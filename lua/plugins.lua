@@ -28,49 +28,10 @@ require("lazy").setup({
     end,
     config = function()
       local wk = require('which-key')
-      
-      -- Theme toggler configuration
-      local themes = {
-        "decay",
-        "tokyonight",
-        "kanagawa",
-        "catppuccin",
-        "everforest",
-        "onedark"
-      }
-      local current_theme = 1
-      
-      local function set_theme(index)
-        current_theme = index
-        local theme = themes[current_theme]
-        if theme == "decay" then
-          require("decay").setup({ style = "dark" })
-        end
-        vim.cmd("colorscheme " .. theme)
-        print("Theme: " .. theme)
-      end
-      
-      local function next_theme()
-        current_theme = (current_theme % #themes) + 1
-        set_theme(current_theme)
-      end
+      local themes_module = require("plugins.themes")
       
       -- Register theme commands
-      vim.api.nvim_create_user_command('NextTheme', next_theme, {})
-      
-      -- Main key mappings
-      local mappings = {
-        ["<leader>"] = {
-          f = { name = "+find" },
-          g = { name = "+git" },
-          d = { name = "+debug" },
-          x = { name = "+trouble" },
-          th = { 
-            name = "+theme",
-            n = { next_theme, "Next theme" },
-          },
-        },
-      }
+      vim.api.nvim_create_user_command('NextTheme', themes_module.next_theme, {})
       
       -- Setup which-key with our mappings
       wk.setup({
@@ -109,25 +70,24 @@ require("lazy").setup({
           spacing = 3,
           align = "left",
         },
-        filter = function() return true end, -- Replaces ignore_missing
+        filter = function() return true end,  -- Replaced ignore_missing
         show_help = true,
-        show_keys = true,
+        triggers = "auto",  -- Changed back to "auto" as the docs recommend
       })
 
-      -- Set up leader key mappings
-      local mappings = {
-        d = { name = "+debug" },
-        f = { name = "+find" },
-        g = { name = "+git" },
-        x = { name = "+trouble" },
-        th = { name = "+theme" },
-      }
-
-      -- Register the mappings with which-key
-      wk.register(mappings, { prefix = "<leader>" })
+      -- Define groups in new format
+      wk.register({
+        ["<leader>d"] = { name = "debug" },
+        ["<leader>f"] = { name = "find" },
+        ["<leader>g"] = { name = "git" },
+        ["<leader>x"] = { name = "trouble" },
+        ["<leader>th"] = { name = "theme" },
+      })
       
-      -- Register the theme toggle separately
-      vim.keymap.set('n', '<leader>thn', function() next_theme() end, { desc = 'Next theme' })
+      -- Register specific mappings
+      wk.register({
+        ["<leader>thn"] = { themes_module.next_theme, desc = "Next theme" },
+      })
     end,
   },
 
@@ -301,7 +261,9 @@ require("lazy").setup({
           enabled = true,
           auto_trigger = true,
           keymap = {
-            accept = "<M-l>",
+            accept = "<Tab>",
+            accept_line = "<C-l>",
+            accept_word = "<C-Right>",
             next = "<M-j>",
             prev = "<M-k>",
             dismiss = "<C-]>"

@@ -8,9 +8,17 @@ local function map(mode, lhs, rhs, opts)
   vim.keymap.set(mode, lhs, rhs, options)
 end
 
+-- Make sure which-key is loaded
+local which_key_loaded, wk = pcall(require, 'which-key')
+
 -- ============================================================================
 -- General Keymaps
 -- ============================================================================
+
+-- Theme toggling
+map('n', '<leader>thn', function() require('plugins.themes').next_theme() end, { desc = 'Next theme' })
+-- Force which-key to show on space key press
+map('n', '<space>', ':WhichKey<CR>', { silent = true, noremap = true })
 
 -- Better window navigation
 map('n', '<C-h>', '<C-w>h', { desc = 'Move to left window' })
@@ -194,4 +202,17 @@ if trouble_ok then
   map('n', 'gR', '<cmd>TroubleToggle lsp_references<cr>', { desc = 'LSP References' })
 end
 
--- WhichKey configuration is now handled in plugins.lua
+-- Register additional which-key mappings if it's available
+if which_key_loaded then
+  wk.register({
+    ["<leader>d"] = { name = "debug" },
+    ["<leader>f"] = { name = "find" },
+    ["<leader>g"] = { name = "git" },
+    ["<leader>x"] = { name = "trouble" },
+    ["<leader>th"] = { name = "theme" },
+  })
+  
+  wk.register({
+    ["<leader>thn"] = { function() require("plugins.themes").next_theme() end, desc = "Next theme" },
+  })
+end

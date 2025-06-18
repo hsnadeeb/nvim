@@ -1,3 +1,7 @@
+-- Set leader keys before anything else
+vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
+
 -- General Neovim settings
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -12,7 +16,3 @@ vim.opt.termguicolors = true
 vim.opt.signcolumn = 'yes'
 vim.opt.updatetime = 250
 vim.opt.timeoutlen = 300
-
--- Leader key
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '

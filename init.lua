@@ -1,3 +1,7 @@
+-- Set leader key before anything else to avoid which-key issues
+vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
+
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -12,9 +16,11 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Load all configuration files
+-- Load all configuration files in correct order
 require("settings")
-require("plugins")
+require("plugins")  -- Loads which-key and other plugins
 require("lsp")
-require("trouble")  -- Enhanced diagnostics UI
+require("trouble").setup()  -- Enhanced diagnostics UI
 require("keybindings")
+
+-- All keybindings now handled in keybindings.lua and plugins.lua

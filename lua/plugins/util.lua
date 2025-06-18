@@ -6,7 +6,7 @@ function M.setup_which_key()
   local wk = require('which-key')
   local themes_module = require("plugins.themes") -- Access the themes module
 
-  -- Configure which-key
+  -- Configure which-key with updated options
   wk.setup({
     plugins = {
       marks = true,
@@ -48,13 +48,14 @@ function M.setup_which_key()
     show_keys = true,
   })
 
-  -- Register the mappings with which-key using the new format
-  for _, mapping in ipairs(mappings) do
-    wk.register(mapping)
-  end
-
-  -- Register the theme toggle separately (redundant if handled by which-key, but safe to keep if preferred)
-  -- map('n', '<leader>thn', function() themes_module.next_theme() end, { desc = 'Next theme' })
+  -- Register theme groups and commands in the correct format
+  wk.register({
+    ["<leader>th"] = { name = "theme" },
+  })
+  
+  wk.register({
+    ["<leader>thn"] = { themes_module.next_theme, desc = "Next theme" },
+  })
 end
 
 
