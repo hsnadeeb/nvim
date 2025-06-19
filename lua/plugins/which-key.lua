@@ -104,6 +104,7 @@ function M.setup()
     -- Buffer operations
     { "<leader>b", group = "buffer" },
     { "<leader>bd", "<cmd>BufferClose<cr>", desc = "Delete Buffer" },
+    { "<leader>bc", "<cmd>BufferClose<cr>", desc = "Close Current Buffer" },
     { "<leader>bn", "<cmd>BufferNext<cr>", desc = "Next Buffer" },
     { "<leader>bp", "<cmd>BufferPrevious<cr>", desc = "Previous Buffer" },
 

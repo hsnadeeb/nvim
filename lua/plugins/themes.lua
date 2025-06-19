@@ -10,8 +10,8 @@ M.themes = {
   "onedark"
 }
 
--- Current theme index
-M.current_theme = 1
+-- Current theme index (5 is everforest)
+M.current_theme = 5
 
 -- Set a specific theme by index
 function M.set_theme(index)
@@ -25,6 +25,9 @@ function M.set_theme(index)
     require("tokyonight").setup({ style = "storm" })
   elseif theme == "catppuccin" then
     require("catppuccin").setup({ flavour = "mocha" })
+  elseif theme == "everforest" then
+    vim.g.everforest_background = "medium"
+    vim.g.everforest_better_performance = 1
   elseif theme == "onedark" then
     require("onedark").setup({ style = "dark" })
   end
@@ -35,10 +38,10 @@ function M.set_theme(index)
     print("Theme switched to: " .. theme)
   else
     print("Failed to switch to theme: " .. theme)
-    -- Fallback to decay if the selected theme fails
-    if theme ~= "decay" then
-      vim.cmd("colorscheme decay")
-      print("Fallback to decay theme")
+    -- Fallback to everforest if the selected theme fails
+    if theme ~= "everforest" then
+      vim.cmd("colorscheme everforest")
+      print("Fallback to everforest theme")
     end
   end
 end

@@ -28,6 +28,17 @@ map('n', '<C-Down>', ':resize +2<CR>', { desc = 'Increase window height' })
 map('n', '<C-Left>', ':vertical resize -2<CR>', { desc = 'Decrease window width' })
 map('n', '<C-Right>', ':vertical resize +2<CR>', { desc = 'Increase window width' })
 
+-- Start and end of line navigation
+map('n', 'H', '^', { desc = 'Go to start of line' })
+map('n', 'L', '$', { desc = 'Go to end of line' })
+map('v', 'H', '^', { desc = 'Go to start of line' })
+map('v', 'L', '$', { desc = 'Go to end of line' })
+-- Alternative with Home/End keys
+map('n', '<Home>', '^', { desc = 'Go to start of line' })
+map('n', '<End>', '$', { desc = 'Go to end of line' })
+map('v', '<Home>', '^', { desc = 'Go to start of line' })
+map('v', '<End>', '$', { desc = 'Go to end of line' })
+
 -- Buffer tab navigation with barbar.nvim
 map('n', '<Tab>', ':BufferNext<CR>', { desc = 'Next buffer tab' })
 map('n', '<S-Tab>', ':BufferPrevious<CR>', { desc = 'Previous buffer tab' })
@@ -52,6 +63,8 @@ map('n', '<A-9>', ':BufferLast<CR>', { desc = 'Go to last buffer' })
 map('n', '<S-h>', ':BufferPrevious<CR>', { desc = 'Previous buffer tab' })
 map('n', '<S-l>', ':BufferNext<CR>', { desc = 'Next buffer tab' })
 map('n', '<leader>bd', ':BufferClose<CR>', { desc = 'Delete buffer' })
+map('n', '<leader>bc', ':BufferClose<CR>', { desc = 'Close current buffer' })
+map('n', '<C-w>c', ':BufferClose<CR>', { desc = 'Close current buffer' })
 
 -- Quick save and quit
 map('n', '<leader>w', ':w<CR>', { desc = 'Save file' })

@@ -2,20 +2,21 @@
 require("lazy").setup({
   -- Theme Management
   {
-    -- Theme: Decay (Default)
-    "decaycs/decay.nvim",
+    -- Theme: Everforest (Default)
+    "sainnhe/everforest",
     lazy = false, -- Load immediately
     priority = 1000, -- Load this first
     config = function()
-      require("decay").setup({ style = "dark" })  
-      vim.cmd("colorscheme decay")
+      vim.g.everforest_background = "medium"
+      vim.g.everforest_better_performance = 1
+      vim.cmd("colorscheme everforest")
     end,
   },
   -- Additional Themes (lazy-loaded)
   { "folke/tokyonight.nvim", lazy = true },
   { "rebelot/kanagawa.nvim", lazy = true },
   { "catppuccin/nvim", name = "catppuccin", lazy = true },
-  { "sainnhe/everforest", lazy = true },
+  { "decaycs/decay.nvim", lazy = true },
   { "navarasu/onedark.nvim", lazy = true },
   
   -- which-key configuration
