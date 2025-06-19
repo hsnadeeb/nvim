@@ -27,9 +27,9 @@ function M.setup()
           ["<Up>"] = require("telescope.actions").move_selection_previous,
           ["<C-u>"] = false, -- Clear prompt
         },
-        n = { 
+        n = {
           ["q"] = require("telescope.actions").close,
-          ["<Esc>"] = require("telescope.actions").close 
+          ["<Esc>"] = require("telescope.actions").close
         },
       },
     },
@@ -53,7 +53,7 @@ function M.setup()
 
   -- Set up keybindings
   local builtin = require("telescope.builtin")
-  
+
   -- Find operations
   map('n', '<leader>ff', builtin.find_files, { desc = 'Find Files' })
   map('n', '<leader>fg', builtin.live_grep, { desc = 'Live Grep' })
@@ -61,25 +61,27 @@ function M.setup()
   map('n', '<leader>fh', builtin.help_tags, { desc = 'Help Tags' })
   map('n', '<leader>fr', builtin.oldfiles, { desc = 'Recent Files' })
   map('n', '<leader>fk', builtin.keymaps, { desc = 'Keymaps' })
-  
+
   -- Git operations
   map('n', '<leader>gc', builtin.git_commits, { desc = 'Git Commits' })
   map('n', '<leader>gbc', builtin.git_bcommits, { desc = 'Git Buffer Commits' })
   map('n', '<leader>gb', builtin.git_branches, { desc = 'Git Branches' })
   map('n', '<leader>gs', builtin.git_status, { desc = 'Git Status' })
-  
+
   -- LSP operations
   map('n', '<leader>fs', builtin.lsp_document_symbols, { desc = 'Document Symbols' })
   map('n', '<leader>fS', builtin.lsp_workspace_symbols, { desc = 'Workspace Symbols' })
   map('n', '<leader>fd', builtin.lsp_definitions, { desc = 'Definitions' })
   map('n', '<leader>fi', builtin.lsp_implementations, { desc = 'Implementations' })
-  
+
   -- Register with which-key if available
   local wk = utils.safe_require("which-key")
   if wk then
-    wk.register({
-      ["<leader>f"] = { name = "find/telescope" },
-    })
+    wk.register(
+    {
+      { "<leader>f", group = "find/telescope" },
+    }
+    )
   end
 end
 
