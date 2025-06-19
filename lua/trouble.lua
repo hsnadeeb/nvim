@@ -70,13 +70,9 @@ function M.setup()
     map('n', '<leader>xd', '<cmd>TroubleToggle document_diagnostics<cr>', { desc = 'Document Diagnostics' })
     map('n', '<leader>xl', '<cmd>TroubleToggle loclist<cr>', { desc = 'Location List' })
     map('n', '<leader>xq', '<cmd>TroubleToggle quickfix<cr>', { desc = 'Quickfix List' })
-    map('n', 'gR', '<cmd>TroubleToggle lsp_references<cr>', { desc = 'LSP References' })
+    map('n', '<leader>lr', '<cmd>TroubleToggle lsp_references<cr>', { desc = 'LSP References (Trouble)' })
     
-    -- Register with which-key if available (but avoid potential circular dependencies)
-    pcall(function()
-      local wk = require("which-key")
-      wk.add({ { "<leader>x", group = "diagnostics" } })
-    end)
+    -- Keybindings are centrally managed in which-key.lua to avoid duplicates
   end
 end
 

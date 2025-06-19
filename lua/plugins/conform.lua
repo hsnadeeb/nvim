@@ -98,11 +98,7 @@ function M.setup()
     })
   end, { desc = "Format selection" })
 
-  -- Register with which-key if available (avoid circular dependencies)
-  pcall(function()
-    local wk = require("which-key")
-    wk.add({ { "<leader>f", group = "find/format" } })
-  end)
+  -- Mappings are now centrally managed in which-key.lua
 end
 
 return M

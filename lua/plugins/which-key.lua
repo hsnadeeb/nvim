@@ -85,9 +85,13 @@ function M.setup()
     },
   })
 
+  -- Note: Some keybindings like <gc>/<gcc> (for commenting) are reported as overlapping
+  -- in health checks. This is normal and expected behavior for comment plugins.
+  -- They can be safely ignored as they use a different interaction model (operator/motion).
+  
   -- Add key mappings with new spec
   which_key.add({
-    -- File operations (consolidating find and format into one group)
+    -- File operations (unified find/format group)
     { "<leader>f", group = "find/format" },
     { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find File" },
     { "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Live Grep" },
@@ -112,35 +116,34 @@ function M.setup()
     { "<leader>g", group = "git" },
     { "<leader>gc", "<cmd>Telescope git_commits<cr>", desc = "Commits" },
     { "<leader>gbc", "<cmd>Telescope git_bcommits<cr>", desc = "Buffer Commits" },
-    { "<leader>gbr", "<cmd>Telescope git_branches<cr>", desc = "Branches" },
+    { "<leader>gB", "<cmd>Telescope git_branches<cr>", desc = "Branches" },
     { "<leader>gs", "<cmd>Telescope git_status<cr>", desc = "Status" },
     { "<leader>gj", function() require("gitsigns").next_hunk() end, desc = "Next Hunk" },
     { "<leader>gk", function() require("gitsigns").prev_hunk() end, desc = "Prev Hunk" },
     { "<leader>gS", function() require("gitsigns").stage_buffer() end, desc = "Stage Buffer" },
     { "<leader>gp", function() require("gitsigns").preview_hunk() end, desc = "Preview Hunk" },
     { "<leader>gd", function() require("gitsigns").diffthis() end, desc = "Diff This" },
-    { "<leader>gB", function() require("gitsigns").toggle_current_line_blame() end, desc = "Toggle Blame" },
+    { "<leader>gbl", function() require("gitsigns").blame_line({ full = true }) end, desc = "Git Blame Line" },
 
     -- LSP operations
     { "<leader>l", group = "lsp" },
     { "<leader>la", vim.lsp.buf.code_action, desc = "Code Action" },
-    { "<leader>ld", vim.lsp.buf.definition, desc = "Definition" },
+    { "<leader>ld", vim.diagnostic.open_float, desc = "Diagnostics (Line)" },
     { "<leader>lD", vim.lsp.buf.declaration, desc = "Declaration" },
     { "<leader>li", vim.lsp.buf.implementation, desc = "Implementation" },
     { "<leader>lr", vim.lsp.buf.references, desc = "References" },
-    { "<leader>lR", vim.lsp.buf.rename, desc = "Rename" },
+    { "<leader>ln", vim.lsp.buf.rename, desc = "Rename" },
     { "<leader>lf", vim.lsp.buf.format, desc = "Format" },
     { "<leader>lh", vim.lsp.buf.hover, desc = "Hover" },
     
-    -- LSP Format (duplicate under f for consistency)
-    { "<leader>fm", function() require("conform").format() end, desc = "Format document" },
+    -- LSP Format (defined once to avoid duplicates)
 
-    -- Terminal operations
-    { "<leader>t", group = "terminal/theme" },
+    -- Terminal and theme operations
+    { "<leader>t", group = "terminal" },
     { "<leader>tt", "<cmd>ToggleTerm<cr>", desc = "Toggle Terminal" },
     { "<leader>tf", "<cmd>ToggleTerm direction=float<cr>", desc = "Float Terminal" },
     { "<leader>tv", "<cmd>ToggleTerm direction=vertical<cr>", desc = "Vertical Terminal" },
-    { "<leader>tz", "<cmd>ToggleTerm direction=horizontal<cr>", desc = "Horizontal Terminal" }, -- Changed from 'th' to 'tz' to avoid conflict
+    { "<leader>tz", "<cmd>ToggleTerm direction=horizontal<cr>", desc = "Horizontal Terminal" },
 
     -- Trouble diagnostics
     { "<leader>x", group = "diagnostics" },
@@ -154,7 +157,7 @@ function M.setup()
     { "<leader>e", "<cmd>NvimTreeToggle<cr>", desc = "Toggle NvimTree" },
     { "<leader>E", "<cmd>NvimTreeFocus<cr>", desc = "Focus NvimTree" },
 
-    -- Theme toggling (now under the shared terminal/theme group)
+    -- Theme toggling
     { "<leader>th", group = "theme" },
     { "<leader>thn", function() require("plugins.themes").next_theme() end, desc = "Next Theme" },
 
@@ -169,16 +172,12 @@ function M.setup()
     -- LSP diagnostics navigation
     { "[d", vim.diagnostic.goto_prev, desc = "Previous Diagnostic" },
     { "]d", vim.diagnostic.goto_next, desc = "Next Diagnostic" },
-    { "gl", vim.diagnostic.open_float, desc = "Line Diagnostics" },
 
-    -- Go to LSP locations (restructured to avoid 'gr' overlap)
+    -- Go to LSP locations
     { "gd", vim.lsp.buf.definition, desc = "Go to Definition" },
     { "gD", vim.lsp.buf.declaration, desc = "Go to Declaration" },
     { "gi", vim.lsp.buf.implementation, desc = "Go to Implementation" },
     { "gR", "<cmd>TroubleToggle lsp_references<cr>", desc = "References (Trouble)" },
-    
-    -- LSP References (separate from other 'g' commands to avoid overlap warning)
-    { "gr", vim.lsp.buf.references, desc = "References" },
   })
 end
 

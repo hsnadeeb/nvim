@@ -67,7 +67,7 @@ function M.setup()
   utils.map('n', '<leader>gD', function() gitsigns.diffthis('~') end, { desc = 'Git Diff (Staged)' })
   
   -- Blame
-  utils.map('n', '<leader>gb', function() gitsigns.blame_line({ full = true }) end, { desc = 'Git Blame Line' })
+  utils.map('n', '<leader>gbl', function() gitsigns.blame_line({ full = true }) end, { desc = 'Git Blame Line' })
   utils.map('n', '<leader>gB', gitsigns.toggle_current_line_blame, { desc = 'Toggle Git Blame' })
   
   -- Preview
@@ -80,14 +80,7 @@ function M.setup()
   utils.map('n', '<leader>gtw', gitsigns.toggle_word_diff, { desc = 'Toggle Git Word Diff' })
   utils.map('n', '<leader>gtb', gitsigns.toggle_current_line_blame, { desc = 'Toggle Git Blame' })
   
-  -- Register with which-key if available (avoid circular dependencies)
-  pcall(function()
-    local wk = require("which-key")
-    wk.add({
-      { "<leader>g", group = "git" },
-      { "<leader>gt", group = "git toggles" }
-    })
-  end)
+  -- Mappings are now centrally managed in which-key.lua
 end
 
 return M

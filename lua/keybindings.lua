@@ -91,24 +91,24 @@ local function lsp_keymaps(bufnr)
   map('n', 'gD', vim.lsp.buf.declaration, opts)
   map('n', 'gd', vim.lsp.buf.definition, opts)
   map('n', 'gi', vim.lsp.buf.implementation, opts)
-  map('n', 'gr', vim.lsp.buf.references, opts) -- Keep this consistent with which-key
+  map('n', '<leader>lr', vim.lsp.buf.references, opts) -- Moved from gr to leader-lr
   map('n', 'K', vim.lsp.buf.hover, opts)
   map('n', '<C-k>', vim.lsp.buf.signature_help, opts)
   
   -- Code actions
-  map('n', '<leader>ca', vim.lsp.buf.code_action, opts)
-  map('n', '<leader>rn', vim.lsp.buf.rename, opts)
+  map('n', '<leader>la', vim.lsp.buf.code_action, opts) -- Under LSP group
+  map('n', '<leader>ln', vim.lsp.buf.rename, opts) -- Under LSP group (renamed from lr to ln)
   map('n', '<leader>fm', vim.lsp.buf.format, { desc = 'Format document', buffer = bufnr })
   
   -- Workspace
-  map('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, opts)
-  map('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, opts)
-  map('n', '<leader>wl', function()
+  map('n', '<leader>lwa', vim.lsp.buf.add_workspace_folder, opts) -- Under LSP group
+  map('n', '<leader>lwr', vim.lsp.buf.remove_workspace_folder, opts) -- Under LSP group
+  map('n', '<leader>lwl', function()
     print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-  end, opts)
+  end, opts) -- Under LSP group
   
   -- Diagnostics
-  map('n', 'gl', vim.diagnostic.open_float, opts)
+  map('n', '<leader>ld', vim.diagnostic.open_float, opts) -- Moved from gl to leader-ld
   map('n', '[d', vim.diagnostic.goto_prev, opts)
   map('n', ']d', vim.diagnostic.goto_next, opts)
   

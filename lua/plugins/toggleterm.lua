@@ -45,14 +45,6 @@ function M.setup()
   utils.map('n', '<leader>`', ':ToggleTerm<CR>', { desc = 'Toggle Terminal' })
   utils.map('t', '<leader>`', '<C-\\><C-n>:ToggleTerm<CR>', { desc = 'Toggle Terminal' })
   
-  -- Register with which-key if available (avoid circular dependencies)
-  pcall(function()
-    local wk = require("which-key")
-    wk.add({
-      { "<leader>t", group = "terminal" }
-    })
-  end)
-
   -- Terminal window navigation (when in terminal mode)
   utils.map('t', '<Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
   utils.map('t', '<C-h>', '<C-\\><C-N><C-w>h', { desc = 'Move to left window' })
