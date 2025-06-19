@@ -27,67 +27,11 @@ require("lazy").setup({
       vim.o.timeoutlen = 300
     end,
     config = function()
-      local wk = require('which-key')
-      local themes_module = require("plugins.themes")
+      require("plugins.which-key").setup()
       
       -- Register theme commands
+      local themes_module = require("plugins.themes")
       vim.api.nvim_create_user_command('NextTheme', themes_module.next_theme, {})
-      
-      -- Setup which-key with our mappings
-      wk.setup({
-        plugins = {
-          marks = true,
-          registers = true,
-          spelling = {
-            enabled = true,
-            suggestions = 20,
-          },
-          presets = {
-            operators = true,
-            motions = true,
-            text_objects = true,
-            windows = true,
-            nav = true,
-            z = true,
-            g = true,
-          },
-        },
-        icons = {
-          breadcrumb = "»",
-          separator = "➜",
-          group = "+",
-        },
-        win = {
-          border = "rounded",
-          position = "bottom",
-          margin = { 1, 0, 1, 0 },
-          padding = { 2, 2, 2, 2 },
-          winblend = 0,
-        },
-        layout = {
-          height = { min = 4, max = 25 },
-          width = { min = 20, max = 50 },
-          spacing = 3,
-          align = "left",
-        },
-        filter = function() return true end,  -- Replaced ignore_missing
-        show_help = true,
-        triggers = "auto",  -- Changed back to "auto" as the docs recommend
-      })
-
-      -- Define groups in new format
-      wk.register({
-        ["<leader>d"] = { name = "debug" },
-        ["<leader>f"] = { name = "find" },
-        ["<leader>g"] = { name = "git" },
-        ["<leader>x"] = { name = "trouble" },
-        ["<leader>th"] = { name = "theme" },
-      })
-      
-      -- Register specific mappings
-      wk.register({
-        ["<leader>thn"] = { themes_module.next_theme, desc = "Next theme" },
-      })
     end,
   },
 
@@ -98,34 +42,7 @@ require("lazy").setup({
       "nvim-tree/nvim-web-devicons", -- optional, for file icons
     },
     config = function()
-      -- Disable netrw (recommended by nvim-tree)
-      vim.g.loaded_netrw = 1
-      vim.g.loaded_netrwPlugin = 1
-
-      -- Set up nvim-tree
-      require("nvim-tree").setup({
-        view = {
-          width = 30,
-          side = "left",
-        },
-        renderer = {
-          group_empty = true,
-          icons = {
-            show = {
-              file = true,
-              folder = true,
-              folder_arrow = true,
-              git = true,
-              modified = true,
-            },
-          },
-        },
-        actions = {
-          open_file = {
-            resize_window = true,
-          },
-        },
-      })
+      require("plugins.nvim-tree").setup()
     end,
   },
 
@@ -135,14 +52,7 @@ require("lazy").setup({
     branch = "0.1.x",
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
-      require("telescope").setup({
-        defaults = {
-          mappings = {
-            i = { ["<C-j>"] = require("telescope.actions").move_selection_next },
-            n = { ["q"] = require("telescope.actions").close },
-          },
-        },
-      })
+      require("plugins.telescope").setup()
     end,
   },
 
@@ -286,30 +196,7 @@ require("lazy").setup({
   {
     "stevearc/conform.nvim",
     config = function()
-      require("conform").setup({
-        formatters_by_ft = {
-          javascript = { "prettier" },
-          javascriptreact = { "prettier" },
-          typescript = { "prettier" },
-          typescriptreact = { "prettier" },
-          css = { "prettier" },
-          html = { "prettier" },
-          json = { "prettier" },
-          go = { "goimports" },
-        },
-        formatters = {
-          prettier = {
-            command = vim.fn.stdpath("data") .. "/mason/bin/prettier",
-          },
-          goimports = {
-            command = vim.fn.stdpath("data") .. "/mason/bin/goimports",
-          },
-        },
-        format_on_save = {
-          timeout_ms = 500,
-          lsp_fallback = true,
-        },
-      })
+      require("plugins.conform").setup()
     end,
   },
 
@@ -317,13 +204,7 @@ require("lazy").setup({
   {
     "lewis6991/gitsigns.nvim",
     config = function()
-      require("gitsigns").setup({
-        signs = {
-          add = { text = "+" },
-          change = { text = "~" },
-          delete = { text = "_" },
-        },
-      })
+      require("plugins.gitsigns").setup()
     end,
   },
 
@@ -349,11 +230,7 @@ require("lazy").setup({
   {
     "akinsho/toggleterm.nvim",
     config = function()
-      require("toggleterm").setup({
-        size = 20,
-        open_mapping = [[<C-\>]],
-        direction = "horizontal",
-      })
+      require("plugins.toggleterm").setup()
     end,
   },
   

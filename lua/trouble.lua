@@ -3,9 +3,14 @@
 
 local M = {}
 
+-- Load utility functions
+local utils = require("utils")
+local map = utils.map
+
 function M.setup()
   local status_ok, trouble = pcall(require, "trouble")
   if not status_ok then
+    vim.notify("trouble.nvim not found!", vim.log.levels.ERROR)
     return
   end
 
@@ -57,7 +62,21 @@ function M.setup()
     use_diagnostic_signs = false -- enabling this will use the signs defined in your lsp client
   })
 
-  -- Keymaps are already set up in keybindings.lua
+  -- Setup keybindings
+  map('n', '<leader>xx', '<cmd>TroubleToggle<cr>', { desc = 'Toggle Trouble' })
+  map('n', '<leader>xw', '<cmd>TroubleToggle workspace_diagnostics<cr>', { desc = 'Workspace Diagnostics' })
+  map('n', '<leader>xd', '<cmd>TroubleToggle document_diagnostics<cr>', { desc = 'Document Diagnostics' })
+  map('n', '<leader>xl', '<cmd>TroubleToggle loclist<cr>', { desc = 'Location List' })
+  map('n', '<leader>xq', '<cmd>TroubleToggle quickfix<cr>', { desc = 'Quickfix List' })
+  map('n', 'gR', '<cmd>TroubleToggle lsp_references<cr>', { desc = 'LSP References' })
+  
+  -- Register the group with which-key if available
+  local wk = utils.safe_require("which-key")
+  if wk then
+    wk.register({
+      ["<leader>x"] = { name = "trouble/diagnostics" },
+    })
+  end
 end
 
 return M
