@@ -21,12 +21,18 @@ require("lazy").setup({
   -- which-key configuration
   {
     "folke/which-key.nvim",
+    version = "^1.0.0",
     event = "VeryLazy",
     init = function()
       vim.o.timeout = true
       vim.o.timeoutlen = 300
     end,
-    config = function()
+    opts = {
+      plugins = {
+        spelling = { enabled = true },
+      },
+    },
+    config = function(_, opts)
       require("plugins.which-key").setup()
       
       -- Register theme commands

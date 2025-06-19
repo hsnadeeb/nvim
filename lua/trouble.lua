@@ -74,7 +74,7 @@ function M.setup()
   local wk = utils.safe_require("which-key")
   if wk then
     wk.register({
-      ["<leader>x"] = { name = "trouble/diagnostics" },
+      { "<leader>x", group = "diagnostics" },
     })
   end
 end
