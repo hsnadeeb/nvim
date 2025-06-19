@@ -62,6 +62,15 @@ function M.setup()
   map('n', '<leader>e', ':NvimTreeToggle<CR>', { desc = 'Toggle NvimTree' })
   map('n', '<leader>E', ':NvimTreeFocus<CR>', { desc = 'Focus NvimTree' })
   map('n', '<leader>ff', ':NvimTreeFindFile<CR>', { desc = 'Find current file in NvimTree' })
+  
+  -- Register with which-key if available (avoid circular dependencies)
+  pcall(function()
+    local wk = require("which-key")
+    wk.add({
+      { "<leader>e", desc = "Toggle NvimTree" },
+      { "<leader>E", desc = "Focus NvimTree" }
+    })
+  end)
 end
 
 return M

@@ -13,8 +13,9 @@ local wk = utils.safe_require('which-key')
 -- General Keymaps
 -- ============================================================================
 
--- Theme toggling - this is now managed in plugins.which-key but keeping for backwards compatibility
-map('n', '<leader>thn', function() require('plugins.themes').next_theme() end, { desc = 'Next theme' })
+-- Theme toggling - managed by which-key
+-- Using consistent paths and descriptions with which-key
+map('n', '<leader>thn', function() require('plugins.themes').next_theme() end, { desc = 'Next Theme' })
 
 -- Better window navigation
 map('n', '<C-h>', '<C-w>h', { desc = 'Move to left window' })
@@ -42,7 +43,7 @@ map('v', '<End>', '$', { desc = 'Go to end of line' })
 -- Buffer tab navigation with barbar.nvim
 map('n', '<Tab>', ':BufferNext<CR>', { desc = 'Next buffer tab' })
 map('n', '<S-Tab>', ':BufferPrevious<CR>', { desc = 'Previous buffer tab' })
--- Alternative buffer navigation (keeping these as well)
+-- Buffer navigation with Alt keys 
 map('n', '<A-,>', ':BufferPrevious<CR>', { desc = 'Previous buffer tab' })
 map('n', '<A-.>', ':BufferNext<CR>', { desc = 'Next buffer tab' })
 map('n', '<A-<>', ':BufferMovePrevious<CR>', { desc = 'Move buffer tab left' })
@@ -67,21 +68,13 @@ map('n', '<leader>bc', ':BufferClose<CR>', { desc = 'Close current buffer' })
 map('n', '<C-w>c', ':BufferClose<CR>', { desc = 'Close current buffer' })
 
 -- Quick save and quit
-map('n', '<leader>w', ':w<CR>', { desc = 'Save file' })
+map('n', '<leader>ws', ':w<CR>', { desc = 'Save' }) -- Updated description to match which-key
 map('n', '<leader>q', ':q<CR>', { desc = 'Quit' })
-map('n', '<leader>Q', ':q!<CR>', { desc = 'Force quit' })
-map('n', '<leader>wq', ':wq<CR>', { desc = 'Save and quit' })
-map('n', '<leader>W', ':wq<CR>', { desc = 'Save and quit' })  -- Alternative mapping
+map('n', '<leader>Q', ':q!<CR>', { desc = 'Force Quit' })
+map('n', '<leader>wq', ':wq<CR>', { desc = 'Save and Quit' })
 
 -- Clear search highlights
 map('n', '<leader>h', ':nohlsearch<CR>', { desc = 'Clear search highlights' })
-
--- ============================================================================
--- Plugin: NvimTree
--- ============================================================================
-map('n', '<leader>e', ':NvimTreeToggle<CR>', { desc = 'Toggle NvimTree' })
-map('n', '<leader>E', ':NvimTreeFocus<CR>', { desc = 'Focus NvimTree' })
-map('n', '<leader>ff', ':NvimTreeFindFile<CR>', { desc = 'Find current file in NvimTree' })
 
 -- ============================================================================
 -- Plugin: Telescope
@@ -98,14 +91,14 @@ local function lsp_keymaps(bufnr)
   map('n', 'gD', vim.lsp.buf.declaration, opts)
   map('n', 'gd', vim.lsp.buf.definition, opts)
   map('n', 'gi', vim.lsp.buf.implementation, opts)
-  map('n', 'gr', vim.lsp.buf.references, opts)
+  map('n', 'gr', vim.lsp.buf.references, opts) -- Keep this consistent with which-key
   map('n', 'K', vim.lsp.buf.hover, opts)
   map('n', '<C-k>', vim.lsp.buf.signature_help, opts)
   
   -- Code actions
   map('n', '<leader>ca', vim.lsp.buf.code_action, opts)
   map('n', '<leader>rn', vim.lsp.buf.rename, opts)
-  map('n', '<leader>f', vim.lsp.buf.format, { desc = 'Format document', buffer = bufnr })
+  map('n', '<leader>fm', vim.lsp.buf.format, { desc = 'Format document', buffer = bufnr })
   
   -- Workspace
   map('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, opts)

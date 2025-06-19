@@ -79,6 +79,15 @@ function M.setup()
   utils.map('n', '<leader>gtl', gitsigns.toggle_linehl, { desc = 'Toggle Git Line Highlight' })
   utils.map('n', '<leader>gtw', gitsigns.toggle_word_diff, { desc = 'Toggle Git Word Diff' })
   utils.map('n', '<leader>gtb', gitsigns.toggle_current_line_blame, { desc = 'Toggle Git Blame' })
+  
+  -- Register with which-key if available (avoid circular dependencies)
+  pcall(function()
+    local wk = require("which-key")
+    wk.add({
+      { "<leader>g", group = "git" },
+      { "<leader>gt", group = "git toggles" }
+    })
+  end)
 end
 
 return M

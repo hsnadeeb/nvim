@@ -13,8 +13,10 @@ function M.setup()
     vim.notify("trouble.nvim not found!", vim.log.levels.ERROR)
     return
   end
-
-  trouble.setup({
+  
+  -- Only continue if trouble is loaded successfully
+  if trouble then
+    trouble.setup({
     position = "bottom", -- position of the list can be: bottom, top, left, right
     height = 10, -- height of the trouble list when position is top or bottom
     width = 50, -- width of the list when position is left or right
@@ -60,22 +62,21 @@ function M.setup()
       other = "﫠"
     },
     use_diagnostic_signs = false -- enabling this will use the signs defined in your lsp client
-  })
-
-  -- Setup keybindings
-  map('n', '<leader>xx', '<cmd>TroubleToggle<cr>', { desc = 'Toggle Trouble' })
-  map('n', '<leader>xw', '<cmd>TroubleToggle workspace_diagnostics<cr>', { desc = 'Workspace Diagnostics' })
-  map('n', '<leader>xd', '<cmd>TroubleToggle document_diagnostics<cr>', { desc = 'Document Diagnostics' })
-  map('n', '<leader>xl', '<cmd>TroubleToggle loclist<cr>', { desc = 'Location List' })
-  map('n', '<leader>xq', '<cmd>TroubleToggle quickfix<cr>', { desc = 'Quickfix List' })
-  map('n', 'gR', '<cmd>TroubleToggle lsp_references<cr>', { desc = 'LSP References' })
-  
-  -- Register the group with which-key if available
-  local wk = utils.safe_require("which-key")
-  if wk then
-    wk.register({
-      { "<leader>x", group = "diagnostics" },
     })
+
+    -- Setup keybindings
+    map('n', '<leader>xx', '<cmd>TroubleToggle<cr>', { desc = 'Toggle Trouble' })
+    map('n', '<leader>xw', '<cmd>TroubleToggle workspace_diagnostics<cr>', { desc = 'Workspace Diagnostics' })
+    map('n', '<leader>xd', '<cmd>TroubleToggle document_diagnostics<cr>', { desc = 'Document Diagnostics' })
+    map('n', '<leader>xl', '<cmd>TroubleToggle loclist<cr>', { desc = 'Location List' })
+    map('n', '<leader>xq', '<cmd>TroubleToggle quickfix<cr>', { desc = 'Quickfix List' })
+    map('n', 'gR', '<cmd>TroubleToggle lsp_references<cr>', { desc = 'LSP References' })
+    
+    -- Register with which-key if available (but avoid potential circular dependencies)
+    pcall(function()
+      local wk = require("which-key")
+      wk.add({ { "<leader>x", group = "diagnostics" } })
+    end)
   end
 end
 

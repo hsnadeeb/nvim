@@ -98,14 +98,11 @@ function M.setup()
     })
   end, { desc = "Format selection" })
 
-  -- Register with which-key if available
-  local wk = utils.safe_require("which-key")
-  if wk then
-    wk.register({
-      ["<leader>f"] = { name = "find/format" },
-      ["<leader>fm"] = { "Format document" },
-    })
-  end
+  -- Register with which-key if available (avoid circular dependencies)
+  pcall(function()
+    local wk = require("which-key")
+    wk.add({ { "<leader>f", group = "find/format" } })
+  end)
 end
 
 return M

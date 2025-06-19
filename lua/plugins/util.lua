@@ -86,41 +86,7 @@ function M.setup_conform()
   })
 end
 
-function M.setup_gitsigns()
-  local gitsigns = require('gitsigns')
-  gitsigns.setup({
-    signs = {
-      add = { text = "+" },
-      change = { text = "~" },
-      delete = { text = "_" },
-    },
-  })
-  -- Keymaps for Gitsigns
-  map('n', '<leader>gj', gitsigns.next_hunk, { desc = 'Next Git Hunk' })
-  map('n', '<leader>gk', gitsigns.prev_hunk, { desc = 'Previous Git Hunk' })
 
-  map('n', '<leader>gs', gitsigns.stage_hunk, { desc = 'Stage Git Hunk' })
-  map('n', '<leader>gS', gitsigns.stage_buffer, { desc = 'Stage Buffer' })
-  map('n', '<leader>gu', gitsigns.undo_stage_hunk, { desc = 'Undo Stage Hunk' })
-
-  map('n', '<leader>gr', gitsigns.reset_hunk, { desc = 'Reset Git Hunk' })
-  map('n', '<leader>gR', gitsigns.reset_buffer, { desc = 'Reset Buffer' })
-  map('n', '<leader>gU', gitsigns.reset_buffer_index, { desc = 'Reset Buffer Index' })
-
-  map('n', '<leader>gd', gitsigns.diffthis, { desc = 'Git Diff' })
-  map('n', '<leader>gD', function() gitsigns.diffthis('~') end, { desc = 'Git Diff (Staged)' })
-
-  map('n', '<leader>gb', function() gitsigns.blame_line({ full = true }) end, { desc = 'Git Blame Line' })
-  map('n', '<leader>gB', gitsigns.toggle_current_line_blame, { desc = 'Toggle Git Blame' })
-
-  map('n', '<leader>gp', gitsigns.preview_hunk, { desc = 'Preview Git Hunk' })
-  map('n', '<leader>gP', gitsigns.preview_hunk_inline, { desc = 'Preview Hunk Inline' })
-
-  map('n', '<leader>gtd', gitsigns.toggle_deleted, { desc = 'Toggle Git Deleted' })
-  map('n', '<leader>gtl', gitsigns.toggle_linehl, { desc = 'Toggle Git Line Highlight' })
-  map('n', '<leader>gtw', gitsigns.toggle_word_diff, { desc = 'Toggle Git Word Diff' })
-  map('n', '<leader>gtb', gitsigns.toggle_current_line_blame, { desc = 'Toggle Git Blame' })
-end
 
 function M.setup_lualine()
   require("lualine").setup({

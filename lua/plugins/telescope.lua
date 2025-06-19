@@ -65,7 +65,7 @@ function M.setup()
   -- Git operations
   map('n', '<leader>gc', builtin.git_commits, { desc = 'Git Commits' })
   map('n', '<leader>gbc', builtin.git_bcommits, { desc = 'Git Buffer Commits' })
-  map('n', '<leader>gb', builtin.git_branches, { desc = 'Git Branches' })
+  map('n', '<leader>gbr', builtin.git_branches, { desc = 'Git Branches' })
   map('n', '<leader>gs', builtin.git_status, { desc = 'Git Status' })
 
   -- LSP operations
@@ -74,15 +74,11 @@ function M.setup()
   map('n', '<leader>fd', builtin.lsp_definitions, { desc = 'Definitions' })
   map('n', '<leader>fi', builtin.lsp_implementations, { desc = 'Implementations' })
 
-  -- Register with which-key if available
-  local wk = utils.safe_require("which-key")
-  if wk then
-    wk.register(
-    {
-      { "<leader>f", group = "find/telescope" },
-    }
-    )
-  end
+  -- Register with which-key if available (avoid circular dependencies)
+  pcall(function()
+    local wk = require("which-key")
+    wk.add({ { "<leader>f", group = "find/telescope" } })
+  end)
 end
 
 return M

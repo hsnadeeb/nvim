@@ -269,7 +269,7 @@ require("lazy").setup({
     "folke/trouble.nvim",
     dependencies = { "kyazdani42/nvim-web-devicons" },
     config = function()
-      require("trouble")
+      require("trouble") -- Just load the module, setup is handled in lua/trouble.lua
     end,
   },
 })

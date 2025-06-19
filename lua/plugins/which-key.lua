@@ -87,8 +87,8 @@ function M.setup()
 
   -- Add key mappings with new spec
   which_key.add({
-    -- File operations
-    { "<leader>f", group = "find/file" },
+    -- File operations (consolidating find and format into one group)
+    { "<leader>f", group = "find/format" },
     { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find File" },
     { "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Live Grep" },
     { "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
@@ -111,7 +111,8 @@ function M.setup()
     -- Git operations
     { "<leader>g", group = "git" },
     { "<leader>gc", "<cmd>Telescope git_commits<cr>", desc = "Commits" },
-    { "<leader>gb", "<cmd>Telescope git_branches<cr>", desc = "Branches" },
+    { "<leader>gbc", "<cmd>Telescope git_bcommits<cr>", desc = "Buffer Commits" },
+    { "<leader>gbr", "<cmd>Telescope git_branches<cr>", desc = "Branches" },
     { "<leader>gs", "<cmd>Telescope git_status<cr>", desc = "Status" },
     { "<leader>gj", function() require("gitsigns").next_hunk() end, desc = "Next Hunk" },
     { "<leader>gk", function() require("gitsigns").prev_hunk() end, desc = "Prev Hunk" },
@@ -130,13 +131,16 @@ function M.setup()
     { "<leader>lR", vim.lsp.buf.rename, desc = "Rename" },
     { "<leader>lf", vim.lsp.buf.format, desc = "Format" },
     { "<leader>lh", vim.lsp.buf.hover, desc = "Hover" },
+    
+    -- LSP Format (duplicate under f for consistency)
+    { "<leader>fm", function() require("conform").format() end, desc = "Format document" },
 
     -- Terminal operations
-    { "<leader>t", group = "terminal" },
+    { "<leader>t", group = "terminal/theme" },
     { "<leader>tt", "<cmd>ToggleTerm<cr>", desc = "Toggle Terminal" },
     { "<leader>tf", "<cmd>ToggleTerm direction=float<cr>", desc = "Float Terminal" },
-    { "<leader>th", "<cmd>ToggleTerm direction=horizontal<cr>", desc = "Horizontal Terminal" },
     { "<leader>tv", "<cmd>ToggleTerm direction=vertical<cr>", desc = "Vertical Terminal" },
+    { "<leader>tz", "<cmd>ToggleTerm direction=horizontal<cr>", desc = "Horizontal Terminal" }, -- Changed from 'th' to 'tz' to avoid conflict
 
     -- Trouble diagnostics
     { "<leader>x", group = "diagnostics" },
@@ -150,15 +154,16 @@ function M.setup()
     { "<leader>e", "<cmd>NvimTreeToggle<cr>", desc = "Toggle NvimTree" },
     { "<leader>E", "<cmd>NvimTreeFocus<cr>", desc = "Focus NvimTree" },
 
-    -- Theme toggling
+    -- Theme toggling (now under the shared terminal/theme group)
     { "<leader>th", group = "theme" },
     { "<leader>thn", function() require("plugins.themes").next_theme() end, desc = "Next Theme" },
 
     -- Quick save and quit
-    { "<leader>w", "<cmd>w<cr>", desc = "Save" },
+    { "<leader>w", group = "write/quit" },
+    { "<leader>ws", "<cmd>w<cr>", desc = "Save" },
+    { "<leader>wq", "<cmd>wq<cr>", desc = "Save and Quit" },
     { "<leader>q", "<cmd>q<cr>", desc = "Quit" },
     { "<leader>Q", "<cmd>q!<cr>", desc = "Force Quit" },
-    { "<leader>W", "<cmd>wq<cr>", desc = "Save and Quit" },
     { "<leader>h", "<cmd>nohlsearch<cr>", desc = "Clear Highlights" },
 
     -- LSP diagnostics navigation
@@ -166,12 +171,14 @@ function M.setup()
     { "]d", vim.diagnostic.goto_next, desc = "Next Diagnostic" },
     { "gl", vim.diagnostic.open_float, desc = "Line Diagnostics" },
 
-    -- Go to LSP locations
+    -- Go to LSP locations (restructured to avoid 'gr' overlap)
     { "gd", vim.lsp.buf.definition, desc = "Go to Definition" },
     { "gD", vim.lsp.buf.declaration, desc = "Go to Declaration" },
     { "gi", vim.lsp.buf.implementation, desc = "Go to Implementation" },
-    { "gr", vim.lsp.buf.references, desc = "Go to References" },
     { "gR", "<cmd>TroubleToggle lsp_references<cr>", desc = "References (Trouble)" },
+    
+    -- LSP References (separate from other 'g' commands to avoid overlap warning)
+    { "gr", vim.lsp.buf.references, desc = "References" },
   })
 end
 
