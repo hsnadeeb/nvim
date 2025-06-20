@@ -14,7 +14,6 @@ function M.setup()
     return
   end
 
-  -- Configure which-key with new spec
   which_key.setup({
     preset = "modern",
     delay = 500,
@@ -25,7 +24,6 @@ function M.setup()
       ["<cr>"] = "RET",
       ["<tab>"] = "TAB",
     },
-    spec = {},
     win = {
       border = "rounded",
       padding = { 1, 2 },
@@ -49,135 +47,112 @@ function M.setup()
       separator = "➜",
       group = "+",
       ellipsis = "…",
-      mappings = true,
-      rules = false,
-      colors = true,
-      keys = {
-        Up = " ",
-        Down = " ",
-        Left = " ",
-        Right = " ",
-        C = "󰘴 ",
-        M = "󰘵 ",
-        D = "󰘳 ",
-        S = "󰘶 ",
-        CR = "󰌑 ",
-        Esc = "󱊷 ",
-        ScrollWheelDown = "󱕐 ",
-        ScrollWheelUp = "󱕑 ",
-        NL = "󰌑 ",
-        BS = "󰁮",
-        Space = "󱁐 ",
-        Tab = "󰌒 ",
-        F1 = "󱊫",
-        F2 = "󱊬",
-        F3 = "󱊭",
-        F4 = "󱊮",
-        F5 = "󱊯",
-        F6 = "󱊰",
-        F7 = "󱊱",
-        F8 = "󱊲",
-        F9 = "󱊳",
-        F10 = "󱊴",
-        F11 = "󱊵",
-        F12 = "󱊶",
-      },
     },
   })
 
-  -- Note: Some keybindings like <gc>/<gcc> (for commenting) are reported as overlapping
-  -- in health checks. This is normal and expected behavior for comment plugins.
-  -- They can be safely ignored as they use a different interaction model (operator/motion).
-  
-  -- Add key mappings with new spec
-  which_key.add({
-    -- File operations (unified find/format group)
-    { "<leader>f", group = "find/format" },
-    { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find File" },
-    { "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Live Grep" },
-    { "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
-    { "<leader>fh", "<cmd>Telescope help_tags<cr>", desc = "Help Tags" },
-    { "<leader>fr", "<cmd>Telescope oldfiles<cr>", desc = "Recent Files" },
-    { "<leader>fk", "<cmd>Telescope keymaps<cr>", desc = "Keymaps" },
-    { "<leader>fs", "<cmd>Telescope lsp_document_symbols<cr>", desc = "Document Symbols" },
-    { "<leader>fS", "<cmd>Telescope lsp_workspace_symbols<cr>", desc = "Workspace Symbols" },
-    { "<leader>fd", "<cmd>Telescope lsp_definitions<cr>", desc = "Definitions" },
-    { "<leader>fi", "<cmd>Telescope lsp_implementations<cr>", desc = "Implementations" },
-    { "<leader>fm", function() require("conform").format() end, desc = "Format document" },
+  -- Key mappings registration
+  which_key.register({
+    -- Find/Format group
+    ["<leader>f"] = {
+      name = "+find/format",
+      f = { "<cmd>Telescope find_files<cr>", "Find File" },
+      g = { "<cmd>Telescope live_grep<cr>", "Live Grep" },
+      b = { "<cmd>Telescope buffers<cr>", "Buffers" },
+      h = { "<cmd>Telescope help_tags<cr>", "Help Tags" },
+      r = { "<cmd>Telescope oldfiles<cr>", "Recent Files" },
+      k = { "<cmd>Telescope keymaps<cr>", "Keymaps" },
+      s = { "<cmd>Telescope lsp_document_symbols<cr>", "Document Symbols" },
+      S = { "<cmd>Telescope lsp_workspace_symbols<cr>", "Workspace Symbols" },
+      d = { "<cmd>Telescope lsp_definitions<cr>", "Definitions" },
+      i = { "<cmd>Telescope lsp_implementations<cr>", "Implementations" },
+      m = { function() require("conform").format() end, "Format document" },
+    },
 
-    -- Buffer operations
-    { "<leader>b", group = "buffer" },
-    { "<leader>bd", "<cmd>BufferClose<cr>", desc = "Delete Buffer" },
-    { "<leader>bc", "<cmd>BufferClose<cr>", desc = "Close Current Buffer" },
-    { "<leader>bn", "<cmd>BufferNext<cr>", desc = "Next Buffer" },
-    { "<leader>bp", "<cmd>BufferPrevious<cr>", desc = "Previous Buffer" },
+    -- Buffer group
+    ["<leader>b"] = {
+      name = "+buffer",
+      d = { "<cmd>BufferClose<cr>", "Delete Buffer" },
+      c = { "<cmd>BufferClose<cr>", "Close Current Buffer" },
+      n = { "<cmd>BufferNext<cr>", "Next Buffer" },
+      p = { "<cmd>BufferPrevious<cr>", "Previous Buffer" },
+    },
 
-    -- Git operations
-    { "<leader>g", group = "git" },
-    { "<leader>gc", "<cmd>Telescope git_commits<cr>", desc = "Commits" },
-    { "<leader>gbc", "<cmd>Telescope git_bcommits<cr>", desc = "Buffer Commits" },
-    { "<leader>gB", "<cmd>Telescope git_branches<cr>", desc = "Branches" },
-    { "<leader>gs", "<cmd>Telescope git_status<cr>", desc = "Status" },
-    { "<leader>gj", function() require("gitsigns").next_hunk() end, desc = "Next Hunk" },
-    { "<leader>gk", function() require("gitsigns").prev_hunk() end, desc = "Prev Hunk" },
-    { "<leader>gS", function() require("gitsigns").stage_buffer() end, desc = "Stage Buffer" },
-    { "<leader>gp", function() require("gitsigns").preview_hunk() end, desc = "Preview Hunk" },
-    { "<leader>gd", function() require("gitsigns").diffthis() end, desc = "Diff This" },
-    { "<leader>gbl", function() require("gitsigns").blame_line({ full = true }) end, desc = "Git Blame Line" },
+    -- Git group
+    ["<leader>g"] = {
+      name = "+git",
+      c = { "<cmd>Telescope git_commits<cr>", "Commits" },
+      bc = { "<cmd>Telescope git_bcommits<cr>", "Buffer Commits" },
+      B = { "<cmd>Telescope git_branches<cr>", "Branches" },
+      s = { "<cmd>Telescope git_status<cr>", "Status" },
+      j = { function() require("gitsigns").next_hunk() end, "Next Hunk" },
+      k = { function() require("gitsigns").prev_hunk() end, "Prev Hunk" },
+      S = { function() require("gitsigns").stage_buffer() end, "Stage Buffer" },
+      p = { function() require("gitsigns").preview_hunk() end, "Preview Hunk" },
+      d = { function() require("gitsigns").diffthis() end, "Diff This" },
+      bl = { function() require("gitsigns").blame_line({ full = true }) end, "Git Blame Line" },
+    },
 
-    -- LSP operations
-    { "<leader>l", group = "lsp" },
-    { "<leader>la", vim.lsp.buf.code_action, desc = "Code Action" },
-    { "<leader>ld", vim.diagnostic.open_float, desc = "Diagnostics (Line)" },
-    { "<leader>lD", vim.lsp.buf.declaration, desc = "Declaration" },
-    { "<leader>li", vim.lsp.buf.implementation, desc = "Implementation" },
-    { "<leader>lr", vim.lsp.buf.references, desc = "References" },
-    { "<leader>ln", vim.lsp.buf.rename, desc = "Rename" },
-    { "<leader>lf", vim.lsp.buf.format, desc = "Format" },
-    { "<leader>lh", vim.lsp.buf.hover, desc = "Hover" },
-    
-    -- LSP Format (defined once to avoid duplicates)
+    -- LSP group
+    ["<leader>l"] = {
+      name = "+lsp",
+      a = { vim.lsp.buf.code_action, "Code Action" },
+      d = { vim.diagnostic.open_float, "Diagnostics (Line)" },
+      D = { vim.lsp.buf.declaration, "Declaration" },
+      i = { vim.lsp.buf.implementation, "Implementation" },
+      r = { vim.lsp.buf.references, "References" },
+      n = { vim.lsp.buf.rename, "Rename" },
+      f = { vim.lsp.buf.format, "Format" },
+      h = { vim.lsp.buf.hover, "Hover" },
+    },
 
-    -- Terminal and theme operations
-    { "<leader>t", group = "terminal" },
-    { "<leader>tt", "<cmd>ToggleTerm<cr>", desc = "Toggle Terminal" },
-    { "<leader>tf", "<cmd>ToggleTerm direction=float<cr>", desc = "Float Terminal" },
-    { "<leader>tv", "<cmd>ToggleTerm direction=vertical<cr>", desc = "Vertical Terminal" },
-    { "<leader>tz", "<cmd>ToggleTerm direction=horizontal<cr>", desc = "Horizontal Terminal" },
+    -- Terminal group
+    ["<leader>t"] = {
+      name = "+terminal",
+      t = { "<cmd>ToggleTerm<cr>", "Toggle Terminal" },
+      f = { "<cmd>ToggleTerm direction=float<cr>", "Float Terminal" },
+      v = { "<cmd>ToggleTerm direction=vertical<cr>", "Vertical Terminal" },
+      z = { "<cmd>ToggleTerm direction=horizontal<cr>", "Horizontal Terminal" },
+    },
 
-    -- Trouble diagnostics
-    { "<leader>x", group = "diagnostics" },
-    { "<leader>xx", "<cmd>TroubleToggle<cr>", desc = "Toggle Trouble" },
-    { "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Workspace Diagnostics" },
-    { "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Document Diagnostics" },
-    { "<leader>xl", "<cmd>TroubleToggle loclist<cr>", desc = "Location List" },
-    { "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", desc = "Quickfix List" },
-
-    -- NvimTree
-    { "<leader>e", "<cmd>NvimTreeToggle<cr>", desc = "Toggle NvimTree" },
-    { "<leader>E", "<cmd>NvimTreeFocus<cr>", desc = "Focus NvimTree" },
+    -- Diagnostics / Trouble
+    ["<leader>x"] = {
+      name = "+diagnostics",
+      x = { "<cmd>TroubleToggle<cr>", "Toggle Trouble" },
+      w = { "<cmd>TroubleToggle workspace_diagnostics<cr>", "Workspace Diagnostics" },
+      d = { "<cmd>TroubleToggle document_diagnostics<cr>", "Document Diagnostics" },
+      l = { "<cmd>TroubleToggle loclist<cr>", "Location List" },
+      q = { "<cmd>TroubleToggle quickfix<cr>", "Quickfix List" },
+    },
 
     -- Theme toggling
-    { "<leader>th", group = "theme" },
-    { "<leader>thn", function() require("plugins.themes").next_theme() end, desc = "Next Theme" },
+    ["<leader>th"] = {
+      name = "+theme",
+      n = { function() require("plugins.themes").next_theme() end, "Next Theme" },
+    },
 
-    -- Quick save and quit
-    { "<leader>w", group = "write/quit" },
-    { "<leader>ws", "<cmd>w<cr>", desc = "Save" },
-    { "<leader>wq", "<cmd>wq<cr>", desc = "Save and Quit" },
-    { "<leader>q", "<cmd>q<cr>", desc = "Quit" },
-    { "<leader>Q", "<cmd>q!<cr>", desc = "Force Quit" },
-    { "<leader>h", "<cmd>nohlsearch<cr>", desc = "Clear Highlights" },
+    -- Write/quit
+    ["<leader>w"] = {
+      name = "+write/quit",
+      s = { "<cmd>w<cr>", "Save" },
+      q = { "<cmd>wq<cr>", "Save and Quit" },
+    },
 
-    -- LSP diagnostics navigation
-    { "[d", vim.diagnostic.goto_prev, desc = "Previous Diagnostic" },
-    { "]d", vim.diagnostic.goto_next, desc = "Next Diagnostic" },
+    -- Other simple mappings
+    ["<leader>q"] = { "<cmd>q<cr>", "Quit" },
+    ["<leader>Q"] = { "<cmd>q!<cr>", "Force Quit" },
+    ["<leader>h"] = { "<cmd>nohlsearch<cr>", "Clear Highlights" },
+    ["<leader>e"] = { "<cmd>NvimTreeToggle<cr>", "Toggle NvimTree" },
+    ["<leader>E"] = { "<cmd>NvimTreeFocus<cr>", "Focus NvimTree" },
 
-    -- Go to LSP locations
-    { "gd", vim.lsp.buf.definition, desc = "Go to Definition" },
-    { "gD", vim.lsp.buf.declaration, desc = "Go to Declaration" },
-    { "gi", vim.lsp.buf.implementation, desc = "Go to Implementation" },
-    { "gR", "<cmd>TroubleToggle lsp_references<cr>", desc = "References (Trouble)" },
+    -- Diagnostics navigation
+    ["[d"] = { vim.diagnostic.goto_prev, "Previous Diagnostic" },
+    ["]d"] = { vim.diagnostic.goto_next, "Next Diagnostic" },
+
+    -- LSP location navigation
+    ["gd"] = { vim.lsp.buf.definition, "Go to Definition" },
+    ["gD"] = { vim.lsp.buf.declaration, "Go to Declaration" },
+    ["gi"] = { vim.lsp.buf.implementation, "Go to Implementation" },
+    ["gR"] = { "<cmd>TroubleToggle lsp_references<cr>", "References (Trouble)" },
   })
 end
 
