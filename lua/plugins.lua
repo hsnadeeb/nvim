@@ -1,5 +1,182 @@
 -- Plugin setup with lazy.nvim
 require("lazy").setup({
+  -- UI Enhancements
+  {
+    'nvim-lualine/lualine.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+      require('lualine').setup {
+        options = {
+          theme = 'auto',
+          component_separators = { left = '│', right = '│' },
+          section_separators = { left = '', right = '' },
+        },
+        sections = {
+          lualine_a = {'mode'},
+          lualine_b = {'branch', 'diff', 'diagnostics'},
+          lualine_c = {'filename'},
+          lualine_x = {'encoding', 'fileformat', 'filetype'},
+          lualine_y = {'progress'},
+          lualine_z = {'location'}
+        },
+      }
+    end
+  },
+  
+  -- Better Visuals
+  {
+    'lukas-reineke/indent-blankline.nvim',
+    main = 'ibl',
+    opts = {
+      indent = {
+        char = '┊',
+      },
+      scope = {
+        show_start = true,
+        show_end = true,
+      }
+    },
+    config = function(_, opts)
+      require('ibl').setup(opts)
+    end
+  },
+  
+  -- Enhanced LSP UI
+  {
+    'glepnir/lspsaga.nvim',
+    event = 'LspAttach',
+    config = function()
+      require('lspsaga').setup({
+        ui = {
+          border = 'rounded',
+          title = true,
+          winblend = 0,
+          expand = '',
+          collapse = '',
+          code_action = '💡',
+          incoming = ' ',
+          outgoing = ' ',
+          hover = ' ',
+          kind = {},
+        },
+        symbol_in_winbar = {
+          enable = true,
+          separator = '  ',
+          hide_keyword = true,
+          show_file = true,
+          folder_level = 2,
+          respect_root = true,
+          color_mode = true,
+        },
+      })
+    end,
+    dependencies = {
+      'nvim-tree/nvim-web-devicons',
+      'nvim-treesitter/nvim-treesitter'
+    }
+  },
+  
+  -- Auto pairs
+  {
+    'windwp/nvim-autopairs',
+    event = 'InsertEnter',
+    config = function()
+      require('nvim-autopairs').setup()
+    end
+  },
+  
+  -- Comments
+  {
+    'numToStr/Comment.nvim',
+    config = function()
+      require('Comment').setup({
+        toggler = {
+          line = nil,  -- Disable default line comment toggle
+          block = nil, -- Disable default block comment toggle
+        },
+        opleader = {
+          line = nil,  -- Disable default line comment operator
+          block = nil, -- Disable default block comment operator
+        },
+        extra = {
+          above = nil, -- Disable default comment above
+          below = nil, -- Disable default comment below
+          eol = nil,   -- Disable default comment at end of line
+        },
+        mappings = {
+          basic = false,  -- Disable basic mappings (gcc, gbc, etc.)
+          extra = false,  -- Disable extra mappings (gco, gcO, etc.)
+        },
+      })
+    end
+  },
+  
+  -- Todo comments
+  {
+    'folke/todo-comments.nvim',
+    dependencies = 'nvim-lua/plenary.nvim',
+    config = function() 
+      require('todo-comments').setup()
+    end
+  },
+  
+  -- Session management
+  {
+    'rmagatti/auto-session',
+    config = function()
+      require('auto-session').setup {
+        log_level = 'error',
+        auto_session_suppress_dirs = { '~/', '/', '~/Downloads' },
+      }
+    end
+  },
+  
+  -- Project management
+  {
+    'ahmedkhalf/project.nvim',
+    config = function()
+      require('project_nvim').setup {
+        detection_methods = { 'pattern' },
+        patterns = { '.git', '_darcs', '.hg', '.bzr', '.svn', 'Makefile', 'package.json', 'pom.xml' },
+      }
+    end
+  },
+  
+  -- Debugging
+  {
+    'mfussenegger/nvim-dap',
+    dependencies = {
+      'rcarriga/nvim-dap-ui',
+      'theHamsta/nvim-dap-virtual-text',
+      'nvim-telescope/telescope-dap.nvim',
+      'nvim-neotest/nvim-nio',  -- Required by nvim-dap-ui
+    },
+    config = function()
+      local dap = require('dap')
+      local dapui = require('dapui')
+      
+      -- Basic debugging keymaps
+      vim.keymap.set('n', '<F5>', dap.continue, { desc = 'Debug: Start/Continue' })
+      vim.keymap.set('n', '<F10>', dap.step_over, { desc = 'Debug: Step Over' })
+      vim.keymap.set('n', '<F11>', dap.step_into, { desc = 'Debug: Step Into' })
+      vim.keymap.set('n', '<F12>', dap.step_out, { desc = 'Debug: Step Out' })
+      vim.keymap.set('n', '<leader>b', dap.toggle_breakpoint, { desc = 'Debug: Toggle Breakpoint' })
+      vim.keymap.set('n', '<leader>B', function() dap.set_breakpoint(vim.fn.input('Breakpoint condition: ')) end,
+        { desc = 'Debug: Set Conditional Breakpoint' })
+      
+      -- DAP UI setup
+      dapui.setup()
+      dap.listeners.after.event_initialized['dapui_config'] = dapui.open
+      dap.listeners.before.event_terminated['dapui_config'] = dapui.close
+      dap.listeners.before.event_exited['dapui_config'] = dapui.close
+      
+      -- Virtual text for debugging
+      require('nvim-dap-virtual-text').setup()
+      
+      -- Telescope DAP integration
+      require('telescope').load_extension('dap')
+    end
+  },
   -- Theme Management
   {
     -- Theme: Decay (Default)
