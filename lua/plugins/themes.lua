@@ -10,8 +10,8 @@ M.themes = {
   "onedark"
 }
 
--- Current theme index (1 is decay)
-M.current_theme = 1
+-- Current theme index (5 is everforest)
+M.current_theme = 5
 
 -- Define nvim-tree diagnostic signs
 local function setup_nvim_tree_signs()
