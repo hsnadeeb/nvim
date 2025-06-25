@@ -7,11 +7,16 @@ M.themes = {
   "kanagawa",
   "catppuccin",
   "everforest",
-  "onedark"
+  "onedark" 
 }
 
--- Current theme index (1 is decay)
-M.current_theme = 1
+-- Current theme index (5 is everforest)
+M.current_theme = 5
+
+-- Initialize the default theme
+function M.setup()
+  M.set_theme(M.current_theme)
+end
 
 -- Define nvim-tree diagnostic signs
 local function setup_nvim_tree_signs()
