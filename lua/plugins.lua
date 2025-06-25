@@ -217,17 +217,6 @@ require("lazy").setup({
     end,
   },
 
-  -- File explorer
-  {
-    "nvim-tree/nvim-tree.lua",
-    dependencies = {
-      "nvim-tree/nvim-web-devicons", -- optional, for file icons
-    },
-    config = function()
-      require("plugins.nvim-tree").setup()
-    end,
-  },
-
   -- Fuzzy finder
   {
     "nvim-telescope/telescope.nvim",
@@ -408,11 +397,34 @@ require("lazy").setup({
     end,
   },
 
+  -- File Explorer
+  {
+    'nvim-tree/nvim-tree.lua',
+    version = '*',
+    lazy = false,
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+      require('nvim-tree').setup({
+        view = {
+          width = 30,
+          side = 'left',
+        },
+        renderer = {
+          group_empty = true,
+        },
+        filters = {
+          dotfiles = false,
+        },
+      })
+      vim.keymap.set('n', '<leader>e', '<cmd>NvimTreeToggle<CR>', { desc = 'Toggle file explorer' })
+    end,
+  },
+
   -- Terminal
   {
     "akinsho/toggleterm.nvim",
     config = function()
-      require("plugins.toggleterm").setup()
+      require('toggleterm').setup()
     end,
   },
   
@@ -440,11 +452,5 @@ require("lazy").setup({
   },
   
   -- Better diagnostics UI
-  {
-    "folke/trouble.nvim",
-    dependencies = { "kyazdani42/nvim-web-devicons" },
-    config = function()
-      require("trouble") -- Just load the module, setup is handled in lua/trouble.lua
-    end,
-  },
+  require('plugins.trouble'),
 })

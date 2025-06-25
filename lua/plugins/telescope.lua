@@ -11,6 +11,25 @@ function M.setup()
     return
   end
 
+  -- Setup keybindings
+  local function setup_keymaps()
+    local telescope_builtin = require('telescope.builtin')
+    
+    -- File operations
+    vim.keymap.set('n', '<leader>ff', telescope_builtin.find_files, { desc = 'Find files' })
+    vim.keymap.set('n', '<leader>fg', telescope_builtin.live_grep, { desc = 'Live grep' })
+    vim.keymap.set('n', '<leader>fb', telescope_builtin.buffers, { desc = 'Find buffer' })
+    vim.keymap.set('n', '<leader>fh', telescope_builtin.help_tags, { desc = 'Find help' })
+    vim.keymap.set('n', '<leader>fr', telescope_builtin.oldfiles, { desc = 'Recent files' })
+    vim.keymap.set('n', '<leader>ft', '<cmd>Telescope<CR>', { desc = 'Telescope' })
+    
+    -- Git operations
+    vim.keymap.set('n', '<leader>gg', telescope_builtin.git_commits, { desc = 'Git commits' })
+    vim.keymap.set('n', '<leader>gc', telescope_builtin.git_bcommits, { desc = 'Git commits (buffer)' })
+    vim.keymap.set('n', '<leader>gb', telescope_builtin.git_branches, { desc = 'Git branches' })
+    vim.keymap.set('n', '<leader>gs', telescope_builtin.git_status, { desc = 'Git status' })
+  end
+
   -- Configure telescope
   telescope.setup({
     defaults = {
@@ -47,34 +66,16 @@ function M.setup()
       -- Add any telescope extensions here
     },
   })
-
-  -- Load extensions if available
-  pcall(telescope.load_extension, "fzf")
-
-  -- Set up keybindings
-  local builtin = require("telescope.builtin")
-
-  -- Find operations
-  map('n', '<leader>ff', builtin.find_files, { desc = 'Find Files' })
-  map('n', '<leader>fg', builtin.live_grep, { desc = 'Live Grep' })
-  map('n', '<leader>fb', builtin.buffers, { desc = 'Find Buffers' })
-  map('n', '<leader>fh', builtin.help_tags, { desc = 'Help Tags' })
-  map('n', '<leader>fr', builtin.oldfiles, { desc = 'Recent Files' })
-  map('n', '<leader>fk', builtin.keymaps, { desc = 'Keymaps' })
-
-  -- Git operations
-  map('n', '<leader>gc', builtin.git_commits, { desc = 'Git Commits' })
-  map('n', '<leader>gbc', builtin.git_bcommits, { desc = 'Git Buffer Commits' })
-  map('n', '<leader>gB', builtin.git_branches, { desc = 'Branches' })
-  map('n', '<leader>gs', builtin.git_status, { desc = 'Git Status' })
-
-  -- LSP operations
-  map('n', '<leader>fs', builtin.lsp_document_symbols, { desc = 'Document Symbols' })
-  map('n', '<leader>fS', builtin.lsp_workspace_symbols, { desc = 'Workspace Symbols' })
-  map('n', '<leader>fd', builtin.lsp_definitions, { desc = 'Definitions' })
-  map('n', '<leader>fi', builtin.lsp_implementations, { desc = 'Implementations' })
-
-  -- Mappings are now centrally managed in which-key.lua
+  
+  -- Load extensions
+  for _, ext in ipairs({
+    -- Add any telescope extensions here
+  }) do
+    telescope.load_extension(ext)
+  end
+  
+  -- Setup keybindings after telescope is loaded
+  setup_keymaps()
 end
 
 return M

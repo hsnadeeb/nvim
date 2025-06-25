@@ -48,39 +48,58 @@ function M.setup()
   })
 
   -- Setup keybindings
-  -- Navigation
-  utils.map('n', '<leader>gj', gitsigns.next_hunk, { desc = 'Next Git Hunk' })
-  utils.map('n', '<leader>gk', gitsigns.prev_hunk, { desc = 'Previous Git Hunk' })
-  
-  -- Staging
-  utils.map('n', '<leader>gs', gitsigns.stage_hunk, { desc = 'Stage Git Hunk' })
-  utils.map('n', '<leader>gS', gitsigns.stage_buffer, { desc = 'Stage Buffer' })
-  utils.map('n', '<leader>gu', gitsigns.undo_stage_hunk, { desc = 'Undo Stage Hunk' })
-  
-  -- Reset
-  utils.map('n', '<leader>gr', gitsigns.reset_hunk, { desc = 'Reset Git Hunk' })
-  utils.map('n', '<leader>gR', gitsigns.reset_buffer, { desc = 'Reset Buffer' })
-  utils.map('n', '<leader>gU', gitsigns.reset_buffer_index, { desc = 'Reset Buffer Index' })
-  
-  -- Diff
-  utils.map('n', '<leader>gd', gitsigns.diffthis, { desc = 'Git Diff' })
-  utils.map('n', '<leader>gD', function() gitsigns.diffthis('~') end, { desc = 'Git Diff (Staged)' })
-  
-  -- Blame
-  utils.map('n', '<leader>gbl', function() gitsigns.blame_line({ full = true }) end, { desc = 'Git Blame Line' })
-  utils.map('n', '<leader>gB', gitsigns.toggle_current_line_blame, { desc = 'Toggle Git Blame' })
-  
-  -- Preview
-  utils.map('n', '<leader>gp', gitsigns.preview_hunk, { desc = 'Preview Git Hunk' })
-  utils.map('n', '<leader>gP', gitsigns.preview_hunk_inline, { desc = 'Preview Hunk Inline' })
-  
-  -- Toggles
-  utils.map('n', '<leader>gtd', gitsigns.toggle_deleted, { desc = 'Toggle Git Deleted' })
-  utils.map('n', '<leader>gtl', gitsigns.toggle_linehl, { desc = 'Toggle Git Line Highlight' })
-  utils.map('n', '<leader>gtw', gitsigns.toggle_word_diff, { desc = 'Toggle Git Word Diff' })
-  utils.map('n', '<leader>gtb', gitsigns.toggle_current_line_blame, { desc = 'Toggle Git Blame' })
-  
-  -- Mappings are now centrally managed in which-key.lua
+  local function setup_keymaps()
+    -- Navigation (using which-key groups for consistency)
+    local keymaps = {
+      -- Normal mode mappings
+      ['n'] = {
+        [']c'] = { 'v:lua.require"gitsigns.actions".next_hunk()', 'Next hunk', expr = true },
+        ['[c'] = { 'v:lua.require"gitsigns.actions".prev_hunk()', 'Previous hunk', expr = true },
+        
+        -- Git operations with leader prefix
+        ['<leader>g'] = {
+          name = '+Git',
+          ['s'] = { '<cmd>Gitsigns stage_hunk<CR>', 'Stage hunk' },
+          ['u'] = { '<cmd>Gitsigns undo_stage_hunk<CR>', 'Undo stage hunk' },
+          ['r'] = { '<cmd>Gitsigns reset_hunk<CR>', 'Reset hunk' },
+          ['S'] = { '<cmd>Gitsigns stage_buffer<CR>', 'Stage buffer' },
+          ['R'] = { '<cmd>Gitsigns reset_buffer<CR>', 'Reset buffer' },
+          ['p'] = { '<cmd>Gitsigns preview_hunk<CR>', 'Preview hunk' },
+          ['b'] = { '<cmd>lua require"gitsigns".blame_line{full=true}<CR>', 'Blame line' },
+          ['d'] = { '<cmd>Gitsigns diffthis<CR>', 'Diff this' },
+          ['D'] = { '<cmd>lua require"gitsigns".diffthis("~")<CR>', 'Diff this ~' },
+        },
+      },
+      -- Visual mode mappings
+      ['v'] = {
+        ['<leader>gs'] = { ':Gitsigns stage_hunk<CR>', 'Stage hunk' },
+        ['<leader>gr'] = { ':Gitsigns reset_hunk<CR>', 'Reset hunk' },
+      },
+    }
+
+
+    -- Apply the keymaps
+    local wk = require('which-key')
+    if wk then
+      -- Register normal mode keymaps
+      wk.register(keymaps['n'])
+      -- Register visual mode keymaps
+      wk.register(keymaps['v'], { mode = 'v' })
+    else
+      -- Fallback to manual keymap setting if which-key is not available
+      for mode, mappings in pairs(keymaps) do
+        for key, cmd in pairs(mappings) do
+          if type(cmd) == 'table' and cmd[1] then
+            local opts = { desc = cmd[2] }
+            if cmd.expr then opts.expr = true end
+            vim.keymap.set(mode, key, cmd[1], opts)
+          end
+        end
+      end
+    end
+  end
+
+  setup_keymaps()
 end
 
 return M
