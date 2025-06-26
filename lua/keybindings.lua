@@ -67,6 +67,9 @@ vim.g.maplocalleader = '\\'
 
 -- General keymaps
 local general_keymaps = {
+  -- Comment toggle
+  ['/'] = { function() require('Comment.api').toggle.linewise.current() end, 'Toggle comment' },
+  
   -- Window navigation
   ['<C-h>'] = { '<C-w>h', 'Move to left window' },
   ['<C-j>'] = { '<C-w>j', 'Move to window below' },
@@ -180,32 +183,50 @@ map('n', '<End>', '$', { desc = 'Go to end of line' })
 map('v', '<Home>', '^', { desc = 'Go to start of line' })
 map('v', '<End>', '$', { desc = 'Go to end of line' })
 
--- Buffer tab navigation with barbar.nvim
-map('n', '<Tab>', ':BufferNext<CR>', { desc = 'Next buffer tab' })
-map('n', '<S-Tab>', ':BufferPrevious<CR>', { desc = 'Previous buffer tab' })
--- Buffer navigation with Alt keys 
-map('n', '<A-,>', ':BufferPrevious<CR>', { desc = 'Previous buffer tab' })
-map('n', '<A-.>', ':BufferNext<CR>', { desc = 'Next buffer tab' })
-map('n', '<A-<>', ':BufferMovePrevious<CR>', { desc = 'Move buffer tab left' })
-map('n', '<A->>', ':BufferMoveNext<CR>', { desc = 'Move buffer tab right' })
-map('n', '<A-c>', ':BufferClose<CR>', { desc = 'Close current buffer tab' })
-map('n', '<A-p>', ':BufferPin<CR>', { desc = 'Pin/unpin current buffer' })
-map('n', '<A-1>', ':BufferGoto 1<CR>', { desc = 'Go to buffer 1' })
-map('n', '<A-2>', ':BufferGoto 2<CR>', { desc = 'Go to buffer 2' })
-map('n', '<A-3>', ':BufferGoto 3<CR>', { desc = 'Go to buffer 3' })
-map('n', '<A-4>', ':BufferGoto 4<CR>', { desc = 'Go to buffer 4' })
-map('n', '<A-5>', ':BufferGoto 5<CR>', { desc = 'Go to buffer 5' })
-map('n', '<A-6>', ':BufferGoto 6<CR>', { desc = 'Go to buffer 6' })
-map('n', '<A-7>', ':BufferGoto 7<CR>', { desc = 'Go to buffer 7' })
-map('n', '<A-8>', ':BufferGoto 8<CR>', { desc = 'Go to buffer 8' })
-map('n', '<A-9>', ':BufferLast<CR>', { desc = 'Go to last buffer' })
+-- ============================================================================
+-- Buffer Management (barbar.nvim)
+-- ============================================================================
+-- Buffer navigation with Alt keys (primary)
+local buffer_keymaps = {
+  ['<A-,>'] = { ':BufferPrevious<CR>', 'Previous buffer' },
+  ['<A-.>'] = { ':BufferNext<CR>', 'Next buffer' },
+  ['<A-<>'] = { ':BufferMovePrevious<CR>', 'Move buffer left' },
+  ['<A->>'] = { ':BufferMoveNext<CR>', 'Move buffer right' },
+  ['<A-c>'] = { ':BufferClose<CR>', 'Close buffer' },
+  ['<A-p>'] = { ':BufferPin<CR>', 'Pin/Unpin buffer' },
+  
+  -- Quick buffer navigation with Alt+number
+  ['<A-1>'] = { ':BufferGoto 1<CR>', 'Go to buffer 1' },
+  ['<A-2>'] = { ':BufferGoto 2<CR>', 'Go to buffer 2' },
+  ['<A-3>'] = { ':BufferGoto 3<CR>', 'Go to buffer 3' },
+  ['<A-4>'] = { ':BufferGoto 4<CR>', 'Go to buffer 4' },
+  ['<A-5>'] = { ':BufferGoto 5<CR>', 'Go to buffer 5' },
+  ['<A-6>'] = { ':BufferGoto 6<CR>', 'Go to buffer 6' },
+  ['<A-7>'] = { ':BufferGoto 7<CR>', 'Go to buffer 7' },
+  ['<A-8>'] = { ':BufferGoto 8<CR>', 'Go to buffer 8' },
+  ['<A-9>'] = { ':BufferLast<CR>', 'Go to last buffer' },
+  
+  -- Alternative buffer navigation (secondary)
+  ['<Tab>'] = { ':BufferNext<CR>', 'Next buffer' },
+  ['<S-Tab>'] = { ':BufferPrevious<CR>', 'Previous buffer' },
+  
+  -- Alternative close buffer
+  ['<leader>bd'] = { ':BufferClose<CR>', 'Delete buffer' },
+  
+  -- Close current buffer (alternative to :q)
+  ['<leader>q'] = { ':BufferClose<CR>', 'Close buffer' },
+  
+  -- Force close current buffer
+  ['<leader>Q'] = { ':BufferClose!<CR>', 'Force close buffer' },
+  
+  -- Save and close buffer
+  ['<leader>wq'] = { ':w | BufferClose<CR>', 'Save and close buffer' },
+}
 
--- Keep these as fallbacks
-map('n', '<S-h>', ':BufferPrevious<CR>', { desc = 'Previous buffer tab' })
-map('n', '<S-l>', ':BufferNext<CR>', { desc = 'Next buffer tab' })
-map('n', '<leader>bd', ':BufferClose<CR>', { desc = 'Delete buffer' })
-map('n', '<leader>bc', ':BufferClose<CR>', { desc = 'Close current buffer' })
-map('n', '<C-w>c', ':BufferClose<CR>', { desc = 'Close current buffer' })
+-- Register buffer keymaps
+for key, mapping in pairs(buffer_keymaps) do
+  map('n', key, mapping[1], { desc = mapping[2] })
+end
 
 -- Quick save and quit
 map('n', '<leader>ws', ':w<CR>', { desc = 'Save' }) -- Updated description to match which-key
@@ -219,24 +240,9 @@ map('n', '<leader>h', ':nohlsearch<CR>', { desc = 'Clear search highlights' })
 -- ============================================================================
 -- Plugin: Telescope
 -- ============================================================================
-local telescope_keymaps = {
-  ['<leader>f'] = { name = '+Find',
-    ['f'] = { '<cmd>Telescope find_files<CR>', 'Find files' },
-    ['g'] = { '<cmd>Telescope live_grep<CR>', 'Live grep' },
-    ['b'] = { '<cmd>Telescope buffers<CR>', 'Find buffer' },
-    ['h'] = { '<cmd>Telescope help_tags<CR>', 'Find help' },
-    ['r'] = { '<cmd>Telescope oldfiles<CR>', 'Recent files' },
-    ['t'] = { '<cmd>Telescope<CR>', 'Telescope' },
-  },
-  ['<leader>g'] = { name = '+Git',
-    ['g'] = { '<cmd>Telescope git_commits<CR>', 'Git commits' },
-    ['c'] = { '<cmd>Telescope git_bcommits<CR>', 'Git commits (buffer)' },
-    ['b'] = { '<cmd>Telescope git_branches<CR>', 'Git branches' },
-    ['s'] = { '<cmd>Telescope git_status<CR>', 'Git status' },
-  },
-}
-
-register_keymaps('n', '', telescope_keymaps)
+-- Telescope keymaps are defined in lua/plugins/telescope.lua
+-- This is intentional to keep all Telescope-related configuration in one place
+-- and avoid conflicts between different parts of the configuration.
 
 -- ============================================================================
 -- LSP Keymaps
@@ -244,62 +250,224 @@ register_keymaps('n', '', telescope_keymaps)
 local function lsp_keymaps(bufnr)
   local lsp_keymaps = {
     -- Navigation
-    ['gD'] = { function() vim.lsp.buf.declaration() end, 'Go to declaration' },
-    ['gd'] = { function() vim.lsp.buf.definition() end, 'Go to definition' },
-    ['gi'] = { function() vim.lsp.buf.implementation() end, 'Go to implementation' },
-    ['gr'] = { function() vim.lsp.buf.references() end, 'Show references' },
-    ['K'] = { function() vim.lsp.buf.hover() end, 'Show documentation' },
-    ['<C-k>'] = { function() vim.lsp.buf.signature_help() end, 'Signature help' },
+    ['gD'] = {
+      function()
+        local ok, _ = pcall(vim.lsp.buf.declaration)
+        if not ok then
+          vim.notify('LSP: declaration not found', vim.log.levels.INFO)
+        end
+      end,
+      'Go to declaration'
+    },
+    ['gd'] = {
+      function()
+        local ok, _ = pcall(vim.lsp.buf.definition)
+        if not ok then
+          vim.notify('LSP: definition not found', vim.log.levels.INFO)
+        end
+      end,
+      'Go to definition'
+    },
+    ['gi'] = {
+      function()
+        local ok, _ = pcall(vim.lsp.buf.implementation)
+        if not ok then
+          vim.notify('LSP: implementation not found', vim.log.levels.INFO)
+        end
+      end,
+      'Go to implementation'
+    },
+    ['gr'] = {
+      function()
+        local ok, _ = pcall(vim.lsp.buf.references)
+        if not ok then
+          vim.notify('LSP: no references found', vim.log.levels.INFO)
+        end
+      end,
+      'Show references'
+    },
+    ['K'] = {
+      function()
+        local ok, _ = pcall(vim.lsp.buf.hover)
+        if not ok then
+          vim.notify('LSP: no documentation available', vim.log.levels.INFO)
+        end
+      end,
+      'Show documentation'
+    },
+    ['<C-k>'] = {
+      function()
+        local ok, _ = pcall(vim.lsp.buf.signature_help)
+        if not ok then
+          vim.notify('LSP: no signature help available', vim.log.levels.INFO)
+        end
+      end,
+      'Signature help'
+    },
     
-    -- Code actions
-    ['<leader>la'] = { function() vim.lsp.buf.code_action() end, 'Code action' },
-    ['<leader>lr'] = { function() vim.lsp.buf.rename() end, 'Rename symbol' },
-    ['<leader>lf'] = { function() vim.lsp.buf.format({ async = true }) end, 'Format document' },
+    -- Code actions and refactoring
+    ['<leader>c'] = { name = '+Code',
+      ['a'] = {
+        function()
+          local ok, _ = pcall(vim.lsp.buf.code_action)
+          if not ok then
+            vim.notify('LSP: no code actions available', vim.log.levels.INFO)
+          end
+        end,
+        'Code actions'
+      },
+      ['r'] = {
+        function()
+          local ok, _ = pcall(vim.lsp.buf.rename)
+          if not ok then
+            vim.notify('LSP: rename not supported', vim.log.levels.INFO)
+          end
+        end,
+        'Rename symbol'
+      },
+      ['f'] = {
+        function()
+          local ok, _ = pcall(vim.lsp.buf.format, { async = true })
+          if not ok then
+            vim.notify('LSP: formatting not supported', vim.log.levels.INFO)
+          end
+        end,
+        'Format buffer'
+      },
+    },
+    
+    -- Documentation and diagnostics
+    ['<leader>d'] = { name = '+Diagnostics',
+      ['d'] = {
+        function()
+          local ok, _ = pcall(vim.diagnostic.open_float)
+          if not ok then
+            vim.notify('No diagnostics available', vim.log.levels.INFO)
+          end
+        end,
+        'Show line diagnostics'
+      },
+      ['p'] = {
+        function()
+          local ok, _ = pcall(vim.diagnostic.goto_prev)
+          if not ok then
+            vim.notify('No previous diagnostic', vim.log.levels.INFO)
+          end
+        end,
+        'Previous diagnostic',
+      },
+      ['n'] = {
+        function()
+          local ok, _ = pcall(vim.diagnostic.goto_next)
+          if not ok then
+            vim.notify('No next diagnostic', vim.log.levels.INFO)
+          end
+        end,
+        'Next diagnostic',
+      },
+      ['l'] = { ':Telescope diagnostics<CR>', 'List all diagnostics' },
+      ['q'] = { vim.diagnostic.setloclist, 'Add to location list' },
+    },
     
     -- Workspace
     ['<leader>lw'] = { name = '+Workspace',
-      ['a'] = { function() vim.lsp.buf.add_workspace_folder() end, 'Add folder' },
-      ['r'] = { function() vim.lsp.buf.remove_workspace_folder() end, 'Remove folder' },
-      ['l'] = { function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, 'List folders' },
+      ['a'] = {
+        function()
+          local ok, _ = pcall(vim.lsp.buf.add_workspace_folder)
+          if not ok then
+            vim.notify('LSP: failed to add workspace folder', vim.log.levels.INFO)
+          end
+        end,
+        'Add folder'
+      },
+      ['r'] = {
+        function()
+          local ok, _ = pcall(vim.lsp.buf.remove_workspace_folder)
+          if not ok then
+            vim.notify('LSP: failed to remove workspace folder', vim.log.levels.INFO)
+          end
+        end,
+        'Remove folder'
+      },
+      ['l'] = {
+        function()
+          print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+        end,
+        'List folders'
+      },
     },
-    
-    -- Diagnostics
-    ['<leader>ld'] = { function() vim.diagnostic.open_float() end, 'Show line diagnostics' },
-    [']d'] = { function() vim.diagnostic.goto_next() end, 'Next diagnostic' },
-    ['[d'] = { function() vim.diagnostic.goto_prev() end, 'Previous diagnostic' },
   }
   
   -- Register LSP keymaps for the current buffer
-  for key, mapping in pairs(lsp_keymaps) do
-    -- Skip which-key menu items (they have a 'name' field)
-    if mapping.name == nil then
-      local cmd = mapping[1]
-      local desc = mapping[2] or mapping.desc
-      local mode = mapping.mode or 'n'
-      local opts = vim.tbl_extend('force', {
-        buffer = bufnr,
-        noremap = true,
-        silent = true,
-        desc = desc
-      }, mapping.opts or {})
+  for keys, mapping in pairs(lsp_keymaps) do
+    local cmd = mapping[1]
+    local desc = mapping.desc or mapping[2]
+    local opts = {
+      buffer = bufnr,
+      desc = desc,
+      noremap = true,
+      silent = true,
+      nowait = true
+    }
+    
+    -- Handle nested keymaps (which-key groups)
+    if mapping.name and type(cmd) ~= 'function' and type(cmd) ~= 'string' then
+      if wk_ok then
+        wk.register({
+          [keys] = { name = mapping.name }
+        }, { mode = 'n', prefix = '', buffer = bufnr })
+      end
       
-      -- Only set the keymap if we have a valid command
-      if type(cmd) == 'function' or (type(cmd) == 'table' and cmd[1] ~= nil) then
-        vim.keymap.set(mode, key, cmd, opts)
+      -- Register child keymaps
+      if type(cmd) == 'table' then
+        for k, v in pairs(cmd) do
+          if type(k) == 'string' and k ~= 'name' and k ~= 'desc' and k ~= 'opts' then
+            local child_cmd = v[1]
+            local child_desc = v.desc or v[2]
+            local child_opts = vim.tbl_extend('force', opts, {
+              desc = child_desc,
+              buffer = bufnr
+            })
+            
+            if type(child_cmd) == 'function' then
+              vim.keymap.set('n', keys .. k, child_cmd, child_opts)
+            elseif type(child_cmd) == 'string' then
+              vim.keymap.set('n', keys .. k, child_cmd, vim.tbl_extend('force', child_opts, { expr = false }))
+            end
+          end
+        end
+      end
+    else
+      -- Regular keymap
+      if type(cmd) == 'function' then
+        vim.keymap.set('n', keys, cmd, opts)
+      elseif type(cmd) == 'string' then
+        vim.keymap.set('n', keys, cmd, vim.tbl_extend('force', opts, { expr = false }))
       end
     end
   end
   
-  -- Enable completion triggered by <c-x><c-o>
-  vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
+  -- Register which-key groups if available
+  if wk_ok then
+    wk.register({
+      ['<leader>c'] = { name = '+Code' },
+      ['<leader>d'] = { name = '+Diagnostics' },
+    }, { buffer = bufnr })
+  end
 end
 
--- Set up LSP keymaps when a language server attaches to a buffer
+-- Set up LSP keymaps when an LSP client attaches to a buffer
 vim.api.nvim_create_autocmd('LspAttach', {
-  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
-  callback = function(ev)
-    lsp_keymaps(ev.buf)
+  callback = function(args)
+    local bufnr = args.buf
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    
+    -- Only set up keymaps if this is the first LSP client for this buffer
+    if not vim.tbl_contains(vim.lsp.get_clients({ buffer = bufnr }), client) then
+      lsp_keymaps(bufnr, client)
+    end
   end,
+  desc = 'Set up LSP keymaps when attaching to a buffer'
 })
 
 -- ============================================================================

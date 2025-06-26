@@ -1,80 +1,117 @@
 local M = {}
 
--- Load utility functions
-local utils = require("utils")
-local map = utils.map
-
+-- Configure telescope with minimal settings
 function M.setup()
   local status_ok, telescope = pcall(require, "telescope")
   if not status_ok then
-    vim.notify("telescope.nvim not found!", vim.log.levels.ERROR)
+    vim.notify("Telescope not found!", vim.log.levels.ERROR)
     return
   end
-
-  -- Configure telescope
+  
+  -- Basic configuration
   telescope.setup({
     defaults = {
-      prompt_prefix = " ",
-      selection_caret = " ",
-      path_display = { "smart" },
-      file_ignore_patterns = { ".git/", "node_modules/" },
+      prompt_prefix = "   ",
+      selection_caret = "  ",
+      path_display = { "truncate" },
+      file_ignore_patterns = {
+        "^%.git/",
+        "^node_modules/",
+        "^%.DS_Store$",
+        "^target/"
+      },
       mappings = {
         i = {
-          ["<C-j>"] = require("telescope.actions").move_selection_next,
-          ["<C-k>"] = require("telescope.actions").move_selection_previous,
-          ["<C-c>"] = require("telescope.actions").close,
-          ["<Down>"] = require("telescope.actions").move_selection_next,
-          ["<Up>"] = require("telescope.actions").move_selection_previous,
-          ["<C-u>"] = false, -- Clear prompt
+          ["<C-j>"] = "move_selection_next",
+          ["<C-k>"] = "move_selection_previous",
+          ["<C-c>"] = "close"
         },
         n = {
-          ["q"] = require("telescope.actions").close,
-          ["<Esc>"] = require("telescope.actions").close
-        },
-      },
-    },
-    pickers = {
-      find_files = {
-        hidden = true,
-      },
-      live_grep = {
-        additional_args = function()
-          return { "--hidden" }
-        end,
-      },
-    },
-    extensions = {
-      -- Add any telescope extensions here
-    },
+          ["q"] = "close"
+        }
+      }
+    }
   })
-
-  -- Load extensions if available
-  pcall(telescope.load_extension, "fzf")
-
+  
   -- Set up keybindings
   local builtin = require("telescope.builtin")
-
-  -- Find operations
-  map('n', '<leader>ff', builtin.find_files, { desc = 'Find Files' })
-  map('n', '<leader>fg', builtin.live_grep, { desc = 'Live Grep' })
-  map('n', '<leader>fb', builtin.buffers, { desc = 'Find Buffers' })
-  map('n', '<leader>fh', builtin.help_tags, { desc = 'Help Tags' })
-  map('n', '<leader>fr', builtin.oldfiles, { desc = 'Recent Files' })
-  map('n', '<leader>fk', builtin.keymaps, { desc = 'Keymaps' })
-
-  -- Git operations
-  map('n', '<leader>gc', builtin.git_commits, { desc = 'Git Commits' })
-  map('n', '<leader>gbc', builtin.git_bcommits, { desc = 'Git Buffer Commits' })
-  map('n', '<leader>gB', builtin.git_branches, { desc = 'Branches' })
-  map('n', '<leader>gs', builtin.git_status, { desc = 'Git Status' })
-
-  -- LSP operations
-  map('n', '<leader>fs', builtin.lsp_document_symbols, { desc = 'Document Symbols' })
-  map('n', '<leader>fS', builtin.lsp_workspace_symbols, { desc = 'Workspace Symbols' })
-  map('n', '<leader>fd', builtin.lsp_definitions, { desc = 'Definitions' })
-  map('n', '<leader>fi', builtin.lsp_implementations, { desc = 'Implementations' })
-
-  -- Mappings are now centrally managed in which-key.lua
+  
+  -- Simple file finder
+  vim.keymap.set('n', '<leader>ff', function()
+    builtin.find_files({
+      hidden = true,
+      no_ignore = false,
+      follow = true
+    })
+  end, { desc = 'Find Files' })
+  
+  -- Live grep
+  vim.keymap.set('n', '<leader>fg', function()
+    builtin.live_grep({
+      hidden = true,
+      no_ignore = false
+    })
+  end, { desc = 'Live Grep' })
+  
+  -- Other useful pickers
+  vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Find Buffers' })
+  vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Find Help' })
+  
+  -- Better buffer closing
+  vim.keymap.set('n', '<leader>bd', function()
+    local buf_utils = require('telescope.utils.buffer')
+    local bufnr = vim.api.nvim_get_current_buf()
+    local filetype = vim.api.nvim_buf_get_option(bufnr, 'filetype')
+    
+    -- If it's a special buffer, just close it
+    if filetype == 'NvimTree' or filetype == 'TelescopePrompt' then
+      vim.cmd('bdelete')
+      return
+    end
+    
+    -- For regular buffers, close and show the next buffer
+    local bufs = vim.fn.getbufinfo({buflisted = 1})
+    if #bufs > 1 then
+      vim.cmd('bnext')
+      vim.cmd('bdelete ' .. bufnr)
+    else
+      vim.cmd('bdelete')
+    end
+  end, { desc = 'Close Buffer' })
+  
+  -- Load fzf extension if available
+  pcall(function()
+    telescope.load_extension('fzf')
+  end)
+  
+  -- Only load dap extension if nvim-dap is available
+  if package.loaded['dap'] then
+    pcall(function()
+      telescope.load_extension('dap')
+    end)
+  end
+  
+  -- Project extension
+  vim.keymap.set('n', '<leader>pp', function()
+    require('telescope').extensions.project.project({
+      display_type = 'minimal',
+      layout_config = {
+        width = 0.9,
+        height = 0.8,
+      },
+    })
+  end, { desc = 'Projects' })
+  
+  -- Register which-key descriptions
+  local wk_ok, wk = pcall(require, 'which-key')
+  if wk_ok then
+    wk.register({
+      f = { name = 'Find' },
+      g = { name = 'Git' },
+      p = { name = 'Project' },
+    }, { prefix = '<leader>' })
+  end
 end
 
 return M
+ 
