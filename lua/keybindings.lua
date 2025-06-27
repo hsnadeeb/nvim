@@ -118,18 +118,53 @@ local general_keymaps = {
     },
   },
   
-  -- Theme toggling
   ['<leader>t'] = { name = '+Terminal/Theme',
-    ['t'] = { name = '+Theme',
-      ['n'] = { function() require('plugins.themes').next_theme() end, 'Next theme' },
-      ['p'] = { function() require('plugins.themes').prev_theme() end, 'Previous theme' },
-    },
-    ['f'] = { ':ToggleTerm direction=float<CR>', 'Floating terminal' },
-    ['h'] = { ':ToggleTerm direction=horizontal<CR>', 'Horizontal terminal' },
-    ['v'] = { ':ToggleTerm direction=vertical<CR>', 'Vertical terminal' },
-    ['\\'] = { ':ToggleTerm<CR>', 'Toggle terminal' },
+  ['t'] = { name = '+Theme',
+    ['n'] = { function() require('plugins.themes').next_theme() end, 'Next theme' },
+    ['p'] = { function() require('plugins.themes').prev_theme() end, 'Previous theme' },
+    ['b'] = { function() require('plugins.themes').back_theme() end, 'Back to previous theme' },
+    ['r'] = { function() require('plugins.themes').random_theme() end, 'Random theme' },
+    ['l'] = { function() require('plugins.themes').list_themes() end, 'List all themes' },
+    ['s'] = { function() require('plugins.themes').pick_theme() end, 'Select theme' },
+    ['i'] = { function() 
+      local current = require('plugins.themes').get_current_theme()
+      vim.notify("Current theme: " .. current.name .. " (" .. current.index .. "/" .. current.total .. ")")
+    end, 'Current theme info' },
+    ['f'] = { function() 
+      vim.ui.input({ prompt = 'Search theme: ' }, function(input)
+        if input and input ~= '' then
+          require('plugins.themes').search_theme(input)
+        end
+      end)
+    end, 'Find/Search theme' },
+    ['e'] = { function() require('plugins.themes').export_theme() end, 'Export theme config' },
+    ['c'] = { function()
+      local themes = require('plugins.themes')
+      local current = themes.get_current_theme()
+      local message = string.format("🎨 %s (%d/%d)", current.name, current.index, current.total)
+      vim.notify(message)
+    end, 'Show current theme' },
   },
-  
+  ['f'] = { ':ToggleTerm direction=float<CR>', 'Floating terminal' },
+  ['h'] = { ':ToggleTerm direction=horizontal<CR>', 'Horizontal terminal' },
+  ['v'] = { ':ToggleTerm direction=vertical<CR>', 'Vertical terminal' },
+  ['\\'] = { ':ToggleTerm<CR>', 'Toggle terminal' },
+},
+
+-- Optional: Add quick access to popular themes
+['<leader>T'] = { name = '+Quick Themes',
+  ['1'] = { function() require('plugins.themes').set_theme_by_name('catppuccin') end, 'Catppuccin' },
+  ['2'] = { function() require('plugins.themes').set_theme_by_name('tokyonight') end, 'Tokyo Night' },
+  ['3'] = { function() require('plugins.themes').set_theme_by_name('kanagawa') end, 'Kanagawa' },
+  ['4'] = { function() require('plugins.themes').set_theme_by_name('rose-pine') end, 'Rose Pine' },
+  ['5'] = { function() require('plugins.themes').set_theme_by_name('everforest') end, 'Everforest' },
+  ['6'] = { function() require('plugins.themes').set_theme_by_name('gruvbox') end, 'Gruvbox' },
+  ['7'] = { function() require('plugins.themes').set_theme_by_name('dracula') end, 'Dracula' },
+  ['8'] = { function() require('plugins.themes').set_theme_by_name('onedark') end, 'One Dark' },
+  ['9'] = { function() require('plugins.themes').set_theme_by_name('nord') end, 'Nord' },
+  ['0'] = { function() require('plugins.themes').set_theme_by_name('nightfox') end, 'Nightfox' },
+},
+
   -- Buffers
   ['<leader>b'] = { name = '+Buffer',
     ['n'] = { ':bnext<CR>', 'Next buffer' },
