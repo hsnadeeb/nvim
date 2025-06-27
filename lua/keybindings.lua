@@ -67,8 +67,6 @@ vim.g.maplocalleader = '\\'
 
 -- General keymaps
 local general_keymaps = {
-  -- Comment toggle
-  ['/'] = { function() require('Comment.api').toggle.linewise.current() end, 'Toggle comment' },
   
   -- Window navigation
   ['<C-h>'] = { '<C-w>h', 'Move to left window' },

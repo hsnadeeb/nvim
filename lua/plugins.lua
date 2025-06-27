@@ -675,6 +675,97 @@ require("lazy").setup({
     end,
   },
 
+  -- Code structure view (like IntelliJ's Structure view)
+  {
+    'stevearc/aerial.nvim',
+    cmd = 'AerialToggle',
+    keys = {
+      { '<leader>m', '<cmd>AerialToggle!<CR>', desc = 'Toggle Code Structure' },
+    },
+    config = function()
+      require('aerial').setup({
+        -- Priority list of preferred backends for aerial.
+        -- This can be a filetype map (see :help aerial-options)
+        backends = { 'lsp', 'treesitter', 'markdown', 'man' },
+        layout = {
+          -- Position of the tree window
+          default_direction = 'right',
+          -- Width of the aerial window (applies when direction is left or right)
+          width = 0.3,
+          -- Minimum width of the aerial window
+          min_width = 30,
+        },
+        -- Show box drawing characters for the tree hierarchy
+        show_guides = true,
+        -- Show a preview of the code in the upper right corner
+        show_guides = true,
+        -- Customize the characters used when show_guides = true
+        guides = {
+          -- When the child item has a sibling below it
+          mid_item = '├──',
+          -- When the child item is the last in the list
+          last_item = '└──',
+          -- When there are nested child guides to the right
+          nested_top = '│   ',
+          -- Raw indentation
+          whitespace = '  ',
+        },
+        -- Keymaps in aerial window. Can be any value that `vim.keymap.set` accepts.
+        keymaps = {
+          ['<CR>'] = 'actions.jump',
+          ['<2-LeftMouse>'] = 'actions.jump',
+          ['<C-v>'] = 'actions.jump_vsplit',
+          ['<C-s>'] = 'actions.jump_split',
+          ['p'] = 'actions.scroll',
+          ['<C-j>'] = 'actions.down_and_scroll',
+          ['<C-k>'] = 'actions.up_and_scroll',
+          ['q'] = 'actions.close',
+          ['?'] = 'actions.show_help',
+        },
+        -- Filter which file types to show in the structure view
+        filter_kind = {
+          'Class',
+          'Constructor',
+          'Enum',
+          'Function',
+          'Interface',
+          'Method',
+          'Struct',
+        },
+        -- Icons to use for different symbol kinds
+        icons = {
+          Array = ' ',
+          Boolean = ' ',
+          Class = ' ',
+          Color = ' ',
+          Constant = ' ',
+          Constructor = ' ',
+          Enum = ' ',
+          EnumMember = ' ',
+          Event = ' ',
+          Field = ' ',
+          File = ' ',
+          Function = ' ',
+          Interface = ' ',
+          Key = ' ',
+          Method = ' ',
+          Module = ' ',
+          Namespace = ' ',
+          Null = ' ',
+          Number = ' ',
+          Object = ' ',
+          Operator = ' ',
+          Package = ' ',
+          Property = ' ',
+          String = ' ',
+          Struct = ' ',
+          TypeParameter = ' ',
+          Variable = ' ',
+        },
+      })
+    end,
+  },
+
   -- Git integration
   {
     "lewis6991/gitsigns.nvim",
