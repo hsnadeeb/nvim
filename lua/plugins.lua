@@ -435,6 +435,21 @@ require("lazy").setup({
     end
   },
 
+  -- Auto-save
+  {
+    'Pocco81/auto-save.nvim',
+    config = function()
+      require('auto-save').setup {
+        enabled = true,
+        execution_message = {
+          message = function() return "" end,  -- Disable save message
+        },
+        trigger_events = {'InsertLeave', 'TextChanged'},
+        debounce_delay = 1000,  -- Save after 1 second of inactivity
+      }
+    end,
+  },
+
   -- Debugging
   {
     'mfussenegger/nvim-dap',
@@ -471,26 +486,12 @@ require("lazy").setup({
     end
   },
   -- Theme Management - Load all themes but don't configure them yet
-  -- { "sainnhe/everforest", lazy = true },
-  -- { "decaycs/decay.nvim",    lazy = true },
-  -- { "folke/tokyonight.nvim", lazy = true },
-  -- { "rebelot/kanagawa.nvim", lazy = true },
-  -- { "catppuccin/nvim",       name = "catppuccin", lazy = true },
-  -- { "navarasu/onedark.nvim", lazy = true },
-
-    -- { "sainnhe/everforest", lazy = true },
-    -- { "ellisonleao/gruvbox.nvim", lazy = true },
-    -- { "dracula/vim", as = "dracula", lazy = true },
-    -- { "arcticicestudio/nord-vim", lazy = true },
-    -- { "craftzdog/solarized-osaka.nvim", lazy = true },
-    -- { "rose-pine/neovim", as = "rose-pine", lazy = true },
-
-    { "sainnhe/everforest", lazy = true },
-    { "ellisonleao/gruvbox.nvim", lazy = true },
-    { "craftzdog/solarized-osaka.nvim", lazy = true },
-    { "decaycs/decay.nvim", lazy = true },
-    { "EdenEast/nightfox.nvim", lazy = true },
-    { "marko-cerovac/material.nvim", lazy = true },
+  { "sainnhe/everforest",             lazy = true },
+  { "ellisonleao/gruvbox.nvim",       lazy = true },
+  { "craftzdog/solarized-osaka.nvim", lazy = true },
+  { "decaycs/decay.nvim",             lazy = true },
+  { "EdenEast/nightfox.nvim",         lazy = true },
+  { "marko-cerovac/material.nvim",    lazy = true },
 
   -- Theme manager configuration
   -- This will be initialized via the VeryLazy event
