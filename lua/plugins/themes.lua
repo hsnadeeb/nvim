@@ -69,42 +69,12 @@ local theme_configs = {
     vim.g.everforest_diagnostic_virtual_text = "colored"
     vim.g.everforest_current_word = "underline"
     vim.g.everforest_show_eob = 1
-    vim.cmd([[
-      augroup EverforestCustom
-        autocmd!
-        autocmd ColorScheme everforest highlight! link @property @field
-        autocmd ColorScheme everforest highlight! link @parameter @variable
-        autocmd ColorScheme everforest highlight! link @lsp.type.parameter @parameter
-        autocmd ColorScheme everforest highlight! link @lsp.type.property @property
-        autocmd ColorScheme everforest highlight! link @lsp.typemod.variable.defaultLibrary @variable.builtin
-        autocmd ColorScheme everforest highlight! link @lsp.typemod.function.defaultLibrary @function.builtin
-        autocmd ColorScheme everforest highlight! link @lsp.typemod.method.defaultLibrary @function.builtin
-        autocmd ColorScheme everforest highlight! link @lsp.type.namespace @namespace
-        autocmd ColorScheme everforest highlight! link @lsp.type.type @type
-        autocmd ColorScheme everforest highlight! link @lsp.type.class @type
-        autocmd ColorScheme everforest highlight! link @lsp.type.enum @type
-        autocmd ColorScheme everforest highlight! link @lsp.type.interface @type
-        autocmd ColorScheme everforest highlight! link @lsp.type.struct @structure
-        autocmd ColorScheme everforest highlight! link @lsp.typemod.type.defaultLibrary @type.builtin
-        autocmd ColorScheme everforest highlight! link @lsp.typemod.typeParameter.declaration @type.definition
-        autocmd ColorScheme everforest highlight! link @lsp.type.macro @macro
-        autocmd ColorScheme everforest highlight! link @lsp.type.variable @variable
-        autocmd ColorScheme everforest highlight! link @lsp.type.function @function
-        autocmd ColorScheme everforest highlight! link @lsp.type.method @method
-        autocmd ColorScheme everforest highlight! link @lsp.type.decorator @function
-        autocmd ColorScheme everforest highlight! link @lsp.type.comment @comment
-        autocmd ColorScheme everforest highlight! link @lsp.type.enumMember @constant
-        autocmd ColorScheme everforest highlight! link @lsp.type.typeParameter @type.definition
-        autocmd ColorScheme everforest highlight! link @lsp.type.parameter @parameter
-        autocmd ColorScheme everforest highlight! link @lsp.type.property @property
-        autocmd ColorScheme everforest highlight! link @lsp.type.keyword @keyword
-        autocmd ColorScheme everforest highlight! link @lsp.type.number @number
-        autocmd ColorScheme everforest highlight! link @lsp.type.string @string
-        autocmd ColorScheme stop
-        autocmd ColorScheme everforest highlight! link @lsp.type.operator @operator
-        autocmd ColorScheme everforest highlight! link @lsp.type.namespace @namespace
-      augroup END
-    ]])
+    -- Enhanced contrast and color settings
+    vim.g.everforest_enable_italic = 1
+    vim.g.everforest_transparent_background = 0
+    vim.g.everforest_dim_inactive_windows = 0  -- Don't dim inactive windows
+    vim.g.everforest_better_performance = 1  -- Better performance
+    vim.g.everforest_ui_contrast = 'high'
     vim.cmd("colorscheme everforest")
   end,
   decay = function()
