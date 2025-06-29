@@ -125,7 +125,6 @@ local general_keymaps = {
       ['p'] = { function() require('plugins.themes').prev_theme() end, 'Previous theme' },
     },
     ['f'] = { ':ToggleTerm direction=float<CR>', 'Floating terminal' },
-    ['h'] = { ':ToggleTerm direction=horizontal<CR>', 'Horizontal terminal' },
     ['v'] = { ':ToggleTerm direction=vertical<CR>', 'Vertical terminal' },
     ['\\'] = { ':ToggleTerm<CR>', 'Toggle terminal' },
   },

@@ -10,6 +10,11 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+-- Load theme persistence early
+local theme_persistence = require('theme_persistence')
+local saved_theme = theme_persistence.load_theme()
+vim.g.saved_theme = saved_theme
+
 --------------------------------------------------
 -- Package Manager: lazy.nvim
 --------------------------------------------------

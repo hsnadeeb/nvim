@@ -2,7 +2,7 @@
 local function get_icon(kind, padding)
   local icon_pack = vim.g.icons_enabled and "icons-" or ""
   local icon = ""
-  
+
   if kind == "debug" then
     icon = ""
   elseif kind == "diagnostics" then
@@ -10,7 +10,7 @@ local function get_icon(kind, padding)
   elseif kind == "git" then
     icon = ""
   end
-  
+
   return icon .. string.rep(" ", padding or 0)
 end
 
@@ -19,8 +19,8 @@ require("lazy").setup({
   {
     'nvim-lualine/lualine.nvim',
     event = 'VeryLazy', -- Load after UI is ready
-    dependencies = { 
-      { 'nvim-tree/nvim-web-devicons', lazy = true } 
+    dependencies = {
+      { 'nvim-tree/nvim-web-devicons', lazy = true }
     },
     config = function()
       require('lualine').setup {
@@ -37,10 +37,10 @@ require("lazy").setup({
           }
         },
         sections = {
-          lualine_a = {'mode'},
+          lualine_a = { 'mode' },
           lualine_b = {
             { 'branch', icon = get_icon('git') },
-            { 'diff', 
+            { 'diff',
               symbols = { added = ' ', modified = ' ', removed = ' ' },
               diff_color = {
                 added = { fg = '#98c379' },
@@ -48,7 +48,7 @@ require("lazy").setup({
                 removed = { fg = '#e06c75' },
               }
             },
-            { 'diagnostics', 
+            { 'diagnostics',
               symbols = { error = ' ', warn = ' ', info = ' ', hint = ' ' },
               diagnostics_color = {
                 error = { fg = '#e06c75' },
@@ -59,7 +59,7 @@ require("lazy").setup({
             }
           },
           lualine_c = {
-            { 'filename', 
+            { 'filename',
               path = 1, -- 0 = just filename, 1 = relative path, 2 = absolute path
               symbols = {
                 modified = ' ', -- Text to show when the buffer is modified
@@ -71,13 +71,13 @@ require("lazy").setup({
             { 'searchcount', maxcount = 999, timeout = 500 }
           },
           lualine_x = {
-            { 'encoding', fmt = string.upper },
+            { 'encoding',   fmt = string.upper },
             { 'fileformat', symbols = { unix = 'LF', dos = 'CRLF', mac = 'CR' } },
-            { 'filetype', icon_only = true, separator = '' },
-            { 'filetype', icon = { align = 'right' }, padding = { left = 0, right = 1 } }
+            { 'filetype',   icon_only = true,                                   separator = '' },
+            { 'filetype',   icon = { align = 'right' },                         padding = { left = 0, right = 1 } }
           },
           lualine_y = {
-            { 'progress', separator = ' ', padding = { left = 1, right = 0 } },
+            { 'progress', separator = ' ',                  padding = { left = 1, right = 0 } },
             { 'location', padding = { left = 0, right = 1 } }
           },
           lualine_z = {
@@ -98,7 +98,7 @@ require("lazy").setup({
           vim.opt.laststatus = 0
         end,
       })
-      
+
       -- Re-enable lualine for regular buffers
       vim.api.nvim_create_autocmd('BufEnter', {
         callback = function()
@@ -110,7 +110,7 @@ require("lazy").setup({
       })
     end,
   },
-  
+
   -- Better Visuals (lazy-loaded on BufRead)
   {
     'lukas-reineke/indent-blankline.nvim',
@@ -143,17 +143,17 @@ require("lazy").setup({
       -- Set highlight groups
       vim.api.nvim_set_hl(0, 'IblIndent', { fg = '#3b4048', nocombine = true }) -- Slightly visible indent guides
       vim.api.nvim_set_hl(0, 'IblScope', { fg = '#4b5262', nocombine = true })  -- Scope highlight
-      
+
       -- Setup with options
       require('ibl').setup(opts)
-      
+
       -- Toggle with <leader>ui
       vim.keymap.set('n', '<leader>ui', function()
         local ibl = require('ibl')
         ibl.toggle()
         vim.notify('Indent guides ' .. (ibl.is_enabled() and 'enabled' or 'disabled'))
       end, { desc = 'Toggle indent guides' })
-      
+
       -- Refresh on color scheme change
       vim.api.nvim_create_autocmd('ColorScheme', {
         callback = function()
@@ -164,27 +164,27 @@ require("lazy").setup({
       })
     end,
   },
-  
+
   -- Enhanced LSP UI (lazy-loaded on LspAttach)
   {
     'glepnir/lspsaga.nvim',
     event = 'LspAttach',
     dependencies = {
-      { 'nvim-tree/nvim-web-devicons', lazy = true },
+      { 'nvim-tree/nvim-web-devicons',     lazy = true },
       { 'nvim-treesitter/nvim-treesitter', lazy = true },
     },
     config = function()
       -- Only load if LSP is available
       if not pcall(require, 'vim.lsp') then return end
-      
+
       local function on_attach(client, bufnr)
         -- Only set up keymaps if this is the first LSP client for this buffer
         local clients = vim.lsp.get_clients({ buffer = bufnr })
         if #clients > 1 then return end
-        
+
         -- Keymaps are now handled in keybindings.lua
       end
-      
+
       require('lspsaga').setup({
         ui = {
           border = 'rounded',
@@ -207,7 +207,7 @@ require("lazy").setup({
           sign = true,
           sign_priority = 40,
           virtual_text = false, -- Disable virtual text for better performance
-          update_time = 200, -- Debounce time in ms
+          update_time = 200,    -- Debounce time in ms
         },
         symbol_in_winbar = {
           enable = true,
@@ -244,7 +244,7 @@ require("lazy").setup({
           },
         },
       })
-      
+
       -- Set up autocommand for LSP attach
       vim.api.nvim_create_autocmd('LspAttach', {
         callback = function(args)
@@ -255,7 +255,7 @@ require("lazy").setup({
       })
     end,
   },
-  
+
   -- Auto pairs (lazy-loaded on InsertEnter)
   {
     'windwp/nvim-autopairs',
@@ -266,13 +266,13 @@ require("lazy").setup({
       local cond = require('nvim-autopairs.conds')
       local autopairs = require('nvim-autopairs')
       local Rule = require('nvim-autopairs.rule')
-      
+
       autopairs.setup({
-        check_ts = true, -- Use treesitter
+        check_ts = true,                      -- Use treesitter
         ts_config = {
-          lua = { 'string' }, -- Don't add pairs in lua strings
+          lua = { 'string' },                 -- Don't add pairs in lua strings
           javascript = { 'template_string' }, -- Don't add pairs in template strings
-          java = false, -- Don't use treesitter for java
+          java = false,                       -- Don't use treesitter for java
         },
         disable_filetype = { 'TelescopePrompt', 'spectre_panel', 'dap-repl' },
         fast_wrap = {
@@ -287,46 +287,46 @@ require("lazy").setup({
           highlight_grey = 'Comment'
         },
         enable_check_bracket_line = false, -- Don't check current line for pairs
-        ignored_next_char = '[%w%.]', -- Don't pair if next char is alphanumeric or dot
-        break_undo = true, -- Break undo sequence at space
+        ignored_next_char = '[%w%.]',      -- Don't pair if next char is alphanumeric or dot
+        break_undo = true,                 -- Break undo sequence at space
       })
-      
+
       -- Add spaces between parentheses
       local brackets = { { '(', ')' }, { '[', ']' }, { '{', '}' } }
       autopairs.add_rules {
         Rule(' ', ' ')
-          :with_pair(function(opts)
-            local pair = opts.line:sub(opts.col - 1, opts.col)
-            return vim.tbl_contains({
-              '()', '[]', '{}'
-            }, pair)
-          end)
-          :with_move(cond.none())
-          :with_cr(cond.none())
-          :with_del(function(opts)
-            local col = vim.api.nvim_win_get_cursor(0)[2]
-            local context = opts.line:sub(col - 1, col + 2)
-            return vim.tbl_contains({
-              '(  )', '[  ]', '{  }',
-              '(  )', '\n  \n',
-            }, context)
-          end)
+            :with_pair(function(opts)
+              local pair = opts.line:sub(opts.col - 1, opts.col)
+              return vim.tbl_contains({
+                '()', '[]', '{}'
+              }, pair)
+            end)
+            :with_move(cond.none())
+            :with_cr(cond.none())
+            :with_del(function(opts)
+              local col = vim.api.nvim_win_get_cursor(0)[2]
+              local context = opts.line:sub(col - 1, col + 2)
+              return vim.tbl_contains({
+                '(  )', '[  ]', '{  }',
+                '(  )', '\n  \n',
+              }, context)
+            end)
       }
-      
+
       -- Add each pair of brackets
       for _, bracket in ipairs(brackets) do
         autopairs.add_rules {
           Rule(bracket[1] .. ' ', ' ' .. bracket[2])
-            :with_pair(function() return false end)
-            :with_move(function(opts) return opts.char == bracket[2] end)
-            :with_cr(cond.none())
-            :with_del(function(opts)
-              return opts.line:sub(opts.col - #bracket[1], opts.col - 1) == bracket[1] .. ' '
-                and opts.line:sub(opts.col, opts.col + #bracket[2] + 1) == ' ' .. bracket[2]
-            end)
+              :with_pair(function() return false end)
+              :with_move(function(opts) return opts.char == bracket[2] end)
+              :with_cr(cond.none())
+              :with_del(function(opts)
+                return opts.line:sub(opts.col - #bracket[1], opts.col - 1) == bracket[1] .. ' '
+                    and opts.line:sub(opts.col, opts.col + #bracket[2] + 1) == ' ' .. bracket[2]
+              end)
         }
       end
-      
+
       -- Integration with nvim-cmp
       local cmp_autopairs = require('nvim-autopairs.completion.cmp')
       local cmp = require('cmp')
@@ -336,7 +336,7 @@ require("lazy").setup({
       )
     end,
   },
-  
+
   -- Comments (lazy-loaded on VeryLazy)
   {
     'numToStr/Comment.nvim',
@@ -344,8 +344,8 @@ require("lazy").setup({
     keys = {
       { 'gc', mode = { 'n', 'v' }, desc = 'Toggle comment' },
       { 'gb', mode = { 'n', 'v' }, desc = 'Toggle block comment' },
-      { 'gc', mode = 'x', desc = 'Toggle comment (visual)' },
-      { 'gb', mode = 'x', desc = 'Toggle block comment (visual)' },
+      { 'gc', mode = 'x',          desc = 'Toggle comment (visual)' },
+      { 'gb', mode = 'x',          desc = 'Toggle block comment (visual)' },
     },
     config = function()
       -- First require the plugin
@@ -354,38 +354,38 @@ require("lazy").setup({
         vim.notify('Comment.nvim not found!', vim.log.levels.ERROR)
         return
       end
-      
+
       -- Set up the comment plugin with minimal configuration
       comment.setup({
-        padding = true, -- Add space between comment and line
-        sticky = true, -- Keep cursor position when commenting
-        ignore = '^$', -- Ignore empty lines
+        padding = true,  -- Add space between comment and line
+        sticky = true,   -- Keep cursor position when commenting
+        ignore = '^$',   -- Ignore empty lines
         toggler = {
-          line = 'gcc', -- Line-comment toggle keymap
+          line = 'gcc',  -- Line-comment toggle keymap
           block = 'gbc', -- Block-comment toggle keymap
         },
         opleader = {
-          line = 'gc', -- Line comment operator
+          line = 'gc',  -- Line comment operator
           block = 'gb', -- Block comment operator
         },
         extra = {
           above = 'gcO', -- Add comment on the line above
           below = 'gco', -- Add comment on the line below
-          eol = 'gcA', -- Add comment at the end of line
+          eol = 'gcA',   -- Add comment at the end of line
         },
         mappings = {
-          basic = true, -- Basic mappings (gcc, gbc, etc.)
-          extra = true, -- Extra mappings (gco, gcO, etc.)
+          basic = true,     -- Basic mappings (gcc, gbc, etc.)
+          extra = true,     -- Extra mappings (gco, gcO, etc.)
           extended = false, -- Extended mappings (g>b, g<b, etc.)
         },
       })
-      
+
       -- Set up the leader / mapping after the plugin is loaded
       local api = require('Comment.api')
       vim.keymap.set('n', '<leader>/', api.toggle.linewise.current, { desc = 'Toggle comment' })
-      vim.keymap.set('v', '<leader>/', "<ESC><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<CR>", 
+      vim.keymap.set('v', '<leader>/', "<ESC><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<CR>",
         { silent = true, desc = 'Toggle comment' })
-      
+
       -- Custom comment strings for specific filetypes
       local comment_ft = require('Comment.ft')
       comment_ft.set('lua', { '-- %s', '--[[%s]]' })
@@ -397,22 +397,22 @@ require("lazy").setup({
   -- Theme: Everforest (Default)
   {
     "sainnhe/everforest",
-    lazy = false, -- Load immediately
+    lazy = false,    -- Load immediately
     priority = 1000, -- Load this first
     config = function()
       require("plugins.themes").setup()
     end,
   },
-  
+
   -- Todo comments
   {
     'folke/todo-comments.nvim',
     dependencies = 'nvim-lua/plenary.nvim',
-    config = function() 
+    config = function()
       require('todo-comments').setup()
     end
   },
-  
+
   -- Session management
   {
     'rmagatti/auto-session',
@@ -423,7 +423,7 @@ require("lazy").setup({
       }
     end
   },
-  
+
   -- Project management
   {
     'ahmedkhalf/project.nvim',
@@ -434,7 +434,7 @@ require("lazy").setup({
       }
     end
   },
-  
+
   -- Debugging
   {
     'mfussenegger/nvim-dap',
@@ -442,12 +442,12 @@ require("lazy").setup({
       'rcarriga/nvim-dap-ui',
       'theHamsta/nvim-dap-virtual-text',
       'nvim-telescope/telescope-dap.nvim',
-      'nvim-neotest/nvim-nio',  -- Required by nvim-dap-ui
+      'nvim-neotest/nvim-nio', -- Required by nvim-dap-ui
     },
     config = function()
       local dap = require('dap')
       local dapui = require('dapui')
-      
+
       -- Basic debugging keymaps
       vim.keymap.set('n', '<F5>', dap.continue, { desc = 'Debug: Start/Continue' })
       vim.keymap.set('n', '<F10>', dap.step_over, { desc = 'Debug: Step Over' })
@@ -456,37 +456,53 @@ require("lazy").setup({
       vim.keymap.set('n', '<leader>b', dap.toggle_breakpoint, { desc = 'Debug: Toggle Breakpoint' })
       vim.keymap.set('n', '<leader>B', function() dap.set_breakpoint(vim.fn.input('Breakpoint condition: ')) end,
         { desc = 'Debug: Set Conditional Breakpoint' })
-      
+
       -- DAP UI setup
       dapui.setup()
       dap.listeners.after.event_initialized['dapui_config'] = dapui.open
       dap.listeners.before.event_terminated['dapui_config'] = dapui.close
       dap.listeners.before.event_exited['dapui_config'] = dapui.close
-      
+
       -- Virtual text for debugging
       require('nvim-dap-virtual-text').setup()
-      
+
       -- Telescope DAP integration
       require('telescope').load_extension('dap')
     end
   },
-  -- Theme Management
+  -- Theme Management - Load all themes but don't configure them yet
+  -- { "sainnhe/everforest", lazy = true },
+  -- { "decaycs/decay.nvim",    lazy = true },
+  -- { "folke/tokyonight.nvim", lazy = true },
+  -- { "rebelot/kanagawa.nvim", lazy = true },
+  -- { "catppuccin/nvim",       name = "catppuccin", lazy = true },
+  -- { "navarasu/onedark.nvim", lazy = true },
+
+    -- { "sainnhe/everforest", lazy = true },
+    -- { "ellisonleao/gruvbox.nvim", lazy = true },
+    -- { "dracula/vim", as = "dracula", lazy = true },
+    -- { "arcticicestudio/nord-vim", lazy = true },
+    -- { "craftzdog/solarized-osaka.nvim", lazy = true },
+    -- { "rose-pine/neovim", as = "rose-pine", lazy = true },
+
+    { "sainnhe/everforest", lazy = true },
+    { "ellisonleao/gruvbox.nvim", lazy = true },
+    { "craftzdog/solarized-osaka.nvim", lazy = true },
+    { "decaycs/decay.nvim", lazy = true },
+    { "EdenEast/nightfox.nvim", lazy = true },
+    { "marko-cerovac/material.nvim", lazy = true },
+
+  -- Theme manager configuration
+  -- This will be initialized via the VeryLazy event
   {
-    -- Theme: Everforest (Default)
-    "sainnhe/everforest",
-    lazy = false, -- Load immediately
-    priority = 1000, -- Load this first
+    "folke/neoconf.nvim",
     config = function()
       require("plugins.themes").setup()
     end,
+    lazy = false,
+    priority = 1000, -- Load first
   },
-  -- Additional Themes (lazy-loaded)
-  { "decaycs/decay.nvim", lazy = true },
-  { "folke/tokyonight.nvim", lazy = true },
-  { "rebelot/kanagawa.nvim", lazy = true },
-  { "catppuccin/nvim", name = "catppuccin", lazy = true },
-  { "navarasu/onedark.nvim", lazy = true },
-  
+
   -- which-key configuration
   {
     "folke/which-key.nvim",
@@ -503,7 +519,7 @@ require("lazy").setup({
     },
     config = function(_, opts)
       require("plugins.which-key").setup()
-      
+
       -- Register theme commands
       local themes_module = require("plugins.themes")
       vim.api.nvim_create_user_command('NextTheme', themes_module.next_theme, {})
@@ -538,13 +554,13 @@ require("lazy").setup({
     event = { "BufReadPost", "BufNewFile" },
     config = function()
       require("nvim-treesitter.configs").setup({
-        ensure_installed = { 
-          "javascript", "typescript", "tsx", "java", "go", 
+        ensure_installed = {
+          "javascript", "typescript", "tsx", "java", "go",
           "html", "css", "json", "lua", "vim", "vimdoc", "query"
         },
         sync_install = false,
         auto_install = true,
-        highlight = { 
+        highlight = {
           enable = true,
           additional_vim_regex_highlighting = false,
         },
@@ -642,7 +658,7 @@ require("lazy").setup({
     event = "InsertEnter",
     config = function()
       require("copilot").setup({
-        suggestion = { 
+        suggestion = {
           enabled = true,
           auto_trigger = true,
           keymap = {
@@ -799,7 +815,7 @@ require("lazy").setup({
       require("plugins.toggleterm").setup()
     end,
   },
-  
+
   -- Buffer tabs
   {
     'romgrk/barbar.nvim',
@@ -822,7 +838,7 @@ require("lazy").setup({
       })
     end,
   },
-  
+
   -- Better diagnostics UI
   {
     "folke/trouble.nvim",

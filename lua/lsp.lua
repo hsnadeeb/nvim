@@ -1,14 +1,8 @@
--- LSP configurations with enhanced IDE features
+-- Ensure LSP config is properly required
 local lspconfig = require('lspconfig')
 local util = require('lspconfig.util')
-local utils = require('utils')
-local map = utils.map
 
--- Enhanced capabilities with nvim-cmp
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
-
--- UI enhancements for LSP
+-- Border configuration for floating windows
 local border = {
   { '╭', 'FloatBorder' },
   { '─', 'FloatBorder' },
@@ -38,8 +32,8 @@ local on_attach = function(client, bufnr)
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
   -- Mappings for LSP functionality
-  local bufopts = { noremap=true, silent=true, buffer=bufnr }
-  
+  local bufopts = { noremap = true, silent = true, buffer = bufnr }
+
   -- Navigation
   map('n', 'gd', vim.lsp.buf.definition, { buffer = bufnr, desc = 'Go to definition' })
   map('n', 'gD', vim.lsp.buf.declaration, { buffer = bufnr, desc = 'Go to declaration' })
@@ -47,36 +41,36 @@ local on_attach = function(client, bufnr)
   map('n', 'gr', vim.lsp.buf.references, { buffer = bufnr, desc = 'Show references' })
   map('n', 'K', vim.lsp.buf.hover, { buffer = bufnr, desc = 'Show documentation' })
   map('n', '<C-k>', vim.lsp.buf.signature_help, { buffer = bufnr, desc = 'Show signature help' })
-  
+
   -- Workspace
   map('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, { buffer = bufnr, desc = 'Add workspace folder' })
   map('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, { buffer = bufnr, desc = 'Remove workspace folder' })
-  map('n', '<leader>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, 
+  map('n', '<leader>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end,
     { buffer = bufnr, desc = 'List workspace folders' })
-  
+
   -- Code actions and refactoring
   map('n', '<leader>rn', vim.lsp.buf.rename, { buffer = bufnr, desc = 'Rename symbol' })
   map('n', '<leader>ca', vim.lsp.buf.code_action, { buffer = bufnr, desc = 'Code action' })
-  map('v', '<leader>ca', ':<C-U>vsplit | lua vim.lsp.buf.range_code_action()<CR>', 
+  map('v', '<leader>ca', ':<C-U>vsplit | lua vim.lsp.buf.range_code_action()<CR>',
     { buffer = bufnr, desc = 'Range code action' })
-  
+
   -- Formatting
-  map('n', '<leader>f', function() vim.lsp.buf.format({ async = true }) end, 
+  map('n', '<leader>f', function() vim.lsp.buf.format({ async = true }) end,
     { buffer = bufnr, desc = 'Format buffer' })
-  
+
   -- Type definition
   map('n', 'gt', vim.lsp.buf.type_definition, { buffer = bufnr, desc = 'Go to type definition' })
-  
+
   -- Show line diagnostics in a floating window
   map('n', 'gl', vim.diagnostic.open_float, { buffer = bufnr, desc = 'Show line diagnostics' })
-  
+
   -- Diagnostic navigation
   map('n', '[d', vim.diagnostic.goto_prev, { buffer = bufnr, desc = 'Previous diagnostic' })
   map('n', ']d', vim.diagnostic.goto_next, { buffer = bufnr, desc = 'Next diagnostic' })
-  
+
   -- Show diagnostics in a floating window
   map('n', '<leader>d', vim.diagnostic.setloclist, { buffer = bufnr, desc = 'Show diagnostics' })
-  
+
   -- Signature help on trigger characters
   vim.api.nvim_create_autocmd('CursorHold', {
     buffer = bufnr,
@@ -92,7 +86,7 @@ local on_attach = function(client, bufnr)
       vim.diagnostic.open_float(bufnr, opts)
     end
   })
-  
+
   -- Highlight symbol under cursor
   if client.server_capabilities.documentHighlightProvider then
     vim.api.nvim_create_augroup('lsp_document_highlight', { clear = true })
@@ -219,3 +213,4 @@ lspconfig.jdtls.setup({
     },
   },
 })
+
