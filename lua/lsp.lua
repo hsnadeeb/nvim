@@ -197,16 +197,18 @@ lspconfig.gopls.setup({
   },
 })
 
--- Java (jdtls for Spring Boot)
+-- Java (jdtls)
 lspconfig.jdtls.setup({
   capabilities = capabilities,
+  on_attach = on_attach,
   settings = {
     java = {
       configuration = {
         runtimes = {
           {
             name = "JavaSE-17",
-            path = "/opt/homebrew/opt/openjdk@17", -- Updated for macOS
+            path = "/Library/Java/JavaVirtualMachines/amazon-corretto-17.jdk/Contents/Home",
+            default = true
           },
         },
       },

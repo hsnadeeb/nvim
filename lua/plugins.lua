@@ -442,10 +442,10 @@ require("lazy").setup({
       require('auto-save').setup {
         enabled = true,
         execution_message = {
-          message = function() return "" end,  -- Disable save message
+          message = function() return "" end, -- Disable save message
         },
-        trigger_events = {'InsertLeave', 'TextChanged'},
-        debounce_delay = 1000,  -- Save after 1 second of inactivity
+        trigger_events = { 'InsertLeave', 'TextChanged' },
+        debounce_delay = 1000, -- Save after 1 second of inactivity
       }
     end,
   },

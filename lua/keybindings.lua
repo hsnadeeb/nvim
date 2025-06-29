@@ -136,6 +136,39 @@ local general_keymaps = {
     ['d'] = { ':bdelete<CR>', 'Delete buffer' },
   },
   
+  -- Java
+  ['<leader>j'] = { name = '+Java',
+    ['r'] = { 
+      function()
+        -- Save the current file
+        vim.cmd('silent! write')
+        
+        local filename = vim.fn.expand('%:t:r')
+        local filepath = vim.fn.expand('%:p')
+        local dir = vim.fn.fnamemodify(filepath, ':h')
+        
+        -- Compile the Java file
+        local compile_cmd = string.format('silent !cd %s && javac %s', 
+          vim.fn.shellescape(dir),
+          vim.fn.shellescape(vim.fn.expand('%:t')))
+        
+        -- Run the compiled Java program in a terminal
+        local run_cmd = string.format('terminal cd %s && java %s',
+          vim.fn.shellescape(dir),
+          filename)
+        
+        -- Execute compile command first
+        vim.cmd(compile_cmd)
+        
+        -- Open a new terminal and run the program
+        vim.cmd('botright split')
+        vim.cmd(run_cmd)
+        vim.cmd('startinsert')
+      end, 
+      'Compile and run Java file' 
+    },
+  },
+  
   -- Quickfix list
   [']q'] = { ':cnext<CR>', 'Next quickfix item' },
   ['[q'] = { ':cprev<CR>', 'Previous quickfix item' },
