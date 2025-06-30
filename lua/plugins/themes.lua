@@ -1,14 +1,14 @@
 local M = {}
 
 -- Cache for loaded themes to prevent redundant loading
-local _M = {}
+local _M = { initialized = false }
 local theme_cache = {}
 
 -- Available themes
 M.themes = {
+  "everforest",  -- Default theme first
   "gruvbox",
   "solarized-osaka",
-  "everforest",
   "decay",
   "nightfox",
   "material"
@@ -16,6 +16,10 @@ M.themes = {
 
 -- Load theme persistence
 local theme_persistence = require('theme_persistence')
+
+-- Set faster redraw times for theme switching
+vim.opt.updatetime = 250
+vim.opt.timeoutlen = 300
 
 -- Function to get theme index by name
 local function get_theme_index(theme_name)

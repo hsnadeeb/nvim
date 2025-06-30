@@ -385,16 +385,6 @@ require("lazy").setup({
     end,
   },
 
-  -- Theme: Everforest (Default)
-  {
-    "sainnhe/everforest",
-    lazy = false,    -- Load immediately
-    priority = 1000, -- Load this first
-    config = function()
-      require("plugins.themes").setup()
-    end,
-  },
-
   -- Todo comments
   {
     'folke/todo-comments.nvim',
@@ -479,7 +469,7 @@ require("lazy").setup({
   -- Theme Management - Load all themes but don't configure them yet
   { "sainnhe/everforest",             lazy = true },
   { "ellisonleao/gruvbox.nvim",       lazy = true },
-  { "craftzdog/solarized-osaka.nvim", lazy = true },
+  { "craftzdog/solarized-osaka.nvim", lazy = true }, 
   { "decaycs/decay.nvim",             lazy = true },
   { "EdenEast/nightfox.nvim",         lazy = true },
   { "marko-cerovac/material.nvim",    lazy = true },
