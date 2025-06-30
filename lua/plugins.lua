@@ -342,41 +342,32 @@ require("lazy").setup({
     'numToStr/Comment.nvim',
     event = 'VeryLazy',
     keys = {
-      { 'gc', mode = { 'n', 'v' }, desc = 'Toggle comment' },
-      { 'gb', mode = { 'n', 'v' }, desc = 'Toggle block comment' },
-      { 'gc', mode = 'x',          desc = 'Toggle comment (visual)' },
-      { 'gb', mode = 'x',          desc = 'Toggle block comment (visual)' },
+      { '<leader>/', mode = { 'n', 'v' }, desc = 'Toggle comment' },
     },
     config = function()
-      -- First require the plugin
       local status_ok, comment = pcall(require, 'Comment')
       if not status_ok then
         vim.notify('Comment.nvim not found!', vim.log.levels.ERROR)
         return
       end
 
-      -- Set up the comment plugin with minimal configuration
+      -- Simple configuration with only <leader>/
       comment.setup({
         padding = true,  -- Add space between comment and line
         sticky = true,   -- Keep cursor position when commenting
         ignore = '^$',   -- Ignore empty lines
         toggler = {
-          line = 'gcc',  -- Line-comment toggle keymap
-          block = 'gbc', -- Block-comment toggle keymap
+          line = '<leader>/',  -- Toggle current line (normal/visual mode)
+          block = '<leader>/', -- Toggle current block (visual mode)
         },
         opleader = {
-          line = 'gc',  -- Line comment operator
-          block = 'gb', -- Block comment operator
-        },
-        extra = {
-          above = 'gcO', -- Add comment on the line above
-          below = 'gco', -- Add comment on the line below
-          eol = 'gcA',   -- Add comment at the end of line
+          line = '<leader>/',  -- Toggle line (visual mode)
+          block = '<leader>/', -- Toggle block (visual mode)
         },
         mappings = {
-          basic = true,     -- Basic mappings (gcc, gbc, etc.)
-          extra = true,     -- Extra mappings (gco, gcO, etc.)
-          extended = false, -- Extended mappings (g>b, g<b, etc.)
+          basic = false,    -- Disable basic mappings (gcc, gbc, etc.)
+          extra = false,    -- Disable extra mappings (gco, gcO, etc.)
+          extended = false, -- Disable extended mappings (g>b, g<b, etc.)
         },
       })
 

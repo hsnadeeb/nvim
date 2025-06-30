@@ -39,20 +39,20 @@ vim.opt.rtp:prepend(lazypath)
 -- Load Configuration Modules
 --------------------------------------------------
 -- First load utility functions used throughout the config
-require("utils")         -- Common utility functions and helpers
+require("utils") -- Common utility functions and helpers
 
 -- Then load all other configuration files in the correct order:
 -- 1. Basic settings (must be loaded before plugins)
-require("settings")      -- Editor behavior, UI settings, and options
+require("settings") -- Editor behavior, UI settings, and options
 
 -- 2. Plugin definitions and setup
-require("plugins")       -- Plugin management via lazy.nvim
+require("plugins") -- Plugin management via lazy.nvim
 
 -- 3. Development tools and IDE features
-require("lsp")           -- Language server protocols and completions
+require("lsp") -- Language server protocols and completions
 
 -- 4. Key bindings (must be loaded last to override any plugin defaults)
-require("keybindings")   -- Global and plugin-specific key mappings
+require("keybindings") -- Global and plugin-specific key mappings
 
 -- Note: Many plugin-specific keybindings are defined in their respective
 -- configuration files under lua/plugins/*.lua to keep related settings together

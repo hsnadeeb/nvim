@@ -268,6 +268,15 @@ function M.next_theme()
   M.set_theme(next_theme)
 end
 
+-- Cycle to the previous theme
+function M.previous_theme()
+  local prev_theme = M.current_theme - 1
+  if prev_theme < 1 then
+    prev_theme = #M.themes
+  end
+  M.set_theme(prev_theme)
+end
+
 -- Get current theme info
 function M.get_current_theme()
   return {

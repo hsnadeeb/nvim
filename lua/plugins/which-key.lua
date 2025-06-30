@@ -13,6 +13,16 @@ function M.setup()
     vim.notify("which-key.nvim not found!", vim.log.levels.ERROR)
     return
   end
+  
+  -- Add error handling for buffer operations
+  local function safe_register(keys, opts)
+    local ok, err = pcall(function()
+      which_key.register(keys, opts)
+    end)
+    if not ok then
+      vim.notify_once("which-key: Failed to register keymap: " .. vim.inspect(err), vim.log.levels.WARN)
+    end
+  end
 
   which_key.setup({
     preset = "modern",
@@ -50,8 +60,12 @@ function M.setup()
     },
   })
 
-  -- Key mappings registration
-  which_key.register({
+    -- Load keymap cleanup utility
+  local keymap_cleanup = require('utils.keymap_cleanup')
+  keymap_cleanup.cleanup()
+
+  -- Register the keymaps
+  safe_register({
     -- Find/Format group
     ["<leader>f"] = {
       name = "+find/format",
@@ -89,7 +103,9 @@ function M.setup()
       S = { function() require("gitsigns").stage_buffer() end, "Stage Buffer" },
       p = { function() require("gitsigns").preview_hunk() end, "Preview Hunk" },
       d = { function() require("gitsigns").diffthis() end, "Diff This" },
-      bl = { function() require("gitsigns").blame_line({ full = true }) end, "Git Blame Line" },
+      -- Changed from 'bl' to 'l' to avoid conflict
+      l = { function() require("gitsigns").blame_line({ full = true }) end, "Blame Line" },
+      b = { name = "+buffer" },
     },
 
     -- LSP group
@@ -128,6 +144,7 @@ function M.setup()
     ["<leader>th"] = {
       name = "+theme",
       n = { function() require("plugins.themes").next_theme() end, "Next Theme" },
+      p = { function() require("plugins.themes").previous_theme() end, "Previous Theme" },
     },
 
     -- Write/quit
@@ -137,12 +154,43 @@ function M.setup()
       q = { "<cmd>wq<cr>", "Save and Quit" },
     },
 
-    -- Other simple mappings
-    ["<leader>q"] = { "<cmd>q<cr>", "Quit" },
-    ["<leader>Q"] = { "<cmd>q!<cr>", "Force Quit" },
-    ["<leader>h"] = { "<cmd>nohlsearch<cr>", "Clear Highlights" },
-    ["<leader>e"] = { "<cmd>NvimTreeToggle<cr>", "Toggle NvimTree" },
-    ["<leader>E"] = { "<cmd>NvimTreeFocus<cr>", "Focus NvimTree" },
+    -- Other simple mappings with buffer checks
+    ["<leader>q"] = { function()
+      if vim.fn.bufname('') ~= 'NvimTree' then vim.cmd('q') end
+    end, "Quit" },
+    ["<leader>Q"] = { function()
+      if vim.fn.bufname('') ~= 'NvimTree' then vim.cmd('q!') end
+    end, "Force Quit" },
+    ["<leader>h"] = { function() vim.cmd('nohlsearch') end, "Clear Highlights" },
+    ["<leader>n"] = { function()
+      if vim.fn.bufname('') ~= 'NvimTree' then
+        vim.cmd('NvimTreeToggle')
+      end
+    end, "Toggle NvimTree" },
+    ["<leader>e"] = { function()
+      -- Check if NvimTree is visible in any window
+      local nvim_tree_win = nil
+      for _, win in ipairs(vim.api.nvim_list_wins()) do
+        if vim.api.nvim_win_is_valid(win) then  -- Check if window is valid
+          local buf = vim.api.nvim_win_get_buf(win)
+          if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].filetype == 'NvimTree' then  -- Check if buffer is valid
+            nvim_tree_win = win
+            break
+          end
+        end
+      end
+
+      if vim.bo.filetype == 'NvimTree' then
+        -- If in NvimTree, go to the previous window (editor)
+        vim.cmd('wincmd p')
+      elseif nvim_tree_win then
+        -- If NvimTree exists, focus it
+        vim.api.nvim_set_current_win(nvim_tree_win)
+      else
+        -- If NvimTree doesn't exist, open it
+        vim.cmd('NvimTreeToggle')
+      end
+    end, "Toggle focus between NvimTree and editor" },
 
     -- Diagnostics navigation
     ["[d"] = { vim.diagnostic.goto_prev, "Previous Diagnostic" },

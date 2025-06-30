@@ -281,15 +281,9 @@ function M.setup()
     end
   })
   
-  -- Keymaps (now using the module functions)
-  map('n', '<leader>e', M.toggle, { desc = 'Toggle NvimTree' })
-  map('n', '<leader>E', M.find_file, { desc = 'Find current file in NvimTree' })
-  map('n', '<leader>er', ':NvimTreeRefresh<CR>', { desc = 'Refresh NvimTree' })
-  map('n', '<leader>ef', ':NvimTreeFocus<CR>', { desc = 'Focus NvimTree' })
-  
-  -- Additional keymaps for better navigation
-  vim.keymap.set('n', '<C-n>', M.toggle, { desc = 'Toggle NvimTree' })
-  vim.keymap.set('n', '<leader>n', M.toggle, { desc = 'Toggle NvimTree' })
+  -- Keymaps for NvimTree
+  map('n', '<leader>n', M.toggle, { desc = 'Toggle NvimTree' })
+  map('n', '<leader>e', ':NvimTreeFocus<CR>', { desc = 'Focus NvimTree' })
   
   -- Auto-commands for better integration
   local nvim_tree_group = vim.api.nvim_create_augroup('NvimTreeIntegration', { clear = true })

@@ -67,7 +67,6 @@ vim.g.maplocalleader = '\\'
 
 -- General keymaps
 local general_keymaps = {
-  
   -- Window navigation
   ['<C-h>'] = { '<C-w>h', 'Move to left window' },
   ['<C-j>'] = { '<C-w>j', 'Move to window below' },
@@ -78,38 +77,13 @@ local general_keymaps = {
   ['<leader>['] = { '<C-o>', 'Go to previous cursor position' },
   ['<leader>]'] = { '<C-i>', 'Go to next cursor position' },
   
-  -- Resize windows
-  ['<C-Up>'] = { ':resize -2<CR>', 'Decrease window height' },
-  ['<C-Down>'] = { ':resize +2<CR>', 'Increase window height' },
-  ['<C-Left>'] = { ':vertical resize -2<CR>', 'Decrease window width' },
-  ['<C-Right>'] = { ':vertical resize +2<CR>', 'Increase window width' },
-  
   -- Navigation
   ['H'] = { '^', 'Go to start of line' },
   ['L'] = { '$', 'Go to end of line' },
-  ['<Home>'] = { '^', 'Go to start of line' },
-  ['<End>'] = { '$', 'Go to end of line' },
-  ['<leader>h'] = { ':nohlsearch<CR>', 'Clear search highlights' },
   
-  -- File operations
-  ['<leader>w'] = { ':w<CR>', 'Save file' },
-  ['<leader>wq'] = { ':wq<CR>', 'Save and quit' },
-  ['<leader>q'] = { ':q<CR>', 'Quit' },
-  ['<leader>Q'] = { ':q!<CR>', 'Force quit' },
-  
-  -- Comment keybindings (using <leader>c prefix to avoid conflicts)
-  ['<leader>c'] = { name = '+Comment',
-    ['c'] = { '<Plug>(comment_toggle_linewise_current)', 'Toggle line comment' },
-    ['b'] = { '<Plug>(comment_toggle_blockwise_current)', 'Toggle block comment' },
-    ['l'] = { '<Plug>(comment_toggle_linewise)', 'Toggle line comment (motion)' },
-    ['B'] = { '<Plug>(comment_toggle_blockwise)', 'Toggle block comment (motion)' },
-  },
-  
-  -- Git keybindings
+  -- Git keybindings (non-conflicting only)
   ['<leader>g'] = { name = '+Git',
     ['b'] = { name = '+Buffer',
-      ['l'] = { '<Cmd>Gitsigns blame_line<CR>', 'Blame line' },
-      ['p'] = { '<Cmd>Gitsigns preview_hunk<CR>', 'Preview hunk' },
       ['r'] = { '<Cmd>Gitsigns reset_hunk<CR>', 'Reset hunk' },
       ['R'] = { '<Cmd>Gitsigns reset_buffer<CR>', 'Reset buffer' },
       ['s'] = { '<Cmd>Gitsigns stage_hunk<CR>', 'Stage hunk' },
@@ -118,49 +92,26 @@ local general_keymaps = {
     },
   },
   
-  -- Theme toggling
-  ['<leader>t'] = { name = '+Terminal/Theme',
-    ['t'] = { name = '+Theme',
-      ['n'] = { function() require('plugins.themes').next_theme() end, 'Next theme' },
-      ['p'] = { function() require('plugins.themes').prev_theme() end, 'Previous theme' },
-    },
-    ['f'] = { ':ToggleTerm direction=float<CR>', 'Floating terminal' },
-    ['v'] = { ':ToggleTerm direction=vertical<CR>', 'Vertical terminal' },
-    ['\\'] = { ':ToggleTerm<CR>', 'Toggle terminal' },
-  },
+  -- No need to unset keymaps here, we'll handle it in the which-key configuration
   
-  -- Buffers
-  ['<leader>b'] = { name = '+Buffer',
-    ['n'] = { ':bnext<CR>', 'Next buffer' },
-    ['p'] = { ':bprevious<CR>', 'Previous buffer' },
-    ['d'] = { ':bdelete<CR>', 'Delete buffer' },
-  },
-  
-  -- Java
+  -- Java specific commands
   ['<leader>j'] = { name = '+Java',
     ['r'] = { 
       function()
-        -- Save the current file
         vim.cmd('silent! write')
-        
         local filename = vim.fn.expand('%:t:r')
         local filepath = vim.fn.expand('%:p')
         local dir = vim.fn.fnamemodify(filepath, ':h')
         
-        -- Compile the Java file
         local compile_cmd = string.format('silent !cd %s && javac %s', 
           vim.fn.shellescape(dir),
           vim.fn.shellescape(vim.fn.expand('%:t')))
         
-        -- Run the compiled Java program in a terminal
         local run_cmd = string.format('terminal cd %s && java %s',
           vim.fn.shellescape(dir),
           filename)
         
-        -- Execute compile command first
         vim.cmd(compile_cmd)
-        
-        -- Open a new terminal and run the program
         vim.cmd('botright split')
         vim.cmd(run_cmd)
         vim.cmd('startinsert')
@@ -169,49 +120,50 @@ local general_keymaps = {
     },
   },
   
-  -- Quickfix list
+  -- Quickfix list navigation (non-conflicting)
   [']q'] = { ':cnext<CR>', 'Next quickfix item' },
   ['[q'] = { ':cprev<CR>', 'Previous quickfix item' },
-  ['<leader>q'] = { name = '+Quickfix',
-    ['o'] = { ':copen<CR>', 'Open quickfix list' },
-    ['c'] = { ':cclose<CR>', 'Close quickfix list' },
-  },
 }
 
--- Register general keymaps
+-- Register general keymaps (only non-conflicting ones)
 register_keymaps('n', '', general_keymaps)
+
+-- Visual mode keymaps
 register_keymaps('v', '', {
   ['H'] = { '^', 'Go to start of line' },
   ['L'] = { '$', 'Go to end of line' },
-  -- Visual mode comment keybindings
-  ['<leader>c'] = { name = '+Comment',
-    ['c'] = { '<Plug>(comment_toggle_linewise_visual)', 'Toggle line comment' },
-    ['b'] = { '<Plug>(comment_toggle_blockwise_visual)', 'Toggle block comment' },
-  },
 })
 
--- Better window navigation
-map('n', '<C-h>', '<C-w>h', { desc = 'Move to left window' })
-map('n', '<C-j>', '<C-w>j', { desc = 'Move to lower window' })
-map('n', '<C-k>', '<C-w>k', { desc = 'Move to upper window' })
-map('n', '<C-l>', '<C-w>l', { desc = 'Move to right window' })
+-- Window navigation (using which-key for better discoverability)
+local wk_ok, wk = pcall(require, 'which-key')
+if wk_ok then
+  wk.register({
+    w = {
+      name = '+window',
+      h = { '<C-w>h', 'Move to left window' },
+      j = { '<C-w>j', 'Move to window below' },
+      k = { '<C-w>k', 'Move to window above' },
+      l = { '<C-w>l', 'Move to right window' },
+      ['='] = { '<C-w>=', 'Balance windows' },
+      ['|'] = { '<C-w>v', 'Split window vertically' },
+      ['-'] = { '<C-w>s', 'Split window horizontally' },
+      c = { '<C-w>c', 'Close window' },
+      o = { '<C-w>o', 'Close other windows' },
+    },
+  }, { prefix = '<leader>' })
+end
 
--- Resize windows with arrows
-map('n', '<C-Up>', ':resize -2<CR>', { desc = 'Decrease window height' })
-map('n', '<C-Down>', ':resize +2<CR>', { desc = 'Increase window height' })
-map('n', '<C-Left>', ':vertical resize -2<CR>', { desc = 'Decrease window width' })
-map('n', '<C-Right>', ':vertical resize +2<CR>', { desc = 'Increase window width' })
+-- Basic window navigation (kept for convenience)
+map('n', '<C-h>', '<C-w>h', { noremap = true, silent = true, desc = 'Move to left window' })
+map('n', '<C-j>', '<C-w>j', { noremap = true, silent = true, desc = 'Move to window below' })
+map('n', '<C-k>', '<C-w>k', { noremap = true, silent = true, desc = 'Move to window above' })
+map('n', '<C-l>', '<C-w>l', { noremap = true, silent = true, desc = 'Move to right window' })
 
--- Start and end of line navigation
-map('n', 'H', '^', { desc = 'Go to start of line' })
-map('n', 'L', '$', { desc = 'Go to end of line' })
-map('v', 'H', '^', { desc = 'Go to start of line' })
-map('v', 'L', '$', { desc = 'Go to end of line' })
--- Alternative with Home/End keys
-map('n', '<Home>', '^', { desc = 'Go to start of line' })
-map('n', '<End>', '$', { desc = 'Go to end of line' })
-map('v', '<Home>', '^', { desc = 'Go to start of line' })
-map('v', '<End>', '$', { desc = 'Go to end of line' })
+-- Line navigation (simplified to avoid conflicts)
+map('n', 'H', '^', { noremap = true, silent = true, desc = 'Go to start of line' })
+map('n', 'L', '$', { noremap = true, silent = true, desc = 'Go to end of line' })
+map('v', 'H', '^', { noremap = true, silent = true, desc = 'Go to start of line' })
+map('v', 'L', '$', { noremap = true, silent = true, desc = 'Go to end of line' })
 
 -- ============================================================================
 -- Buffer Management (barbar.nvim)
@@ -501,24 +453,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 
 -- ============================================================================
--- Git Keymaps
+-- Git Keymaps (Moved to which-key.lua for centralized management)
 -- ============================================================================
-local gitsigns_keymaps = {
-  ['<leader>g'] = { name = '+Git',
-    ['s'] = { '<cmd>Gitsigns stage_hunk<CR>', 'Stage hunk' },
-    ['u'] = { '<cmd>Gitsigns undo_stage_hunk<CR>', 'Undo stage hunk' },
-    ['r'] = { '<cmd>Gitsigns reset_hunk<CR>', 'Reset hunk' },
-    ['S'] = { '<cmd>Gitsigns stage_buffer<CR>', 'Stage buffer' },
-    ['R'] = { '<cmd>Gitsigns reset_buffer<CR>', 'Reset buffer' },
-    ['p'] = { '<cmd>Gitsigns preview_hunk<CR>', 'Preview hunk' },
-    ['b'] = { '<cmd>Gitsigns blame_line<CR>', 'Blame line' },
-    ['d'] = { '<cmd>Gitsigns diffthis<CR>', 'Diff this' },
-    [']c'] = { '<cmd>Gitsigns next_hunk<CR>', 'Next hunk' },
-    ['[c'] = { '<cmd>Gitsigns prev_hunk<CR>', 'Previous hunk' },
-  },
-}
-
-register_keymaps('n', '', gitsigns_keymaps)
+-- Note: Git keybindings are now managed in plugins/which-key.lua
 
 -- ============================================================================
 -- Trouble.nvim (Diagnostics)
