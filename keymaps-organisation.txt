@@ -1,0 +1,83 @@
+Keymap Organization
+Here’s the final keymap structure as defined in whichkey.lua:
+
+<leader>f: Find/Format
+f: Find files (Telescope)
+g: Live grep (Telescope)
+b: Buffers (Telescope)
+h: Help tags (Telescope)
+r: Recent files (Telescope)
+k: Keymaps (Telescope)
+s: Document symbols (Telescope)
+S: Workspace symbols (Telescope)
+m: Format document (Conform)
+<leader>b: Buffer
+n: Next buffer
+p: Previous buffer
+d: Delete buffer
+<leader>g: Git
+c: Commits (Telescope)
+bc: Buffer commits (Telescope)
+B: Branches (Telescope)
+s: Status (Telescope)
+j: Next hunk
+k: Previous hunk
+S: Stage buffer
+p: Preview hunk
+d: Diff this
+bl: Blame line
+r: Reset hunk
+R: Reset buffer
+u: Undo stage hunk
+<leader>l: LSP
+a: Code action
+d: Line diagnostics
+D: Go to declaration
+f: Format buffer
+h: Hover documentation
+i: Go to implementation
+n: Rename symbol
+r: Show references
+s: Document symbols
+S: Workspace symbols
+t: Go to type definition
+k: Signature help
+w: Workspace
+a: Add workspace folder
+r: Remove workspace folder
+l: List workspace folders
+q: Diagnostics to location list
+p: Previous diagnostic
+n: Next diagnostic
+<leader>t: Terminal
+t: Toggle terminal
+f: Float terminal
+v: Vertical terminal
+z: Horizontal terminal
+<leader>x: Diagnostics (Trouble)
+x: Toggle Trouble
+w: Workspace diagnostics
+d: Document diagnostics
+l: Location list
+q: Quickfix list
+e: Show errors
+W: Show warnings
+<leader>th: Theme
+n: Next theme
+p: Previous theme
+<leader>w: Write/Quit
+s: Save
+q: Save and quit
+<leader>q: Quit
+<leader>Q: Force quit
+<leader>h: Clear highlights
+<leader>e: Toggle NvimTree
+<leader>E: Focus NvimTree
+Non-Leader Keymaps:
+gd: Go to definition
+gD: Go to declaration
+gi: Go to implementation
+gr, gR: References (Trouble)
+gt: Go to type definition
+[d: Previous diagnostic
+]d: Next diagnostic

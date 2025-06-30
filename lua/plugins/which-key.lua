@@ -3,10 +3,6 @@
 
 local M = {}
 
--- Load utility functions
-local utils = require("utils")
-local map = utils.map
-
 function M.setup()
   local status_ok, which_key = pcall(require, "which-key")
   if not status_ok then
@@ -17,7 +13,6 @@ function M.setup()
   which_key.setup({
     preset = "modern",
     delay = 500,
-    expand = 1,
     notify = true,
     replace = {
       ["<space>"] = "SPC",
@@ -41,7 +36,6 @@ function M.setup()
       scroll_up = "<c-u>",
     },
     sort = { "local", "order", "group", "alphanum", "mod" },
-    expand = 0,
     icons = {
       breadcrumb = "»",
       separator = "➜",
@@ -63,18 +57,15 @@ function M.setup()
       k = { "<cmd>Telescope keymaps<cr>", "Keymaps" },
       s = { "<cmd>Telescope lsp_document_symbols<cr>", "Document Symbols" },
       S = { "<cmd>Telescope lsp_workspace_symbols<cr>", "Workspace Symbols" },
-      d = { "<cmd>Telescope lsp_definitions<cr>", "Definitions" },
-      i = { "<cmd>Telescope lsp_implementations<cr>", "Implementations" },
       m = { function() require("conform").format() end, "Format document" },
     },
 
     -- Buffer group
     ["<leader>b"] = {
       name = "+buffer",
-      d = { "<cmd>BufferClose<cr>", "Delete Buffer" },
-      c = { "<cmd>BufferClose<cr>", "Close Current Buffer" },
       n = { "<cmd>BufferNext<cr>", "Next Buffer" },
       p = { "<cmd>BufferPrevious<cr>", "Previous Buffer" },
+      d = { "<cmd>BufferClose<cr>", "Delete Buffer" },
     },
 
     -- Git group
@@ -89,20 +80,35 @@ function M.setup()
       S = { function() require("gitsigns").stage_buffer() end, "Stage Buffer" },
       p = { function() require("gitsigns").preview_hunk() end, "Preview Hunk" },
       d = { function() require("gitsigns").diffthis() end, "Diff This" },
-      bl = { function() require("gitsigns").blame_line({ full = true }) end, "Git Blame Line" },
+      bl = { function() require("gitsigns").blame_line({ full = true }) end, "Blame Line" },
+      r = { "<cmd>Gitsigns reset_hunk<CR>", "Reset Hunk" },
+      R = { "<cmd>Gitsigns reset_buffer<CR>", "Reset Buffer" },
+      u = { "<cmd>Gitsigns undo_stage_hunk<CR>", "Undo Stage Hunk" },
     },
 
     -- LSP group
     ["<leader>l"] = {
       name = "+lsp",
-      a = { vim.lsp.buf.code_action, "Code Action" },
-      d = { vim.diagnostic.open_float, "Diagnostics (Line)" },
-      D = { vim.lsp.buf.declaration, "Declaration" },
-      i = { vim.lsp.buf.implementation, "Implementation" },
-      r = { vim.lsp.buf.references, "References" },
-      n = { vim.lsp.buf.rename, "Rename" },
-      f = { vim.lsp.buf.format, "Format" },
-      h = { vim.lsp.buf.hover, "Hover" },
+      a = { function() vim.lsp.buf.code_action() end, "Code Action" },
+      d = { function() vim.diagnostic.open_float() end, "Line Diagnostics" },
+      D = { function() vim.lsp.buf.declaration() end, "Go to Declaration" },
+      f = { function() vim.lsp.buf.format({ async = true }) end, "Format Buffer" },
+      h = { function() vim.lsp.buf.hover() end, "Hover Documentation" },
+      i = { function() vim.lsp.buf.implementation() end, "Go to Implementation" },
+      n = { function() vim.lsp.buf.rename() end, "Rename Symbol" },
+      r = { function() vim.lsp.buf.references() end, "Show References" },
+      s = { "<cmd>Telescope lsp_document_symbols<cr>", "Document Symbols" },
+      S = { "<cmd>Telescope lsp_workspace_symbols<cr>", "Workspace Symbols" },
+      t = { function() vim.lsp.buf.type_definition() end, "Go to Type Definition" },
+      k = { function() vim.lsp.buf.signature_help() end, "Signature Help" },
+      w = { name = "+workspace",
+        a = { function() vim.lsp.buf.add_workspace_folder() end, "Add Workspace Folder" },
+        r = { function() vim.lsp.buf.remove_workspace_folder() end, "Remove Workspace Folder" },
+        l = { function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, "List Workspace Folders" },
+      },
+      q = { function() vim.diagnostic.setloclist() end, "Diagnostics to Location List" },
+      p = { function() vim.diagnostic.goto_prev() end, "Previous Diagnostic" },
+      n = { function() vim.diagnostic.goto_next() end, "Next Diagnostic" },
     },
 
     -- Terminal group
@@ -122,12 +128,15 @@ function M.setup()
       d = { "<cmd>TroubleToggle document_diagnostics<cr>", "Document Diagnostics" },
       l = { "<cmd>TroubleToggle loclist<cr>", "Location List" },
       q = { "<cmd>TroubleToggle quickfix<cr>", "Quickfix List" },
+      e = { "<cmd>TroubleToggle workspace_diagnostics filter.severity=vim.diagnostic.severity.ERROR<cr>", "Show Errors" },
+      W = { "<cmd>TroubleToggle workspace_diagnostics filter.severity=vim.diagnostic.severity.WARN<cr>", "Show Warnings" },
     },
 
     -- Theme toggling
     ["<leader>th"] = {
       name = "+theme",
       n = { function() require("plugins.themes").next_theme() end, "Next Theme" },
+      p = { function() require("plugins.themes").prev_theme() end, "Previous Theme" },
     },
 
     -- Write/quit
@@ -144,16 +153,27 @@ function M.setup()
     ["<leader>e"] = { "<cmd>NvimTreeToggle<cr>", "Toggle NvimTree" },
     ["<leader>E"] = { "<cmd>NvimTreeFocus<cr>", "Focus NvimTree" },
 
-    -- Diagnostics navigation
-    ["[d"] = { vim.diagnostic.goto_prev, "Previous Diagnostic" },
-    ["]d"] = { vim.diagnostic.goto_next, "Next Diagnostic" },
-
-    -- LSP location navigation
-    ["gd"] = { vim.lsp.buf.definition, "Go to Definition" },
-    ["gD"] = { vim.lsp.buf.declaration, "Go to Declaration" },
-    ["gi"] = { vim.lsp.buf.implementation, "Go to Implementation" },
+    -- LSP navigation (non-leader for consistency with standard Vim)
+    ["gd"] = { function() vim.lsp.buf.definition() end, "Go to Definition" },
+    ["gD"] = { function() vim.lsp.buf.declaration() end, "Go to Declaration" },
+    ["gi"] = { function() vim.lsp.buf.implementation() end, "Go to Implementation" },
+    ["gr"] = { "<cmd>TroubleToggle lsp_references<cr>", "References (Trouble)" },
+    ["gt"] = { function() vim.lsp.buf.type_definition() end, "Go to Type Definition" },
     ["gR"] = { "<cmd>TroubleToggle lsp_references<cr>", "References (Trouble)" },
-  })
+
+    -- Diagnostics navigation
+    ["[d"] = { function() vim.diagnostic.goto_prev() end, "Previous Diagnostic" },
+    ["]d"] = { function() vim.diagnostic.goto_next() end, "Next Diagnostic" },
+  }, { mode = "n" })
+
+  -- Visual mode mappings
+  which_key.register({
+    ["<leader>c"] = {
+      name = "+Comment",
+      c = { "<Plug>(comment_toggle_linewise_visual)", "Toggle line comment" },
+      b = { "<Plug>(comment_toggle_blockwise_visual)", "Toggle block comment" },
+    },
+  }, { mode = "v" })
 end
 
 return M

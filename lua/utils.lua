@@ -13,8 +13,8 @@ end
 -- Helper function for setting keymaps with default options
 function M.map(mode, lhs, rhs, opts)
   local options = { noremap = true, silent = true }
-  if opts then 
-    options = vim.tbl_extend('force', options, opts) 
+  if opts then
+    options = vim.tbl_extend('force', options, opts)
   end
   vim.keymap.set(mode, lhs, rhs, options)
 end
@@ -30,9 +30,9 @@ end
 function M.dump(o)
   if type(o) == 'table' then
     local s = '{ '
-    for k,v in pairs(o) do
-      if type(k) ~= 'number' then k = '"'..k..'"' end
-      s = s .. '['..k..'] = ' .. M.dump(v) .. ','
+    for k, v in pairs(o) do
+      if type(k) ~= 'number' then k = '"' .. k .. '"' end
+      s = s .. '[' .. k .. '] = ' .. M.dump(v) .. ','
     end
     return s .. '} '
   else
@@ -41,3 +41,4 @@ function M.dump(o)
 end
 
 return M
+

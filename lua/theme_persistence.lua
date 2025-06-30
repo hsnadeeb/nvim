@@ -24,7 +24,7 @@ function M.load_theme()
       return theme
     end
   end
-  return 'everforest'  -- Default theme
+  return 'everforest' -- Default theme
 end
 
 return M
