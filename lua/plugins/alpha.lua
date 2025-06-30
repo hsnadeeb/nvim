@@ -10,7 +10,7 @@ function M.setup()
 
   dashboard.section.header.val = {
     "",
-    "░▒▓███████▓▒░ ▒▓█▓▒▒  ░▒▓█▓▒░  ▒▓██████▓▒░░   ▒▓████████▓▒░ ▒▓█▓▒░ ",
+    "░▒▓███████▓▒░ ░▒▓█▓▒░ ░▒▓█▓▒░ ░▒▓██████▓▒░░   ▒▓████████▓▒░ ▒▓█▓▒░ ",
     " ░▒▓█▓▒░      ░▒▓█▓▒░ ░▒▓█▓▒░ ▒▓█▓▒░ ░▒▓█▓▒░       ░▒▓█▓▒░  ▒▓█▓▒░ ",
     " ░▒▓█▓▒░      ░▒▓█▓▒░ ░▒▓█▓▒░ ▒▓█▓▒░ ░▒▓█▓▒░     ░▒▓██▓▒░   ▒▓█▓▒░ ",
     "  ░▒▓██████▓▒ ░░▒▓████████▓▒░ ░▒▓████████▓▒░    ░▒▓██▓▒░    ▒▓█▓▒░ ",
@@ -20,13 +20,23 @@ function M.setup()
     "",
   }
 
+
+-- ███████╗██╗  ██╗ █████╗ ███████╗██╗
+-- ██╔════╝██║  ██║██╔══██╗╚══███╔╝██║
+-- ███████╗███████║███████║  ███╔╝ ██║
+-- ╚════██║██╔══██║██╔══██║ ███╔╝  ╚═╝
+-- ███████║██║  ██║██║  ██║███████╗██╗
+-- ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝
+                                   
+
+
   dashboard.section.buttons.val = {
     dashboard.button("e", "  New file", ":ene <BAR> startinsert <CR>"),
-    dashboard.button("f", "  Find file", ":Telescope find_files <CR>"),
-    dashboard.button("r", "  Recent files", ":Telescope oldfiles <CR>"),
-    dashboard.button("p", "  Open Current Directory", ":lua vim.cmd('Telescope file_browser')"),
-    dashboard.button("h", "  Home Directory", ":lua vim.cmd('Telescope file_browser path=~')"),
-    dashboard.button("q", "  Quit", ":qa <CR>"),
+    dashboard.button("f", "  Find file", ":Telescope find_files<CR>"),
+    dashboard.button("r", "  Recent files", ":Telescope oldfiles<CR>"),
+    dashboard.button("p", "  Browse Current Dir", ":Telescope find_files cwd=.<CR>"),
+    dashboard.button("h", "  Home Directory", ":Telescope find_files cwd=~<CR>"),
+    dashboard.button("q", "  Quit", ":qa<CR>"),
   }
 
   -- Set up alpha with the dashboard config

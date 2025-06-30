@@ -60,10 +60,6 @@ function M.setup()
     },
   })
 
-    -- Load keymap cleanup utility
-  local keymap_cleanup = require('utils.keymap_cleanup')
-  keymap_cleanup.cleanup()
-
   -- Register the keymaps
   safe_register({
     -- Autosave toggle
