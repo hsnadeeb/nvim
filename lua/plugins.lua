@@ -337,15 +337,12 @@ require("lazy").setup({
     end,
   },
 
-  -- Comments (lazy-loaded on VeryLazy)
+  --  s (lazy-loaded on VeryLazy)
   {
     'numToStr/Comment.nvim',
     event = 'VeryLazy',
     keys = {
-      { 'gc', mode = { 'n', 'v' }, desc = 'Toggle comment' },
-      { 'gb', mode = { 'n', 'v' }, desc = 'Toggle block comment' },
-      { 'gc', mode = 'x',          desc = 'Toggle comment (visual)' },
-      { 'gb', mode = 'x',          desc = 'Toggle block comment (visual)' },
+      { '<leader>/', mode = { 'n', 'x' }, desc = 'Toggle comment' },
     },
     config = function()
       -- First require the plugin
@@ -357,6 +354,12 @@ require("lazy").setup({
 
       -- Set up the comment plugin with minimal configuration
       comment.setup({
+        toggler = {
+          line = '<leader>/',  -- Toggle current line
+        },
+        opleader = {
+          line = '<leader>/',  -- Toggle line comment in visual/operator mode
+        },
         padding = true,  -- Add space between comment and line
         sticky = true,   -- Keep cursor position when commenting
         ignore = '^$',   -- Ignore empty lines
@@ -840,6 +843,26 @@ require("lazy").setup({
     end,
   },
 
+  -- TypeScript Tools
+  {
+    'pmizio/typescript-tools.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
+    ft = { 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
+    opts = {
+      settings = {
+        tsserver_file_preferences = {
+          includeInlayParameterNameHints = 'all',
+          includeCompletionsForModuleExports = true,
+          includeCompletionsForImportStatements = true,
+        },
+        tsserver_format_options = {
+          allowIncompleteCompletions = true,
+          allowRenameOfImportPath = true,
+        },
+      },
+    },
+  },
+  
   -- Better diagnostics UI
   {
     "folke/trouble.nvim",

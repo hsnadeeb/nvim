@@ -1,6 +1,7 @@
 -- Ensure LSP config is properly required
 local lspconfig = require('lspconfig')
 local util = require('lspconfig.util')
+local keybindings = require('keybindings')
 
 -- Border configuration for floating windows
 local border = {
@@ -20,39 +21,24 @@ local handlers = {
   ["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = border }),
 }
 
-  -- Common on_attach function for LSP clients
+-- Common capabilities for LSP clients
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+
+-- Common on_attach function for LSP clients
 local on_attach = function(client, bufnr)
   -- Disable formatting for specific LSPs (use null-ls or formatter.nvim instead)
   if client.name == 'tsserver' or client.name == 'ts_ls' then
     client.server_capabilities.documentFormattingProvider = false
     client.server_capabilities.documentRangeFormattingProvider = false
   end
-
+  
+  -- Call the keybindings setup
+  keybindings.on_attach(client, bufnr)
+  
   -- Enable completion triggered by <c-x><c-o>
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-  -- Buffer local keymaps
-  local bufopts = { noremap = true, silent = true, buffer = bufnr }
   
-  -- Navigation keymaps
-  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
-  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
-  vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-  vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
-  vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, bufopts)
-  vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
-  vim.keymap.set('n', '<leader>wl', function()
-    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-  end, bufopts)
-  vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, bufopts)
-  vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
-  vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-  vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
-  vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, bufopts)
-  vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, bufopts)
-  vim.keymap.set('n', ']d', vim.diagnostic.goto_next, bufopts)
-
   -- Highlight symbol under cursor
   if client.server_capabilities.documentHighlightProvider then
     vim.api.nvim_create_augroup('lsp_document_highlight', { clear = true })
@@ -69,79 +55,50 @@ local on_attach = function(client, bufnr)
   end
 end
 
--- TypeScript/JavaScript/React
-lspconfig.ts_ls.setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-  filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'typescript.tsx' },
-  root_dir = util.root_pattern('package.json', 'tsconfig.json', 'jsconfig.json', '.git'),
-  single_file_support = true,
-  settings = {
-    typescript = {
-      inlayHints = {
-        includeInlayParameterNameHints = 'all',
-        includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-        includeInlayFunctionParameterTypeHints = true,
-        includeInlayVariableTypeHints = true,
-        includeInlayPropertyDeclarationTypeHints = true,
-        includeInlayFunctionLikeReturnTypeHints = true,
-        includeInlayEnumMemberValueHints = true,
+-- Common settings for LSP servers
+local function make_config()
+  return {
+    capabilities = capabilities,
+    on_attach = on_attach,
+    handlers = handlers,
+    flags = {
+      debounce_text_changes = 150,
+    },
+  }
+end
+
+-- Setup LSP servers with common config
+local servers = { 'pyright', 'rust_analyzer', 'gopls', 'lua_ls' }
+for _, lsp in ipairs(servers) do
+  lspconfig[lsp].setup(make_config())
+end
+
+-- TypeScript/JavaScript setup with typescript-tools.nvim
+-- Configuration is handled by the plugin itself
+-- This is just a minimal setup to ensure LSP features work
+
+-- Only setup ts_ls as a fallback if typescript-tools is not available
+if not pcall(require, 'typescript-tools') then
+  lspconfig.ts_ls.setup({
+    capabilities = capabilities,
+    on_attach = on_attach,
+    filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'typescript.tsx' },
+    root_dir = util.root_pattern('package.json', 'tsconfig.json', 'jsconfig.json', '.git'),
+    single_file_support = true,
+    settings = {
+      typescript = {
+        format = { enable = false },
+        inlayHints = { enable = false },
+        suggestions = { enabled = false },
       },
-      suggest = {
-        completeFunctionCalls = true,
-        autoImports = true,
-        importModuleSpecifier = 'shortest',
-        includeCompletionsForModuleExports = true,
-        includeCompletionsForImportStatements = true,
-      },
-      format = {
-        enable = false,
-      },
-      updateImportsOnFileMove = {
-        enable = true,
-      },
-      preferences = {
-        importModuleSpecifierPreference = 'shortest',
-        quotePreference = 'single',
+      javascript = {
+        format = { enable = false },
+        inlayHints = { enable = false },
+        suggestions = { enabled = false },
       },
     },
-    javascript = {
-      inlayHints = {
-        includeInlayParameterNameHints = 'all',
-        includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-        includeInlayFunctionParameterTypeHints = true,
-        includeInlayVariableTypeHints = true,
-        includeInlayPropertyDeclarationTypeHints = true,
-        includeInlayFunctionLikeReturnTypeHints = true,
-      },
-      suggest = {
-        completeFunctionCalls = true,
-        autoImports = true,
-        importModuleSpecifier = 'shortest',
-        includeCompletionsForModuleExports = true,
-        includeCompletionsForImportStatements = true,
-      },
-      format = {
-        enable = false,
-      },
-      preferences = {
-        importModuleSpecifierPreference = 'shortest',
-        quotePreference = 'single',
-      },
-    },
-    completions = {
-      completeFunctionCalls = true,
-    },
-  },
-  init_options = {
-    hostInfo = 'neovim',
-    preferences = {
-      disableSuggestions = false,
-      importModuleSpecifierPreference = 'shortest',
-      includePackageJsonAutoImports = 'on',
-    },
-  },
-})
+  })
+end
 
 -- HTML
 lspconfig.html.setup({ capabilities = capabilities, on_attach = on_attach })

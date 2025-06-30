@@ -14,6 +14,11 @@ function M.setup()
     preset = "modern",
     delay = 500,
     notify = true,
+    ignore_missing = true,  -- Ignore missing keymaps
+    disable = {
+      buftypes = { "nofile", "prompt", "terminal" },  -- Disable for specific buffer types
+      filetypes = { "TelescopePrompt", "mason" },     -- Disable for specific filetypes
+    },
     replace = {
       ["<space>"] = "SPC",
       ["<cr>"] = "RET",
@@ -25,6 +30,7 @@ function M.setup()
       title = true,
       title_pos = "center",
       zindex = 1000,
+      winblend = 0,  -- Disable transparency to avoid rendering issues
     },
     layout = {
       width = { min = 20, max = 50 },
@@ -41,6 +47,9 @@ function M.setup()
       separator = "➜",
       group = "+",
       ellipsis = "…",
+    },
+    triggers_nowait = {
+      "`", "'", 'g"', 'g`', 'g\'', '"',
     },
   })
 
@@ -59,7 +68,7 @@ function M.setup()
       S = { "<cmd>Telescope lsp_workspace_symbols<cr>", "Workspace Symbols" },
       m = { function() require("conform").format() end, "Format document" },
     },
-
+ 
     -- Buffer group
     ["<leader>b"] = {
       name = "+buffer",
@@ -86,7 +95,7 @@ function M.setup()
       u = { "<cmd>Gitsigns undo_stage_hunk<CR>", "Undo Stage Hunk" },
     },
 
-    -- LSP group
+    -- LSP group - updated to avoid conflicts
     ["<leader>l"] = {
       name = "+lsp",
       a = { function() vim.lsp.buf.code_action() end, "Code Action" },
@@ -96,7 +105,7 @@ function M.setup()
       h = { function() vim.lsp.buf.hover() end, "Hover Documentation" },
       i = { function() vim.lsp.buf.implementation() end, "Go to Implementation" },
       n = { function() vim.lsp.buf.rename() end, "Rename Symbol" },
-      r = { function() vim.lsp.buf.references() end, "Show References" },
+      -- Removed 'r' as it's now in keybindings.lua
       s = { "<cmd>Telescope lsp_document_symbols<cr>", "Document Symbols" },
       S = { "<cmd>Telescope lsp_workspace_symbols<cr>", "Workspace Symbols" },
       t = { function() vim.lsp.buf.type_definition() end, "Go to Type Definition" },
@@ -108,7 +117,8 @@ function M.setup()
       },
       q = { function() vim.diagnostic.setloclist() end, "Diagnostics to Location List" },
       p = { function() vim.diagnostic.goto_prev() end, "Previous Diagnostic" },
-      n = { function() vim.diagnostic.goto_next() end, "Next Diagnostic" },
+      -- Removed duplicate 'n' binding
+      ["n"] = { function() vim.diagnostic.goto_next() end, "Next Diagnostic" },
     },
 
     -- Terminal group
@@ -148,32 +158,44 @@ function M.setup()
 
     -- Other simple mappings
     ["<leader>q"] = { "<cmd>q<cr>", "Quit" },
-    ["<leader>Q"] = { "<cmd>q!<cr>", "Force Quit" },
     ["<leader>h"] = { "<cmd>nohlsearch<cr>", "Clear Highlights" },
-    ["<leader>e"] = { "<cmd>NvimTreeToggle<cr>", "Toggle NvimTree" },
+    -- Removed duplicate NvimTree binding as it's now in keybindings.lua
     ["<leader>E"] = { "<cmd>NvimTreeFocus<cr>", "Focus NvimTree" },
+  }, { mode = "n" })
 
-    -- LSP navigation (non-leader for consistency with standard Vim)
-    ["gd"] = { function() vim.lsp.buf.definition() end, "Go to Definition" },
+  -- LSP keymaps for navigation (non-leader) - updated to avoid conflicts
+  local lsp_keymaps = {
     ["gD"] = { function() vim.lsp.buf.declaration() end, "Go to Declaration" },
+    ["gd"] = { function() vim.lsp.buf.definition() end, "Go to Definition" },
     ["gi"] = { function() vim.lsp.buf.implementation() end, "Go to Implementation" },
-    ["gr"] = { "<cmd>TroubleToggle lsp_references<cr>", "References (Trouble)" },
     ["gt"] = { function() vim.lsp.buf.type_definition() end, "Go to Type Definition" },
-    ["gR"] = { "<cmd>TroubleToggle lsp_references<cr>", "References (Trouble)" },
+    ["K"] = { function() vim.lsp.buf.hover() end, "Hover Documentation" },
+    ["<C-k>"] = { function() vim.lsp.buf.signature_help() end, "Signature Help" },
+  }
+  
+  -- Remove all conflicting mappings first
+  vim.keymap.set('n', 'gc', '<Nop>', { silent = true, noremap = true })
+  vim.keymap.set('n', 'gcc', '<Nop>', { silent = true, noremap = true })
+  vim.keymap.set('n', 'gb', '<Nop>', { silent = true, noremap = true })
+  vim.keymap.set('n', 'gbc', '<Nop>', { silent = true, noremap = true })
+  vim.keymap.set('n', ' e', '<Nop>', { silent = true, noremap = true })
+  vim.keymap.set('n', '<Space>e', '<Nop>', { silent = true, noremap = true })
+  
+  -- Also disable visual mode mappings that might conflict
+  vim.keymap.set('x', 'gc', '<Nop>', { silent = true, noremap = true })
+  vim.keymap.set('x', 'gb', '<Nop>', { silent = true, noremap = true })
 
-    -- Diagnostics navigation
+  -- Apply LSP keymaps
+  for key, mapping in pairs(lsp_keymaps) do
+    vim.keymap.set("n", key, mapping[1], { desc = mapping[2], silent = true })
+  end
+
+  -- Diagnostics navigation
+  which_key.register({
     ["[d"] = { function() vim.diagnostic.goto_prev() end, "Previous Diagnostic" },
     ["]d"] = { function() vim.diagnostic.goto_next() end, "Next Diagnostic" },
   }, { mode = "n" })
 
-  -- Visual mode mappings
-  which_key.register({
-    ["<leader>c"] = {
-      name = "+Comment",
-      c = { "<Plug>(comment_toggle_linewise_visual)", "Toggle line comment" },
-      b = { "<Plug>(comment_toggle_blockwise_visual)", "Toggle block comment" },
-    },
-  }, { mode = "v" })
-end
+end 
 
 return M

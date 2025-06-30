@@ -59,6 +59,57 @@ end
 vim.g.mapleader = ' '
 vim.g.maplocalleader = '\\'
 
+-- Unmap conflicting keys first to prevent any conflicts
+local function unmap_conflicts()
+  -- Disable comment.nvim default mappings
+  vim.keymap.set('n', 'gc', '<Nop>', { noremap = true, silent = true })
+  vim.keymap.set('n', 'gb', '<Nop>', { noremap = true, silent = true })
+  vim.keymap.set('n', 'gcc', '<Nop>', { noremap = true, silent = true })
+  vim.keymap.set('n', 'gbc', '<Nop>', { noremap = true, silent = true })
+  vim.keymap.set('x', 'gc', '<Nop>', { noremap = true, silent = true })
+  vim.keymap.set('x', 'gb', '<Nop>', { noremap = true, silent = true })
+  
+  -- Disable space+e for NvimTree (use <leader>e instead)
+  vim.keymap.set('n', ' e', '<Nop>', { noremap = true, silent = true })
+  
+  -- Disable any other conflicting mappings
+  vim.keymap.set('n', 'gr', '<Nop>', { noremap = true, silent = true }) -- We'll set this up in LSP
+end
+
+-- Call unmap_conflicts immediately
+unmap_conflicts()
+
+-- Set up LSP keybindings on attach
+local function on_attach(client, bufnr)
+  -- Enable completion triggered by <c-x><c-o>
+  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+  -- Mappings.
+  local bufopts = { noremap=true, silent=true, buffer=bufnr }
+  
+  -- LSP keybindings
+  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
+  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+  vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
+  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+  vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+  vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
+  vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
+  vim.keymap.set('n', '<space>wl', function()
+    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+  end, bufopts)
+  vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
+  vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
+  vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
+  vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+  vim.keymap.set('n', '<space>f', function() vim.lsp.buf.format { async = true } end, bufopts)
+
+  -- Enable cmd+click for go to definition
+  vim.keymap.set('n', '<Cmd>lua vim.lsp.buf.definition()<CR>', '<Cmd>lua vim.lsp.buf.definition()<CR>', { noremap = true, silent = true })
+  vim.keymap.set('n', '<D-Click>', '<Cmd>lua vim.lsp.buf.definition()<CR>', { noremap = true, silent = true })
+  vim.keymap.set('n', '<D-LeftMouse>', '<Cmd>lua vim.lsp.buf.definition()<CR>', { noremap = true, silent = true })
+end
+
 -- General keymaps
 local general_keymaps = {
   -- Window navigation
@@ -67,9 +118,9 @@ local general_keymaps = {
   ['<C-k>'] = { '<C-w>k', 'Move to window above' },
   ['<C-l>'] = { '<C-w>l', 'Move to right window' },
 
-    -- IntelliJ-style navigation
-    ['<leader>['] = { '<C-o>', 'Go to previous cursor position' },
-    ['<leader>]'] = { '<C-i>', 'Go to next cursor position' },
+  -- IntelliJ-style navigation
+  ['<leader>['] = { '<C-o>', 'Go to previous cursor position' },
+  ['<leader>]'] = { '<C-i>', 'Go to next cursor position' },
     
   -- Resize windows
   ['<C-Up>'] = { ':resize -2<CR>', 'Decrease window height' },
@@ -83,15 +134,23 @@ local general_keymaps = {
   ['<Home>'] = { '^', 'Go to start of line' },
   ['<End>'] = { '$', 'Go to end of line' },
 
-  -- Comment keybindings
-  ['<leader>c'] = { name = '+Comment',
-    ['c'] = { '<Plug>(comment_toggle_linewise_current)', 'Toggle line comment' },
-    ['b'] = { '<Plug>(comment_toggle_blockwise_current)', 'Toggle block comment' },
-    ['l'] = { '<Plug>(comment_toggle_linewise)', 'Toggle line comment (motion)' },
-    ['B'] = { '<Plug>(comment_toggle_blockwise)', 'Toggle block comment (motion)' },
+  -- LSP keybindings - using leader prefix for additional functionality
+  ['<leader>l'] = { name = '+LSP',
+    ['r'] = { function() require('trouble').toggle('lsp_references') end, 'References' },
+    ['d'] = { function() vim.diagnostic.open_float() end, 'Line Diagnostics' },
+    ['D'] = { function() vim.diagnostic.setloclist() end, 'Diagnostics to Location List' },
+    ['f'] = { function() vim.lsp.buf.format { async = true } end, 'Format' },
+    ['w'] = { name = '+Workspace',
+      ['a'] = { vim.lsp.buf.add_workspace_folder, 'Add Workspace Folder' },
+      ['r'] = { vim.lsp.buf.remove_workspace_folder, 'Remove Workspace Folder' },
+      ['l'] = { function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, 'List Workspace Folders' },
+    },
   },
-
-  -- Java
+  
+  -- File explorer - using leader prefix
+  ['<leader>e'] = { '<cmd>NvimTreeToggle<CR>', 'File Explorer' },
+  
+  -- Java keybindings
   ['<leader>j'] = { name = '+Java',
     ['r'] = {
       function()
@@ -117,6 +176,8 @@ local general_keymaps = {
 
 -- Register general keymaps
 register_keymaps('n', '', general_keymaps)
+
+-- Visual mode mappings
 register_keymaps('v', '', {
   ['H'] = { '^', 'Go to start of line' },
   ['L'] = { '$', 'Go to end of line' },
