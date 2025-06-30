@@ -9,7 +9,6 @@
   "cmp-path": { "branch": "main", "commit": "edbab83da34fffbaf993491e84d0223540f42f0b" },
   "conform.nvim": { "branch": "master", "commit": "00d7e92d170139569b1887ff2be298a0cdd7d9ae" },
   "copilot-cmp": { "branch": "master", "commit": "15fc12af3d0109fa76b60b5cffa1373697e261d1" },
-  "copilot.lua": { "branch": "master", "commit": "46f4b7d026cba9497159dcd3e6aa61a185cb1c48" },
   "decay.nvim": { "branch": "main", "commit": "457014541ebcfb29bd660592a0b02f22c9e2d0e2" },
   "everforest": { "branch": "master", "commit": "f40c2e6c8784c99c57c79edc94cd180e76450222" },
   "gitsigns.nvim": { "branch": "main", "commit": "1b0350ab707713b2bc6c236151f1a324175347b1" },

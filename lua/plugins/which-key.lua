@@ -1,6 +1,3 @@
--- Configuration for which-key.nvim
--- This module provides enhanced key binding documentation and navigation
-
 local M = {}
 
 -- Load utility functions
@@ -8,206 +5,130 @@ local utils = require("utils")
 local map = utils.map
 
 function M.setup()
-  local status_ok, which_key = pcall(require, "which-key")
-  if not status_ok then
-    vim.notify("which-key.nvim not found!", vim.log.levels.ERROR)
-    return
-  end
-  
-  -- Add error handling for buffer operations
-  local function safe_register(keys, opts)
-    local ok, err = pcall(function()
-      which_key.register(keys, opts)
-    end)
-    if not ok then
-      vim.notify_once("which-key: Failed to register keymap: " .. vim.inspect(err), vim.log.levels.WARN)
+  -- Defer setup to reduce startup time
+  vim.defer_fn(function()
+    local status_ok, which_key = pcall(require, "which-key")
+    if not status_ok then
+      vim.notify("which-key.nvim not found!", vim.log.levels.ERROR)
+      return
     end
-  end
 
-  which_key.setup({
-    preset = "modern",
-    delay = 500,
-    expand = 1,
-    notify = true,
-    replace = {
-      ["<space>"] = "SPC",
-      ["<cr>"] = "RET",
-      ["<tab>"] = "TAB",
-    },
-    win = {
-      border = "rounded",
-      padding = { 1, 2 },
-      title = true,
-      title_pos = "center",
-      zindex = 1000,
-    },
-    layout = {
-      width = { min = 20, max = 50 },
-      spacing = 3,
-      align = "left",
-    },
-    keys = {
-      scroll_down = "<c-d>",
-      scroll_up = "<c-u>",
-    },
-    sort = { "local", "order", "group", "alphanum", "mod" },
-    expand = 0,
-    icons = {
-      breadcrumb = "»",
-      separator = "➜",
-      group = "+",
-      ellipsis = "…",
-    },
-  })
+    -- Simplified error handling for keymap registration
+    local function safe_register(keys, opts)
+      pcall(which_key.register, keys, opts)
+    end
 
-    -- Load keymap cleanup utility
-  local keymap_cleanup = require('utils.keymap_cleanup')
-  keymap_cleanup.cleanup()
+    which_key.setup({
+      preset = "modern",
+      delay = 500,
+      win = { border = "rounded", padding = { 1, 2 }, title = true, title_pos = "center" },
+      layout = { width = { min = 20, max = 50 }, spacing = 3, align = "left" },
+      keys = { scroll_down = "<c-d>", scroll_up = "<c-u>" },
+      icons = { breadcrumb = "»", separator = "➜", group = "+" },
+    })
 
-  -- Register the keymaps
-  safe_register({
-    -- Autosave toggle
-    ["<leader>a"] = { 
-      name = "+autosave",
-      a = { "<cmd>lua _G.toggle_autosave()<cr>", "Toggle AutoSave" },
-    },
+    -- Register keymaps (consolidated, duplicates removed)
+    safe_register({
+      -- Autosave
+      ["<leader>a"] = { name = "+autosave", a = { "<cmd>AutoSaveToggle<cr>", "Toggle AutoSave" } },
 
-    -- Find/Format group
-    ["<leader>f"] = {
-      name = "+find/format",
-      f = { "<cmd>Telescope find_files<cr>", "Find File" },
-      g = { "<cmd>Telescope live_grep<cr>", "Live Grep" },
-      b = { "<cmd>Telescope buffers<cr>", "Buffers" },
-      h = { "<cmd>Telescope help_tags<cr>", "Help Tags" },
-      r = { "<cmd>Telescope oldfiles<cr>", "Recent Files" },
-      k = { "<cmd>Telescope keymaps<cr>", "Keymaps" },
-      s = { "<cmd>Telescope lsp_document_symbols<cr>", "Document Symbols" },
-      S = { "<cmd>Telescope lsp_workspace_symbols<cr>", "Workspace Symbols" },
-      d = { "<cmd>Telescope lsp_definitions<cr>", "Definitions" },
-      i = { "<cmd>Telescope lsp_implementations<cr>", "Implementations" },
-      m = { function() require("conform").format() end, "Format document" },
-    },
+      -- Find/Format
+      ["<leader>f"] = {
+        name = "+find/format",
+        f = { "<cmd>Telescope find_files<cr>", "Find File" },
+        g = { "<cmd>Telescope live_grep<cr>", "Live Grep" },
+        b = { "<cmd>Telescope buffers<cr>", "Buffers" },
+        h = { "<cmd>Telescope help_tags<cr>", "Help Tags" },
+        r = { "<cmd>Telescope oldfiles<cr>", "Recent Files" },
+        k = { "<cmd>Telescope keymaps<cr>", "Keymaps" },
+        s = { "<cmd>Telescope lsp_document_symbols<cr>", "Document Symbols" },
+        S = { "<cmd>Telescope lsp_workspace_symbols<cr>", "Workspace Symbols" },
+        d = { "<cmd>Telescope lsp_definitions<cr>", "Definitions" },
+        i = { "<cmd>Telescope lsp_implementations<cr>", "Implementations" },
+        m = { "<cmd>lua require('conform').format()<cr>", "Format document" },
+      },
 
-    -- Buffer group
-    ["<leader>b"] = {
-      name = "+buffer",
-      d = { "<cmd>BufferClose<cr>", "Delete Buffer" },
-      c = { "<cmd>BufferClose<cr>", "Close Current Buffer" },
-      n = { "<cmd>BufferNext<cr>", "Next Buffer" },
-      p = { "<cmd>BufferPrevious<cr>", "Previous Buffer" },
-    },
+      -- Buffer
+      ["<leader>b"] = {
+        name = "+buffer",
+        d = { "<cmd>BufferClose<cr>", "Delete Buffer" },
+        n = { "<cmd>BufferNext<cr>", "Next Buffer" },
+        p = { "<cmd>BufferPrevious<cr>", "Previous Buffer" },
+      },
 
-    -- Git group
-    ["<leader>g"] = {
-      name = "+git",
-      c = { "<cmd>Telescope git_commits<cr>", "Commits" },
-      bc = { "<cmd>Telescope git_bcommits<cr>", "Buffer Commits" },
-      B = { "<cmd>Telescope git_branches<cr>", "Branches" },
-      s = { "<cmd>Telescope git_status<cr>", "Status" },
-      j = { function() require("gitsigns").next_hunk() end, "Next Hunk" },
-      k = { function() require("gitsigns").prev_hunk() end, "Prev Hunk" },
-      S = { function() require("gitsigns").stage_buffer() end, "Stage Buffer" },
-      p = { function() require("gitsigns").preview_hunk() end, "Preview Hunk" },
-      d = { function() require("gitsigns").diffthis() end, "Diff This" },
-      -- Changed from 'bl' to 'l' to avoid conflict
-      l = { function() require("gitsigns").blame_line({ full = true }) end, "Blame Line" },
-      b = { name = "+buffer" },
-    },
+      -- Git
+      ["<leader>g"] = {
+        name = "+git",
+        c = { "<cmd>Telescope git_commits<cr>", "Commits" },
+        b = { "<cmd>Telescope git_bcommits<cr>", "Buffer Commits" },
+        B = { "<cmd>Telescope git_branches<cr>", "Branches" },
+        s = { "<cmd>Telescope git_status<cr>", "Status" },
+        j = { "<cmd>lua require('gitsigns').next_hunk()<cr>", "Next Hunk" },
+        k = { "<cmd>lua require('gitsigns').prev_hunk()<cr>", "Prev Hunk" },
+        S = { "<cmd>lua require('gitsigns').stage_buffer()<cr>", "Stage Buffer" },
+        p = { "<cmd>lua require('gitsigns').preview_hunk()<cr>", "Preview Hunk" },
+        d = { "<cmd>lua require('gitsigns').diffthis()<cr>", "Diff This" },
+        l = { "<cmd>lua require('gitsigns').blame_line({full=true})<cr>", "Blame Line" },
+      },
 
-    -- LSP group
-    ["<leader>l"] = {
-      name = "+lsp",
-      a = { vim.lsp.buf.code_action, "Code Action" },
-      d = { vim.diagnostic.open_float, "Diagnostics (Line)" },
-      D = { vim.lsp.buf.declaration, "Declaration" },
-      i = { vim.lsp.buf.implementation, "Implementation" },
-      r = { vim.lsp.buf.references, "References" },
-      n = { vim.lsp.buf.rename, "Rename" },
-      f = { vim.lsp.buf.format, "Format" },
-      h = { vim.lsp.buf.hover, "Hover" },
-    },
+      -- LSP
+      ["<leader>l"] = {
+        name = "+lsp",
+        a = { "<cmd>lua vim.lsp.buf.code_action()<cr>", "Code Action" },
+        d = { "<cmd>lua vim.diagnostic.open_float()<cr>", "Diagnostics (Line)" },
+        D = { "<cmd>lua vim.lsp.buf.declaration()<cr>", "Declaration" },
+        i = { "<cmd>lua vim.lsp.buf.implementation()<cr>", "Implementation" },
+        r = { "<cmd>lua vim.lsp.buf.references()<cr>", "References" },
+        n = { "<cmd>lua vim.lsp.buf.rename()<cr>", "Rename" },
+        f = { "<cmd>lua vim.lsp.buf.format()<cr>", "Format" },
+        h = { "<cmd>lua vim.lsp.buf.hover()<cr>", "Hover" },
+      },
 
-    -- Terminal group
-    ["<leader>t"] = {
-      name = "+terminal",
-      ["`"] = { "<cmd>ToggleTerm<cr>", "Toggle Terminal" },
-      f = { "<cmd>ToggleTerm direction=float<cr>", "Float Terminal" },
-      v = { "<cmd>ToggleTerm direction=vertical<cr>", "Vertical Terminal" },
-      t = { "<cmd>ToggleTerm direction=horizontal<cr>", "Horizontal Terminal" },
-    },
+      -- Terminal
+      ["<leader>t"] = {
+        name = "+terminal",
+        ["`"] = { "<cmd>ToggleTerm<cr>", "Toggle Terminal" },
+        f = { "<cmd>ToggleTerm direction=float<cr>", "Float Terminal" },
+        v = { "<cmd>ToggleTerm direction=vertical<cr>", "Vertical Terminal" },
+        t = { "<cmd>ToggleTerm direction=horizontal<cr>", "Horizontal Terminal" },
+      },
 
-    -- Diagnostics / Trouble
-    ["<leader>x"] = {
-      name = "+diagnostics",
-      x = { "<cmd>TroubleToggle<cr>", "Toggle Trouble" },
-      w = { "<cmd>TroubleToggle workspace_diagnostics<cr>", "Workspace Diagnostics" },
-      d = { "<cmd>TroubleToggle document_diagnostics<cr>", "Document Diagnostics" },
-      l = { "<cmd>TroubleToggle loclist<cr>", "Location List" },
-      q = { "<cmd>TroubleToggle quickfix<cr>", "Quickfix List" },
-    },
+      -- Diagnostics
+      ["<leader>x"] = {
+        name = "+diagnostics",
+        x = { "<cmd>TroubleToggle<cr>", "Toggle Trouble" },
+        w = { "<cmd>TroubleToggle workspace_diagnostics<cr>", "Workspace Diagnostics" },
+        d = { "<cmd>TroubleToggle document_diagnostics<cr>", "Document Diagnostics" },
+        l = { "<cmd>TroubleToggle loclist<cr>", "Location List" },
+        q = { "<cmd>TroubleToggle quickfix<cr>", "Quickfix List" },
+      },
 
-    -- Theme toggling
-    ["<leader>th"] = {
-      name = "+theme",
-      n = { function() require("plugins.themes").next_theme() end, "Next Theme" },
-      p = { function() require("plugins.themes").previous_theme() end, "Previous Theme" },
-    },
+      -- Theme
+      ["<leader>th"] = {
+        name = "+theme",
+        n = { "<cmd>NextTheme<cr>", "Next Theme" },
+        p = { "<cmd>lua require('plugins.themes').previous_theme()<cr>", "Previous Theme" },
+      },
 
-    -- Write/quit
-    ["<leader>w"] = {
-      name = "+write/quit",
-      s = { "<cmd>w<cr>", "Save" },
-      q = { "<cmd>wq<cr>", "Save and Quit" },
-    },
+      -- Write/Quit
+      ["<leader>w"] = { name = "+write/quit", s = { "<cmd>w<cr>", "Save" }, q = { "<cmd>wq<cr>", "Save and Quit" } },
 
-    -- Other simple mappings with buffer checks
-    ["<leader>q"] = { function()
-      if vim.fn.bufname('') ~= 'NvimTree' then vim.cmd('q') end
-    end, "Quit" },
-    ["<leader>Q"] = { function()
-      if vim.fn.bufname('') ~= 'NvimTree' then vim.cmd('q!') end
-    end, "Force Quit" },
-    ["<leader>h"] = { function() vim.cmd('nohlsearch') end, "Clear Highlights" },
-    ["<leader>n"] = { function()
-      if vim.fn.bufname('') ~= 'NvimTree' then
-        vim.cmd('NvimTreeToggle')
-      end
-    end, "Toggle NvimTree" },
-    ["<leader>e"] = { function()
-      -- Check if NvimTree is visible in any window
-      local nvim_tree_win = nil
-      for _, win in ipairs(vim.api.nvim_list_wins()) do
-        if vim.api.nvim_win_is_valid(win) then  -- Check if window is valid
-          local buf = vim.api.nvim_win_get_buf(win)
-          if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].filetype == 'NvimTree' then  -- Check if buffer is valid
-            nvim_tree_win = win
-            break
-          end
-        end
-      end
+      -- Simple Mappings
+      ["<leader>q"] = { "<cmd>if &ft != 'NvimTree' | q | endif<cr>", "Quit" },
+      ["<leader>Q"] = { "<cmd>if &ft != 'NvimTree' | q! | endif<cr>", "Force Quit" },
+      ["<leader>h"] = { "<cmd>nohlsearch<cr>", "Clear Highlights" },
 
-      if vim.bo.filetype == 'NvimTree' then
-        -- If in NvimTree, go to the previous window (editor)
-        vim.cmd('wincmd p')
-      elseif nvim_tree_win then
-        -- If NvimTree exists, focus it
-        vim.api.nvim_set_current_win(nvim_tree_win)
-      else
-        -- If NvimTree doesn't exist, open it
-        vim.cmd('NvimTreeToggle')
-      end
-    end, "Toggle focus between NvimTree and editor" },
+      -- Diagnostics Navigation
+      ["[d"] = { "<cmd>lua vim.diagnostic.goto_prev()<cr>", "Previous Diagnostic" },
+      ["]d"] = { "<cmd>lua vim.diagnostic.goto_next()<cr>", "Next Diagnostic" },
 
-    -- Diagnostics navigation
-    ["[d"] = { vim.diagnostic.goto_prev, "Previous Diagnostic" },
-    ["]d"] = { vim.diagnostic.goto_next, "Next Diagnostic" },
-
-    -- LSP location navigation
-    ["gd"] = { vim.lsp.buf.definition, "Go to Definition" },
-    ["gD"] = { vim.lsp.buf.declaration, "Go to Declaration" },
-    ["gi"] = { vim.lsp.buf.implementation, "Go to Implementation" },
-    ["gR"] = { "<cmd>TroubleToggle lsp_references<cr>", "References (Trouble)" },
-  })
+      -- LSP Navigation
+      ["gd"] = { "<cmd>lua vim.lsp.buf.definition()<cr>", "Go to Definition" },
+      ["gD"] = { "<cmd>lua vim.lsp.buf.declaration()<cr>", "Go to Declaration" },
+      ["gi"] = { "<cmd>lua vim.lsp.buf.implementation()<cr>", "Go to Implementation" },
+      ["gR"] = { "<cmd>TroubleToggle lsp_references<cr>", "References (Trouble)" },
+    })
+  end, 50) -- Defer setup by 50ms
 end
 
 return M
