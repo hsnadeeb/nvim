@@ -353,9 +353,9 @@ require("lazy").setup({
 
       -- Simple configuration with only <leader>/
       comment.setup({
-        padding = true,  -- Add space between comment and line
-        sticky = true,   -- Keep cursor position when commenting
-        ignore = '^$',   -- Ignore empty lines
+        padding = true,        -- Add space between comment and line
+        sticky = true,         -- Keep cursor position when commenting
+        ignore = '^$',         -- Ignore empty lines
         toggler = {
           line = '<leader>/',  -- Toggle current line (normal/visual mode)
           block = '<leader>/', -- Toggle current block (visual mode)
@@ -416,20 +416,6 @@ require("lazy").setup({
     end
   },
 
-  -- Auto-save
-  {
-    'Pocco81/auto-save.nvim',
-    config = function()
-      require('auto-save').setup {
-        enabled = true,
-        execution_message = {
-          message = function() return "" end, -- Disable save message
-        },
-        trigger_events = { 'InsertLeave', 'TextChanged' },
-        debounce_delay = 1000, -- Save after 1 second of inactivity
-      }
-    end,
-  },
 
   -- Debugging
   {
@@ -469,7 +455,7 @@ require("lazy").setup({
   -- Theme Management - Load all themes but don't configure them yet
   { "sainnhe/everforest",             lazy = true },
   { "ellisonleao/gruvbox.nvim",       lazy = true },
-  { "craftzdog/solarized-osaka.nvim", lazy = true }, 
+  { "craftzdog/solarized-osaka.nvim", lazy = true },
   { "decaycs/decay.nvim",             lazy = true },
   { "EdenEast/nightfox.nvim",         lazy = true },
   { "marko-cerovac/material.nvim",    lazy = true },
@@ -674,6 +660,30 @@ require("lazy").setup({
   },
 
   -- Code structure view (like IntelliJ's Structure view)
+  -- Auto-save functionality
+  {
+    '907th/vim-auto-save',
+    event = 'BufReadPost',
+    config = function()
+      vim.g.auto_save = 0        -- Disable autosave by default
+      vim.g.auto_save_silent = 1 -- No messages on save
+      vim.g.auto_save_events = { 'InsertLeave', 'TextChanged', 'FocusLost' }
+
+      -- Function to toggle autosave and show notification
+      function _G.toggle_autosave()
+        if vim.g.auto_save == 1 then
+          vim.g.auto_save = 0
+          vim.notify('Autosave: Disabled', vim.log.levels.INFO, { title = 'AutoSave' })
+        else
+          vim.g.auto_save = 1
+          vim.notify('Autosave: Enabled', vim.log.levels.INFO, { title = 'AutoSave' })
+        end
+      end
+      -- Add user command for toggling
+      vim.api.nvim_create_user_command('AutoSaveToggle', 'lua _G.toggle_autosave()', {})
+    end
+  },
+
   {
     'stevearc/aerial.nvim',
     cmd = 'AerialToggle',

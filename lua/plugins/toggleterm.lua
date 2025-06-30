@@ -35,11 +35,9 @@ function M.setup()
   })
 
   -- Setup keybindings
-  -- Toggle terminal on/off
-  utils.map('n', '<leader>tt', ':ToggleTerm<CR>', { desc = 'Toggle Terminal' })
   -- Directional terminals
   utils.map('n', '<leader>tf', ':ToggleTerm direction=float<CR>', { desc = 'Float Terminal' })
-  utils.map('n', '<leader>tz', ':ToggleTerm direction=horizontal<CR>', { desc = 'Horizontal Terminal' })
+  utils.map('n', '<leader>tt', ':ToggleTerm direction=horizontal<CR>', { desc = 'Horizontal Terminal' })
   utils.map('n', '<leader>tv', ':ToggleTerm direction=vertical<CR>', { desc = 'Vertical Terminal' })
   -- Toggle between terminal and last buffer
   utils.map('n', '<leader>`', ':ToggleTerm<CR>', { desc = 'Toggle Terminal' })

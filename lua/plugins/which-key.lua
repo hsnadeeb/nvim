@@ -66,6 +66,12 @@ function M.setup()
 
   -- Register the keymaps
   safe_register({
+    -- Autosave toggle
+    ["<leader>a"] = { 
+      name = "+autosave",
+      a = { "<cmd>lua _G.toggle_autosave()<cr>", "Toggle AutoSave" },
+    },
+
     -- Find/Format group
     ["<leader>f"] = {
       name = "+find/format",
@@ -124,10 +130,10 @@ function M.setup()
     -- Terminal group
     ["<leader>t"] = {
       name = "+terminal",
-      t = { "<cmd>ToggleTerm<cr>", "Toggle Terminal" },
+      ["`"] = { "<cmd>ToggleTerm<cr>", "Toggle Terminal" },
       f = { "<cmd>ToggleTerm direction=float<cr>", "Float Terminal" },
       v = { "<cmd>ToggleTerm direction=vertical<cr>", "Vertical Terminal" },
-      z = { "<cmd>ToggleTerm direction=horizontal<cr>", "Horizontal Terminal" },
+      t = { "<cmd>ToggleTerm direction=horizontal<cr>", "Horizontal Terminal" },
     },
 
     -- Diagnostics / Trouble
