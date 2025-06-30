@@ -385,6 +385,15 @@ require("lazy").setup({
     end,
   },
 
+  -- Dashboard
+  {
+    'goolord/alpha-nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+      require('plugins.alpha').setup()
+    end
+  },
+
   -- Todo comments
   {
     'folke/todo-comments.nvim',
