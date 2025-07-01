@@ -466,7 +466,6 @@ require("lazy").setup({
   { "ellisonleao/gruvbox.nvim",       lazy = true },
   { "craftzdog/solarized-osaka.nvim", lazy = true },
   { "decaycs/decay.nvim",             lazy = true },
-  { "EdenEast/nightfox.nvim",         lazy = true },
   { "marko-cerovac/material.nvim",    lazy = true },
 
   -- Theme manager configuration

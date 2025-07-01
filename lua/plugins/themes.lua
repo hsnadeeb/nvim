@@ -1,125 +1,125 @@
 local M = {}
 
--- Cache for loaded themes to prevent redundant loading
-local _M = { initialized = false }
-local theme_cache = {}
+-- Cache for loaded themes and state management
+local state = {
+  initialized = false,
+  current_theme_name = nil,
+  current_theme_index = 1,
+  theme_cache = {},
+  signs_defined = false
+}
 
--- Available themes
+-- Available themes (order matters for cycling)
 M.themes = {
   "everforest",  -- Default theme first
   "gruvbox",
-  "solarized-osaka",
+  "solarized-osaka", 
   "decay",
-  "nightfox",
   "material"
 }
 
--- Load theme persistence
+-- Load theme persistence module once
 local theme_persistence = require('theme_persistence')
 
--- Set faster redraw times for theme switching
-vim.opt.updatetime = 250
-vim.opt.timeoutlen = 300
-
--- Function to get theme index by name
-local function get_theme_index(theme_name)
-  for i, name in ipairs(M.themes) do
-    if name == theme_name then
-      return i
-    end
-  end
-  return 3 -- Default to everforest if not found
-end
-
--- Initialize current theme from saved theme or use default
-M.current_theme = get_theme_index(vim.g.saved_theme or "everforest")
-
--- Theme configurations
+-- Optimized theme configurations with lazy loading
 local theme_configs = {
   gruvbox = function()
     vim.g.gruvbox_contrast_dark = "hard"
     vim.g.gruvbox_invert_selection = 0
     vim.g.gruvbox_italic = 1
     vim.g.gruvbox_bold = 1
-    require("gruvbox").setup({
-      overrides = {
-        Normal = { bg = "#1d2021" },
-        Function = { fg = "#fabd2f", bold = true },
-        String = { fg = "#b8bb26", italic = true },
-      }
-    })
-    vim.cmd("colorscheme gruvbox")
-  end,
-  ["solarized-osaka"] = function()
-    require("solarized-osaka").setup({
-      style = "storm",
-      transparent = false,
-      colors = {
-        base00 = "#1c2526",
-        yellow = "#ffcc00",
-      }
-    })
-    vim.cmd("silent! colorscheme solarized-osaka")
-    -- vim.cmd("silent! doautocmd User ThemeChanged")
-  end,
-  everforest = function()
-    vim.g.everforest_background = "hard"
-    vim.g.everforest_better_performance = 1
-    vim.g.everforest_disable_italic_comment = 1
-    vim.g.everforest_enable_italic = 1
-    vim.g.everforest_ui_contrast = "high"
-    vim.g.everforest_diagnostic_text_highlight = 1
-    vim.g.everforest_diagnostic_line_highlight = 1
-    vim.g.everforest_diagnostic_virtual_text = "colored"
-    vim.g.everforest_current_word = "underline"
-    vim.g.everforest_show_eob = 1
-    -- Enhanced contrast and color settings
-    vim.g.everforest_enable_italic = 1
-    vim.g.everforest_transparent_background = 0
-    vim.g.everforest_dim_inactive_windows = 0  -- Don't dim inactive windows
-    vim.g.everforest_better_performance = 1  -- Better performance
-    vim.g.everforest_ui_contrast = 'high'
-    vim.cmd("colorscheme everforest")
-  end,
-  decay = function()
-    require("decay").setup({
-      style = "decay",
-      italics = {
-        code = true,
-        comments = true,
-        folds = true,
-      },
-      nvim_tree = {
-        contrast = true,
-      },
-      cmp = {
-        block_kind = true,
-      },
-      lsp = {
-        virtual_text = 'undercurl',
-        underlines = {
-          errors = { 'undercurl' },
-          hints = { 'undercurl' },
-          warnings = { 'undercurl' },
-          information = { 'undercurl' },
-        },
-      },
-      palette = {
-        background = "#0f1112",
-        comment = "#6c7086",
-        black = "#1a1c23",
-        red = "#f87070",
-        green = "#79dcaa",
-        yellow = "#ffe59e",
-        blue = "#7ab0df",
-        magenta = "#c397d8",
-        cyan = "#70c0ba",
-        white = "#c5c5c5",
-      }
-    })
-    vim.cmd("colorscheme decay")
     
-    -- Additional highlight overrides
+    local ok, gruvbox = pcall(require, "gruvbox")
+    if ok then
+      gruvbox.setup({
+        overrides = {
+          Normal = { bg = "#1d2021" },
+          Function = { fg = "#fabd2f", bold = true },
+          String = { fg = "#b8bb26", italic = true },
+        }
+      })
+    end
+    vim.cmd.colorscheme("gruvbox")
+  end,
+  
+  ["solarized-osaka"] = function()
+    local ok, solarized = pcall(require, "solarized-osaka")
+    if ok then
+      solarized.setup({
+        style = "storm",
+        transparent = false,
+        colors = {
+          base00 = "#1c2526",
+          yellow = "#ffcc00",
+        }
+      })
+    end
+    vim.cmd.colorscheme("solarized-osaka")
+  end,
+  
+  everforest = function()
+    -- Set globals efficiently
+    local everforest_opts = {
+      everforest_background = "hard",
+      everforest_better_performance = 1,
+      everforest_disable_italic_comment = 1,
+      everforest_enable_italic = 1,
+      everforest_ui_contrast = "high",
+      everforest_diagnostic_text_highlight = 1,
+      everforest_diagnostic_line_highlight = 1,
+      everforest_diagnostic_virtual_text = "colored",
+      everforest_current_word = "underline",
+      everforest_show_eob = 1,
+      everforest_transparent_background = 0,
+      everforest_dim_inactive_windows = 0,
+    }
+    
+    for key, value in pairs(everforest_opts) do
+      vim.g[key] = value
+    end
+    
+    vim.cmd.colorscheme("everforest")
+  end,
+  
+  decay = function()
+    local ok, decay = pcall(require, "decay")
+    if ok then
+      decay.setup({
+        style = "decay",
+        italics = {
+          code = true,
+          comments = true,
+          folds = true,
+        },
+        nvim_tree = { contrast = true },
+        cmp = { block_kind = true },
+        lsp = {
+          virtual_text = 'undercurl',
+          underlines = {
+            errors = { 'undercurl' },
+            hints = { 'undercurl' },
+            warnings = { 'undercurl' },
+            information = { 'undercurl' },
+          },
+        },
+        palette = {
+          background = "#0f1112",
+          comment = "#6c7086",
+          black = "#1a1c23",
+          red = "#f87070",
+          green = "#79dcaa",
+          yellow = "#ffe59e",
+          blue = "#7ab0df",
+          magenta = "#c397d8",
+          cyan = "#70c0ba",
+          white = "#c5c5c5",
+        }
+      })
+    end
+    
+    vim.cmd.colorscheme("decay")
+    
+    -- Batch highlight overrides
     vim.cmd([[
       hi! link NvimTreeFolderIcon NvimTreeFolderName
       hi! link NvimTreeIndentMarker Comment
@@ -130,163 +130,216 @@ local theme_configs = {
       hi! link NvimTreeGitDeleted DiffDelete
     ]])
   end,
-  nightfox = function()
-    require("nightfox").setup({
-      options = {
-        styles = { comments = "italic", keywords = "bold" }, -- Vibrant styling
-        transparent = false,
-      },
-      palettes = {
-        nightfox = {
-          bg1 = "#1a1d2b", -- Darker background for contrast
-          yellow = "#ffcc66", -- Bright yellow for highlights
-          green = "#00ffaa", -- Neon green for strings
-        }
-      }
-    })
-    vim.cmd("colorscheme nightfox")
-  end,
+  
   material = function()
-    vim.g.material_style = "oceanic" -- Wild, oceanic vibe
-    require("material").setup({
-      contrast = { sidebars = true, floating_windows = true },
-      styles = { comments = { italic = true }, keywords = { bold = true } },
-      custom_colors = {
-        bg = "#0c1a20", -- Deep oceanic background
-        yellow = "#ffd700", -- Bright gold for vibrancy
-      }
-    })
-    vim.cmd("colorscheme material")
+    vim.g.material_style = "oceanic"
+    local ok, material = pcall(require, "material")
+    if ok then
+      material.setup({
+        contrast = { sidebars = true, floating_windows = true },
+        styles = { comments = { italic = true }, keywords = { bold = true } },
+        custom_colors = {
+          bg = "#0c1a20",
+          yellow = "#ffd700",
+        }
+      })
+    end
+    vim.cmd.colorscheme("material")
   end
 }
 
--- Function to safely load a theme
+-- Optimized theme index lookup
+local theme_index_map = {}
+for i, name in ipairs(M.themes) do
+  theme_index_map[name] = i
+end
+
+-- Get theme index by name (O(1) lookup)
+local function get_theme_index(theme_name)
+  return theme_index_map[theme_name] or 1
+end
+
+-- Safe theme loading with better error handling
 local function load_theme_safely(theme_name)
-  local ok, err = pcall(function()
-    local config = theme_configs[theme_name]
-    if config then
-      config()
-    else
-      vim.cmd("colorscheme " .. theme_name)
-    end
-  end)
+  if state.theme_cache[theme_name] then
+    return theme_name -- Already loaded successfully
+  end
+  
+  local config = theme_configs[theme_name]
+  if not config then
+    vim.notify("Unknown theme: " .. theme_name, vim.log.levels.WARN)
+    return load_theme_safely("everforest")
+  end
+  
+  local ok, err = pcall(config)
   if not ok then
     vim.notify("Failed to load theme " .. theme_name .. ": " .. tostring(err), vim.log.levels.ERROR)
-    theme_configs.everforest()
-    return "everforest"
+    if theme_name ~= "everforest" then
+      return load_theme_safely("everforest")
+    end
+    return nil
   end
+  
+  state.theme_cache[theme_name] = true
   return theme_name
 end
 
--- Initialize the default theme
-function M.setup()
-  if _M.initialized then return end
-  _M.initialized = true
-
-  local theme = M.themes[M.current_theme] or "everforest"
-  theme = load_theme_safely(theme)
-
-  vim.g.colors_name = theme
-  _M.current_theme_name = theme
-  _M.current_theme_index = M.current_theme
-
-  vim.api.nvim_exec_autocmds("User", { pattern = "ThemeChanged" })
-
-  vim.api.nvim_create_autocmd("User", {
-    pattern = "ThemeChanged",
-    callback = function()
-      if _M.current_theme_name then
-        theme_persistence.save_theme(_M.current_theme_name)
-      end
-    end,
-    group = vim.api.nvim_create_augroup("ThemePersistence", { clear = true })
-  })
-end
-
--- Define nvim-tree diagnostic signs
-if not _M.signs_defined then
+-- Define diagnostic signs once
+local function define_signs()
+  if state.signs_defined then return end
+  
   local signs = {
-    { name = "NvimTreeDiagnosticErrorIcon", text = "" },
-    { name = "NvimTreeDiagnosticWarnIcon", text = "" },
-    { name = "NvimTreeDiagnosticInfoIcon", text = "" },
-    { name = "NvimTreeDiagnosticHintIcon", text = "" },
+    { name = "NvimTreeDiagnosticErrorIcon", text = "" },
+    { name = "NvimTreeDiagnosticWarnIcon", text = "" }, 
+    { name = "NvimTreeDiagnosticInfoIcon", text = "" },
+    { name = "NvimTreeDiagnosticHintIcon", text = "" },
   }
+  
   for _, sign in ipairs(signs) do
     vim.fn.sign_define(sign.name, { text = sign.text, texthl = sign.name })
   end
-  _M.signs_defined = true
+  
+  state.signs_defined = true
 end
 
--- Show theme notification
+-- Optimized notification system
 local function show_theme_notification(theme_name)
   local theme_titles = {
     gruvbox = "Gruvbox",
     ["solarized-osaka"] = "Solarized Osaka",
-    everforest = "Everforest",
+    everforest = "Everforest", 
     decay = "Decay",
-    nightfox = "Nightfox",
     material = "Material"
   }
+  
   local title = theme_titles[theme_name] or theme_name:gsub("^%l", string.upper)
+  
+  -- Use vim.schedule to avoid blocking
   vim.schedule(function()
     vim.notify(
       string.format("Theme: %s", title),
       vim.log.levels.INFO,
-      { title = "Theme Changed", timeout = 2000, icon = "🎨" }
+      { title = "Theme Switched", timeout = 1500, icon = "🎨" }
     )
   end)
 end
 
--- Set a specific theme by index
-function M.set_theme(index)
-  if _M.current_theme_index == index and theme_cache[index] then
+-- Initialize theme system
+function M.setup()
+  if state.initialized then return end
+  
+  -- Set faster redraw times
+  vim.opt.updatetime = 250
+  vim.opt.timeoutlen = 300
+  
+  -- Load saved theme or use default
+  local saved_theme = vim.g.saved_theme or "everforest"
+  local theme_index = get_theme_index(saved_theme)
+  
+  -- Load the theme
+  local loaded_theme = load_theme_safely(M.themes[theme_index])
+  if not loaded_theme then
+    vim.notify("Critical: Could not load any theme!", vim.log.levels.ERROR)
     return
   end
+  
+  -- Update state
+  state.current_theme_name = loaded_theme
+  state.current_theme_index = get_theme_index(loaded_theme)
+  M.current_theme = state.current_theme_index
+  vim.g.colors_name = loaded_theme
+  
+  -- Define signs
+  define_signs()
+  
+  -- Setup autocmd for persistence (only once)
+  local group = vim.api.nvim_create_augroup("ThemePersistence", { clear = true })
+  vim.api.nvim_create_autocmd("User", {
+    pattern = "ThemeChanged",
+    callback = function()
+      if state.current_theme_name then
+        theme_persistence.save_theme(state.current_theme_name)
+      end
+    end,
+    group = group
+  })
+  
+  state.initialized = true
+  
+  -- Trigger initial event
+  vim.schedule(function()
+    vim.api.nvim_exec_autocmds("User", { pattern = "ThemeChanged" })
+  end)
+end
 
-  M.current_theme = index
-  local theme = M.themes[M.current_theme]
-
-  if not theme then
+-- Set specific theme by index
+function M.set_theme(index)
+  if not state.initialized then
+    vim.notify("Theme system not initialized", vim.log.levels.ERROR)
+    return
+  end
+  
+  if index < 1 or index > #M.themes then
     vim.notify("Invalid theme index: " .. tostring(index), vim.log.levels.ERROR)
     return
   end
-
-  if not theme_cache[theme] then
-    theme_cache[theme] = true
+  
+  -- Skip if already active
+  if state.current_theme_index == index then
+    return
   end
-
-  local loaded_theme = load_theme_safely(theme)
-  _M.current_theme_index = index
-  _M.current_theme_name = loaded_theme
+  
+  local theme_name = M.themes[index]
+  local loaded_theme = load_theme_safely(theme_name)
+  
+  if not loaded_theme then
+    vim.notify("Failed to switch to theme: " .. theme_name, vim.log.levels.ERROR)
+    return
+  end
+  
+  -- Update state
+  state.current_theme_name = loaded_theme
+  state.current_theme_index = index
   M.current_theme = index
   vim.g.colors_name = loaded_theme
-
-  theme_persistence.save_theme(loaded_theme)
-  vim.cmd("silent! doautocmd User ThemeChanged")
-  show_theme_notification(loaded_theme)
+  
+  -- Trigger events
+  vim.schedule(function()
+    vim.api.nvim_exec_autocmds("User", { pattern = "ThemeChanged" })
+    show_theme_notification(loaded_theme)
+  end)
 end
 
--- Cycle to the next theme
+-- Cycle to next theme
 function M.next_theme()
-  local next_theme = (M.current_theme % #M.themes) + 1
-  M.set_theme(next_theme)
+  local next_index = state.current_theme_index + 1
+  if next_index > #M.themes then
+    next_index = 1  -- Wrap around to first theme
+  end
+  M.set_theme(next_index)
 end
 
--- Cycle to the previous theme
+-- Cycle to previous theme  
 function M.previous_theme()
-  local prev_theme = M.current_theme - 1
-  if prev_theme < 1 then
-    prev_theme = #M.themes
+  local prev_index = state.current_theme_index - 1
+  if prev_index < 1 then
+    prev_index = #M.themes  -- Wrap around to last theme
   end
-  M.set_theme(prev_theme)
+  M.set_theme(prev_index)
 end
 
 -- Get current theme info
 function M.get_current_theme()
   return {
-    name = M.themes[M.current_theme] or "unknown",
-    index = M.current_theme
+    name = state.current_theme_name or "unknown",
+    index = state.current_theme_index or 1
   }
+end
+
+-- Set theme by name (convenience function)
+function M.set_theme_by_name(theme_name)
+  local index = get_theme_index(theme_name)
+  M.set_theme(index)
 end
 
 return M

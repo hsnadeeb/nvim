@@ -22,6 +22,31 @@ function M.find_file()
   })
 end
 
+-- Function to toggle dotfiles visibility in nvim-tree
+function M.toggle_dotfiles()
+  local view = require('nvim-tree.view')
+  local lib = require('nvim-tree.lib')
+  
+  -- Close the tree if it's open
+  if view.is_visible() then
+    view.close()
+  end
+  
+  -- Toggle dotfiles
+  local config = require("nvim-tree.config").get().filters
+  config.dotfiles = not config.dotfiles
+  
+  -- Set the new config
+  require("nvim-tree").setup({
+    filters = config
+  })
+  
+  -- Reopen the tree
+  vim.schedule(function()
+    lib.open()
+  end)
+end
+
 function M.setup()
   local status_ok, nvim_tree = pcall(require, "nvim-tree")
   if not status_ok then
@@ -156,8 +181,8 @@ function M.setup()
     
     -- Filters
     filters = {
-      dotfiles = false,
-      custom = { 'node_modules', '\\.cache', '^\\..*', '^_build$', '^deps$' },
+      dotfiles = false,  -- we keep this false to show dotfiles by default
+      custom = { 'node_modules', '\\.cache', '^_build$', '^deps$' },
       exclude = {},
     },
     
@@ -284,6 +309,7 @@ function M.setup()
   -- Keymaps for NvimTree
   map('n', '<leader>n', M.toggle, { desc = 'Toggle NvimTree' })
   map('n', '<leader>e', ':NvimTreeFocus<CR>', { desc = 'Focus NvimTree' })
+  map('n', '<leader>h', M.toggle_dotfiles, { desc = 'Toggle dotfiles in NvimTree' })
   
   -- Auto-commands for better integration
   local nvim_tree_group = vim.api.nvim_create_augroup('NvimTreeIntegration', { clear = true })
