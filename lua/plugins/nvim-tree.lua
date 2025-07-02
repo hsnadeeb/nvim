@@ -22,29 +22,60 @@ function M.find_file()
   })
 end
 
--- Function to toggle dotfiles visibility in nvim-tree
-function M.toggle_dotfiles()
-  local view = require('nvim-tree.view')
-  local lib = require('nvim-tree.lib')
+-- Function to toggle focus between nvim-tree and editor
+function M.toggle_focus()
+  local api = require('nvim-tree.api')
   
-  -- Close the tree if it's open
-  if view.is_visible() then
-    view.close()
+  -- If nvim-tree is not open, open it and focus
+  if not require('nvim-tree.view').is_visible() then
+    api.tree.open()
+    api.tree.focus()
+    return
   end
   
-  -- Toggle dotfiles
-  local config = require("nvim-tree.config").get().filters
-  config.dotfiles = not config.dotfiles
+  -- If nvim-tree is open, check if it's focused
+  local current_win = vim.api.nvim_get_current_win()
+  local tree_winid = require('nvim-tree.view').get_winnr()
   
-  -- Set the new config
-  require("nvim-tree").setup({
-    filters = config
+  if current_win == tree_winid then
+    -- Currently in nvim-tree, move to the last used editor window
+    vim.cmd('wincmd p')
+  else
+    -- Currently in editor, focus nvim-tree
+    api.tree.focus()
+  end
+end
+
+-- Function to toggle dotfiles visibility in nvim-tree
+function M.toggle_dotfiles()
+  local api = require('nvim-tree.api')
+  
+  -- Get current configuration
+  local config = require('nvim-tree').config
+  
+  -- Toggle dotfiles
+  local new_dotfiles = not (config.filters.dotfiles or false)
+  
+  -- Update the configuration
+  require('nvim-tree').setup({
+    filters = {
+      dotfiles = new_dotfiles,
+      custom = config.filters.custom or {},
+      exclude = config.filters.exclude or {}
+    }
   })
   
-  -- Reopen the tree
-  vim.schedule(function()
-    lib.open()
-  end)
+  -- Show notification
+  local status = new_dotfiles and 'hidden' or 'visible'
+  vim.notify('Dotfiles are now ' .. status, vim.log.levels.INFO, { title = 'NvimTree' })
+  
+  -- Refresh the current node if tree is visible
+  if api.tree.is_visible() then
+    local node = api.tree.get_node_under_cursor()
+    if node then
+      api.tree.change_root_to_node(node)
+    end
+  end
 end
 
 function M.setup()
@@ -126,27 +157,27 @@ function M.setup()
           modified = true,
         },
         glyphs = {
-          default = '',
-          symlink = '',
+          default = '',
+          symlink = '',
           bookmark = '󰆤',
           modified = '●',
           folder = {
-            arrow_closed = '',
-            arrow_open = '',
-            default = '',
-            open = '',
-            empty = '',
-            empty_open = '',
-            symlink = '',
-            symlink_open = '',
+            arrow_closed = '',
+            arrow_open = '',
+            default = '',
+            open = '',
+            empty = '',
+            empty_open = '',
+            symlink = '',
+            symlink_open = '',
           },
           git = {
             unstaged = '✗',
             staged = '✓',
-            unmerged = '',
+            unmerged = '',
             renamed = '➜',
             untracked = '★',
-            deleted = '',
+            deleted = '',
             ignored = '◌',
           },
         },
@@ -200,10 +231,10 @@ function M.setup()
       show_on_dirs = true,
       debounce_delay = 50,
       icons = {
-        hint = '',
-        info = '',
-        warning = '',
-        error = '',
+        hint = '',
+        info = '',
+        warning = '',
+        error = '',
       },
     },
     
@@ -308,7 +339,7 @@ function M.setup()
   
   -- Keymaps for NvimTree
   map('n', '<leader>n', M.toggle, { desc = 'Toggle NvimTree' })
-  map('n', '<leader>e', ':NvimTreeFocus<CR>', { desc = 'Focus NvimTree' })
+  map('n', '<leader>e', M.toggle_focus, { desc = 'Toggle focus between NvimTree and editor' })
   map('n', '<leader>h', M.toggle_dotfiles, { desc = 'Toggle dotfiles in NvimTree' })
   
   -- Auto-commands for better integration

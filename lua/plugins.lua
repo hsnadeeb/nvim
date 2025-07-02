@@ -498,7 +498,9 @@ require("lazy").setup({
 
       -- Register theme commands
       local themes_module = require("plugins.themes")
-      vim.api.nvim_create_user_command('NextTheme', themes_module.next_theme, {})
+      vim.api.nvim_create_user_command('NextTheme', themes_module.next, {})
+      vim.api.nvim_create_user_command('PreviousTheme', themes_module.previous, {})
+      vim.api.nvim_create_user_command('CycleTheme', themes_module.cycle, {})
     end,
   },
 

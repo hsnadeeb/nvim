@@ -145,8 +145,9 @@ function M.setup()
     -- Theme toggling
     ["<leader>th"] = {
       name = "+theme",
-      n = { function() require("plugins.themes").next_theme() end, "Next Theme" },
-      p = { function() require("plugins.themes").previous_theme() end, "Previous Theme" },
+      n = { function() require("plugins.themes").next() end, "Next Theme" },
+      p = { function() require("plugins.themes").previous() end, "Previous Theme" },
+      c = { function() require("plugins.themes").cycle() end, "Cycle Theme" },
     },
 
     -- Write/quit
@@ -163,36 +164,20 @@ function M.setup()
     ["<leader>Q"] = { function()
       if vim.fn.bufname('') ~= 'NvimTree' then vim.cmd('q!') end
     end, "Force Quit" },
-    ["<leader>h"] = { function() vim.cmd('nohlsearch') end, "Clear Highlights" },
     ["<leader>n"] = { function()
-      if vim.fn.bufname('') ~= 'NvimTree' then
-        vim.cmd('NvimTreeToggle')
-      end
+      require('nvim-tree.api').tree.toggle()
     end, "Toggle NvimTree" },
     ["<leader>e"] = { function()
-      -- Check if NvimTree is visible in any window
-      local nvim_tree_win = nil
-      for _, win in ipairs(vim.api.nvim_list_wins()) do
-        if vim.api.nvim_win_is_valid(win) then  -- Check if window is valid
-          local buf = vim.api.nvim_win_get_buf(win)
-          if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].filetype == 'NvimTree' then  -- Check if buffer is valid
-            nvim_tree_win = win
-            break
-          end
-        end
-      end
-
+      local api = require('nvim-tree.api')
       if vim.bo.filetype == 'NvimTree' then
-        -- If in NvimTree, go to the previous window (editor)
         vim.cmd('wincmd p')
-      elseif nvim_tree_win then
-        -- If NvimTree exists, focus it
-        vim.api.nvim_set_current_win(nvim_tree_win)
       else
-        -- If NvimTree doesn't exist, open it
-        vim.cmd('NvimTreeToggle')
+        api.tree.focus()
       end
     end, "Toggle focus between NvimTree and editor" },
+    ["<leader>h"] = { function()
+      require('plugins.nvim-tree').toggle_dotfiles()
+    end, "Toggle dotfiles in NvimTree" },
 
     -- Diagnostics navigation
     ["[d"] = { vim.diagnostic.goto_prev, "Previous Diagnostic" },

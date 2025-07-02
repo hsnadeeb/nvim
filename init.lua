@@ -53,31 +53,19 @@ require("lsp") -- Language server protocols and completions
 require("keybindings") -- Global and plugin-specific key mappings
 
 -- Initialize theme system after all plugins are loaded
--- This ensures all theme plugins are available before setup
-vim.api.nvim_create_autocmd("User", {
-  pattern = "VeryLazy", -- Triggered after all lazy-loaded plugins
-  callback = function()
-    -- Try different possible locations for the themes module
-    local themes
-    local theme_paths = {
-      "plugins.themes",  -- If themes.lua is in plugins/ directory
-      "themes",          -- If themes.lua is in lua/ root
-      "config.themes"    -- Alternative location
-    }
-    
-    for _, path in ipairs(theme_paths) do
-      local ok, module = pcall(require, path)
-      if ok then
-        themes = module
-        break
-      end
-    end
-    
-    if themes and themes.setup then
-      themes.setup()
-    else
-      vim.notify("Could not load themes module", vim.log.levels.WARN)
-    end
-  end,
-  once = true -- Only run once
+local function setup_themes()
+  local ok, themes = pcall(require, 'plugins.themes')
+  if ok and themes and themes.setup then
+    return themes.setup()
+  end
+  vim.notify('Could not load themes module', vim.log.levels.ERROR)
+  vim.cmd.colorscheme('default')
+end
+
+-- Set up theme initialization after all plugins are loaded
+vim.api.nvim_create_autocmd('User', {
+  pattern = 'VeryLazy',
+  callback = setup_themes,
+  once = true,
+  desc = 'Initialize theme system'
 })

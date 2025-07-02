@@ -1,62 +1,49 @@
 local M = {}
 
--- Cache file path
-local cache_file = vim.fn.stdpath('config') .. '/.theme_cache'
+-- Constants
+local CACHE_FILE = vim.fn.stdpath('config') .. '/.theme_cache'
+local DEFAULT_THEME = 'everforest'
 
--- In-memory cache to avoid repeated file I/O
+-- Module state
 local cached_theme = nil
-local cache_dirty = false
+local save_timer = nil
 
--- Async file operations to prevent blocking
-local function write_file_async(filepath, content, callback)
-  vim.schedule(function()
-    local file = io.open(filepath, 'w')
-    local success = false
-    
-    if file then
-      local bytes_written = file:write(content)
-      file:close()
-      success = bytes_written ~= nil
-    end
-    
-    if callback then
-      callback(success)
-    end
-  end)
+-- Write theme to cache file
+local function write_theme_to_file(theme_name)
+  local file = io.open(CACHE_FILE, 'w')
+  if not file then return false end
+  
+  local success = file:write(theme_name) and true or false
+  file:close()
+  return success
 end
 
--- Save theme with debouncing to prevent excessive writes
-local save_timer = nil
+-- Save theme with debouncing
 function M.save_theme(theme_name)
-  if not theme_name or theme_name == '' then
-    return false
-  end
+  if not theme_name or theme_name == '' then return false end
   
-  -- Update memory cache immediately
+  -- Update cache
   cached_theme = theme_name
-  cache_dirty = true
   
-  -- Debounce file writes
+  -- Cancel any pending writes
   if save_timer then
     save_timer:stop()
+    save_timer = nil
   end
   
+  -- Schedule write with debounce
   save_timer = vim.defer_fn(function()
-    if cache_dirty then
-      write_file_async(cache_file, theme_name, function(success)
-        if success then
-          cache_dirty = false
-        else
-          vim.notify("Failed to save theme preference", vim.log.levels.WARN)
-        end
-      end)
+    local ok = write_theme_to_file(theme_name)
+    if not ok then
+      vim.notify('Failed to save theme preference', vim.log.levels.WARN)
     end
-  end, 500) -- 500ms debounce
+    save_timer = nil
+  end, 300) -- 300ms debounce
   
   return true
 end
 
--- Load theme with caching
+-- Load theme from cache or file
 function M.load_theme()
   -- Return cached theme if available
   if cached_theme then
@@ -64,9 +51,9 @@ function M.load_theme()
   end
   
   -- Try to read from file
-  local file = io.open(cache_file, 'r')
+  local file = io.open(CACHE_FILE, 'r')
   if file then
-    local theme = file:read('*line')
+    local theme = file:read('*l')
     file:close()
     
     if theme and theme ~= '' then
@@ -75,28 +62,27 @@ function M.load_theme()
     end
   end
   
-  -- Default theme
-  local default_theme = 'everforest'
-  cached_theme = default_theme
-  return default_theme
+  -- Return default theme
+  cached_theme = DEFAULT_THEME
+  return DEFAULT_THEME
 end
 
--- Clear cache (useful for testing)
+-- Clear cache
 function M.clear_cache()
   cached_theme = nil
-  cache_dirty = false
   if save_timer then
     save_timer:stop()
     save_timer = nil
   end
+  return true
 end
 
--- Get cache status (useful for debugging)
-function M.get_cache_status()
+-- Get cache status
+function M.get_status()
   return {
-    cached_theme = cached_theme,
-    cache_dirty = cache_dirty,
-    cache_file = cache_file
+    current_theme = M.load_theme(),
+    cache_file = CACHE_FILE,
+    has_pending_write = save_timer ~= nil
   }
 end
 
