@@ -231,10 +231,10 @@ function M.setup()
       show_on_dirs = true,
       debounce_delay = 50,
       icons = {
-        hint = '',
-        info = '',
-        warning = '',
-        error = '',
+        hint = '',
+        info = '',
+        warning = '',
+        error = '',
       },
     },
     

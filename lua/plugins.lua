@@ -818,17 +818,22 @@ require("lazy").setup({
     end,
   },
 
-  -- Buffer tabs
+  -- Buffer tabs with barbar.nvim
   {
     'romgrk/barbar.nvim',
     dependencies = {
       'lewis6991/gitsigns.nvim',
       'nvim-tree/nvim-web-devicons',
     },
+    init = function()
+      -- Disable automatic setup
+      vim.g.barbar_auto_setup = false
+    end,
     config = function()
+      -- Simple configuration without auto_hide function that was causing issues
       require('barbar').setup({
         animation = true,
-        auto_hide = false,
+        auto_hide = 1,  -- Hide when only one buffer is open
         tabpages = true,
         clickable = true,
         icons = {
