@@ -1,3 +1,4 @@
+-- local vim = require "vim"
 local M = {}
 
 -- Constants
@@ -22,35 +23,30 @@ end
 function M.save_theme(theme_name)
   if not theme_name or theme_name == '' then return false end
   
-  -- Update cache
   cached_theme = theme_name
   
-  -- Cancel any pending writes
   if save_timer then
     save_timer:stop()
     save_timer = nil
   end
   
-  -- Schedule write with debounce
   save_timer = vim.defer_fn(function()
     local ok = write_theme_to_file(theme_name)
     if not ok then
       vim.notify('Failed to save theme preference', vim.log.levels.WARN)
     end
     save_timer = nil
-  end, 300) -- 300ms debounce
+  end, 300)
   
   return true
 end
 
 -- Load theme from cache or file
 function M.load_theme()
-  -- Return cached theme if available
   if cached_theme then
     return cached_theme
   end
   
-  -- Try to read from file
   local file = io.open(CACHE_FILE, 'r')
   if file then
     local theme = file:read('*l')
@@ -62,7 +58,6 @@ function M.load_theme()
     end
   end
   
-  -- Return default theme
   cached_theme = DEFAULT_THEME
   return DEFAULT_THEME
 end

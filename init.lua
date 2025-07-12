@@ -1,30 +1,20 @@
---------------------------------------------------
 -- Neovim Configuration Entry Point
---------------------------------------------------
--- This file bootstraps the entire configuration and loads all modules
--- in the correct order. The config is organized in a modular way with
--- each aspect of the editor handled by a dedicated file.
-
--- Set leader key before anything else to avoid plugin initialization issues
--- The space key is used as the leader key for easy access to commands
+-- Bootstraps lazy.nvim and loads all configuration modules in the correct order.
+-- -- local vim = require "vim"-- Set leader keys before plugins to avoid initialization issues
 vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
+vim.g.maplocalleader = '\\'
 
 -- Load theme persistence early and cache the saved theme
 local theme_persistence = require('theme_persistence')
-vim.g.saved_theme = theme_persistence.load_theme()
+vim.g.saved_theme = theme_persistence.load_theme() or 'everforest'
 
---------------------------------------------------
--- Package Manager: lazy.nvim
---------------------------------------------------
--- Bootstrap lazy.nvim if it's not already installed
--- This auto-installs the plugin manager on first run
+-- Bootstrap lazy.nvim if not installed
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-  vim.notify("Installing lazy.nvim - the package manager...", vim.log.levels.INFO)
+  vim.notify("Installing lazy.nvim...", vim.log.levels.INFO)
   vim.fn.system({
     "git",
-    "clone", 
+    "clone",
     "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
     "--branch=stable",
@@ -34,38 +24,22 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
---------------------------------------------------
--- Load Configuration Modules
---------------------------------------------------
--- Load utility functions first
-require("utils") -- Common utility functions and helpers
-
--- Load basic settings before plugins
+-- Load configuration modules
 require("settings") -- Editor behavior, UI settings, and options
+require("lazy").setup("plugins") -- Plugin management via lazy.nvim
 
--- Load plugins (themes will be loaded here via lazy loading)
-require("plugins") -- Plugin management via lazy.nvim
-
--- Load development tools
-require("lsp") -- Language server protocols and completions
-
--- Load keybindings last to override any plugin defaults
-require("keybindings") -- Global and plugin-specific key mappings
-
--- Initialize theme system after all plugins are loaded
-local function setup_themes()
-  local ok, themes = pcall(require, 'plugins.themes')
-  if ok and themes and themes.setup then
-    return themes.setup()
-  end
-  vim.notify('Could not load themes module', vim.log.levels.ERROR)
-  vim.cmd.colorscheme('default')
-end
-
--- Set up theme initialization after all plugins are loaded
+-- Initialize theme system after plugins are loaded
 vim.api.nvim_create_autocmd('User', {
   pattern = 'VeryLazy',
-  callback = setup_themes,
+  callback = function()
+    local ok, theme_manager = pcall(require, 'theme_manager')
+    if ok and theme_manager and type(theme_manager.setup) == 'function' then
+      theme_manager.setup()
+    else
+      vim.notify('Could not load theme manager, applying saved theme: ' .. vim.g.saved_theme, vim.log.levels.WARN)
+      pcall(vim.cmd.colorscheme, vim.g.saved_theme)
+    end
+  end,
   once = true,
   desc = 'Initialize theme system'
 })

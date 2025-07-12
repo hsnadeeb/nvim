@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json",
+  "diagnostics.globals": ["vim"],
+  "workspace.library": [
+    "/opt/homebrew/Cellar/neovim/0.9.5/share/nvim/runtime/lua",
+    "/opt/homebrew/Cellar/neovim/0.9.5/share/nvim/runtime/lua/vim",
+    "/opt/homebrew/Cellar/neovim/0.9.5/share/nvim/runtime/lua/vim/lsp",
+    "/opt/homebrew/Cellar/neovim/0.9.5/lib/nvim"
+  ],
+  "workspace.checkThirdParty": false,
+  "type.castNumberToInteger": true,
+  "runtime.version": "LuaJIT",
+  "diagnostics.disable": [
+    "lowercase-global",
+    "undefined-global"
+  ],
+  "diagnostics.neededFileStatus": {
+    "lowercase-global": "None",
+    "undefined-global": "None"
+  },
+  "type.weakNilCheck": true,
+  "type.weakUnionCheck": true,
+  "type.weakEqual": true,
+  "Lua.runtime.special": {
+    "vim": "global"
+  },
+  "Lua.workspace.preloadFileSize": 1000
+}
