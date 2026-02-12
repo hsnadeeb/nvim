@@ -193,6 +193,9 @@ function M.set(name)
 	return apply_theme(name)
 end
 
+-- Alias for next (used by CycleTheme command)
+M.cycle = M.next
+
 function M.current()
 	return state.current or persistence.load_theme()
 end
