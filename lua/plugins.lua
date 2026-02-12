@@ -543,9 +543,9 @@ require("lazy").setup({
 	-- Theme Management - Load all themes but don't configure them yet
 	{ "sainnhe/everforest", lazy = true },
 	{ "ellisonleao/gruvbox.nvim", lazy = true },
-	{ "craftzdog/solarized-osaka.nvim", lazy = true },
-	{ "decaycs/decay.nvim", lazy = true },
 	{ "marko-cerovac/material.nvim", lazy = true },
+	{ "EdenEast/nightfox.nvim", lazy = true },
+	{ "navarasu/onedark.nvim", lazy = true },
 
 	-- Theme manager configuration
 	-- This will be initialized via the VeryLazy event
