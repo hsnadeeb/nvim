@@ -144,6 +144,9 @@ vim.opt.termguicolors = true
 vim.opt.hlsearch = true
 vim.keymap.set('n', '<Esc>', ':nohlsearch<CR>', { silent = true, desc = 'Clear search highlights' })
 
+-- Copy entire buffer to clipboard
+vim.keymap.set('n', '<leader>yy', ':%y+<CR>', { silent = true, desc = 'Copy entire buffer' })
+
 -- Better window title
 vim.opt.title = true
 vim.opt.titlestring = '%t - NVIM (%{expand("%:p:h")})'
