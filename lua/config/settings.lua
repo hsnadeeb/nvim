@@ -19,8 +19,6 @@ end
 -- Performance
 opt.updatetime = 250
 opt.timeoutlen = 300
-opt.lazyredraw = true
-opt.ttyfast = true
 opt.synmaxcol = 240
 opt.swapfile = false
 

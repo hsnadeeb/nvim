@@ -25,7 +25,7 @@ vim.api.nvim_create_autocmd("User", {
       if client.name == "ts_ls" or client.name == "tsserver" then
         client.server_capabilities.documentFormattingProvider = false
       end
-      vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
+      vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
       local bufopts = { noremap = true, silent = true, buffer = bufnr }
       vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
       vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)

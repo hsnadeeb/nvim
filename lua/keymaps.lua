@@ -166,10 +166,10 @@ if wk then
 		},
 		["<leader>x"] = {
 			name = "+diagnostics",
-			x = { "<cmd>TroubleToggle<CR>", "Toggle" },
-			w = { "<cmd>TroubleToggle workspace_diagnostics<CR>", "Workspace" },
-			d = { "<cmd>TroubleToggle document_diagnostics<CR>", "Document" },
-			q = { "<cmd>TroubleToggle quickfix<CR>", "Quickfix" },
+			x = { "<cmd>Trouble diagnostics toggle<CR>", "Toggle" },
+			w = { "<cmd>Trouble diagnostics toggle<CR>", "Workspace" },
+			d = { "<cmd>Trouble diagnostics toggle filter.buf=0<CR>", "Document" },
+			q = { "<cmd>Trouble qflist toggle<CR>", "Quickfix" },
 		},
 		["<leader>t"] = {
 			name = "+terminal",
