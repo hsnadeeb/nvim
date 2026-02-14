@@ -1,5 +1,10 @@
 local M = {}
 
+local state = {
+	current = nil,
+	initialized = false,
+}
+
 -- Ensure proper color rendering
 vim.opt.termguicolors = true
 vim.opt.background = "dark"
@@ -17,7 +22,6 @@ local themes = {
 			vim.cmd.colorscheme("everforest")
 		end,
 	},
-
 	{
 		name = "gruvbox",
 		setup = function()
@@ -28,7 +32,6 @@ local themes = {
 			vim.cmd.colorscheme("gruvbox")
 		end,
 	},
-
 	{
 		name = "nightfox",
 		setup = function()
@@ -48,7 +51,6 @@ local themes = {
 			vim.cmd.colorscheme("carbonfox")
 		end,
 	},
-
 	{
 		name = "onedark",
 		setup = function()
@@ -71,36 +73,6 @@ local themes = {
 			onedark.load()
 		end,
 	},
-	{
-		name = "material",
-		setup = function()
-			vim.g.material_style = "oceanic"
-
-			local ok, material = pcall(require, "material")
-			if not ok then
-				return
-			end
-
-			material.setup({
-				contrast = {
-					sidebars = true,
-					floating_windows = true,
-				},
-				styles = {
-					comments = { italic = true },
-					keywords = { bold = true },
-				},
-			})
-
-			vim.cmd.colorscheme("material")
-		end,
-	},
-}
-
--- State
-local state = {
-	current = nil,
-	initialized = false,
 }
 
 local persistence = require("theme_persistence")
@@ -108,7 +80,6 @@ local persistence = require("theme_persistence")
 local theme_titles = {
 	gruvbox = "Gruvbox",
 	everforest = "Everforest",
-	material = "Material",
 	nightfox = "Nightfox",
 	onedark = "OneDark",
 }

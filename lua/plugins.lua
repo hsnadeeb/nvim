@@ -294,7 +294,6 @@ require("lazy").setup({
 		event = "InsertEnter",
 		dependencies = { "hrsh7th/nvim-cmp" },
 		config = function()
-			local Rule = require("nvim-autopairs.rule")
 			local cond = require("nvim-autopairs.conds")
 			local autopairs = require("nvim-autopairs")
 			local Rule = require("nvim-autopairs.rule")
@@ -543,7 +542,6 @@ require("lazy").setup({
 	-- Theme Management - Load all themes but don't configure them yet
 	{ "sainnhe/everforest", lazy = true },
 	{ "ellisonleao/gruvbox.nvim", lazy = true },
-	{ "marko-cerovac/material.nvim", lazy = true },
 	{ "EdenEast/nightfox.nvim", lazy = true },
 	{ "navarasu/onedark.nvim", lazy = true },
 
@@ -659,7 +657,7 @@ require("lazy").setup({
 					"google-java-format",
 					-- Debug adapters
 					"java-debug-adapter",
-					-- "java-test", -- Optional: Install manually with :MasonInstall java-test
+					"java-test", -- Optional: Install manually with :MasonInstall java-test
 					"delve",
 				},
 				-- Keep startup quiet but ensure tools are installed automatically on first run.
@@ -942,22 +940,22 @@ require("lazy").setup({
 	},
 
 	-- Status line
-	{
-		"nvim-lualine/lualine.nvim",
-		config = function()
-			require("lualine").setup({
-				options = { theme = "auto" },
-				sections = {
-					lualine_a = { "mode" },
-					lualine_b = { "branch", "diff" },
-					lualine_c = { "filename" },
-					lualine_x = { "encoding", "fileformat", "filetype" },
-					lualine_y = { "progress" },
-					lualine_z = { "location" },
-				},
-			})
-		end,
-	},
+	-- {
+	-- 	"nvim-lualine/lualine.nvim",
+	-- 	config = function()
+	-- 		require("lualine").setup({
+	-- 			options = { theme = "auto" },
+	-- 			sections = {
+	-- 				lualine_a = { "mode" },
+	-- 				lualine_b = { "branch", "diff" },
+	-- 				lualine_c = { "filename" },
+	-- 				lualine_x = { "encoding", "fileformat", "filetype" },
+	-- 				lualine_y = { "progress" },
+	-- 				lualine_z = { "location" },
+	-- 			},
+	-- 		})
+	-- 	end,
+	-- },
 
 	-- Terminal
 	{
