@@ -47,7 +47,7 @@ local function on_attach(client, bufnr)
 
   -- Inlay hints (Neovim 0.10+)
   if vim.lsp.inlay_hint and client.server_capabilities.inlayHintProvider then
-    vim.lsp.inlay_hint.enable(bufnr, true)
+    vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
   end
 end
 
