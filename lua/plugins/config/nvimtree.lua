@@ -71,7 +71,7 @@ return function()
 				window_picker = { enable = true, chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890" },
 			},
 		},
-		filters = { dotfiles = false, custom = { "node_modules", "\\.cache", "^_build$", "^deps$" }, exclude = {} },
+		filters = { dotfiles = false, custom = {}, exclude = {} },
 		git = { enable = true, ignore = false, show_on_dirs = true, timeout = 400 },
 		diagnostics = {
 			enable = true,

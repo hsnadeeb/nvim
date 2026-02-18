@@ -29,8 +29,8 @@ map("n", "[q", ":cprev<CR>", { desc = "Prev quickfix" })
 -- Buffer Management
 -- ============================================================================
 
-map("n", "<leader>bd", ":BufferClose<CR>", { desc = "Close buffer" })
-map("n", "<leader>bD", ":BufferClose!<CR>", { desc = "Force close buffer" })
+map("n", "<leader>ww", ":BufferClose<CR>", { desc = "Close buffer" })
+map("n", "<leader>wW", ":BufferClose!<CR>", { desc = "Force close buffer" })
 map("n", "<leader>ws", ":w<CR>", { desc = "Save file" })
 map("n", "<leader>wq", ":w | BufferClose<CR>", { desc = "Save and close" })
 
