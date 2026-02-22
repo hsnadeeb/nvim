@@ -7,11 +7,9 @@ return function()
 
   local utils = require("config.utils")
   local map = utils.map
-  local Terminal = require("toggleterm.terminal")
 
   local function lazygit()
-    local lazygit = Terminal:new({ cmd = "lazygit", hidden = true, direction = "float" })
-    lazygit:toggle()
+    require("toggleterm").exec("lazygit", nil, nil, nil, "float")
   end
 
   map("n", "<leader>tt", "<cmd>ToggleTerm<CR>", { desc = "Toggle Terminal" })
