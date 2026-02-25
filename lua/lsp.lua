@@ -10,17 +10,6 @@ vim.api.nvim_create_autocmd("User", {
     local cmp_nvim_lsp = require("cmp_nvim_lsp")
     capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
 
-    local border = {
-      { "╭", "FloatBorder" }, { "─", "FloatBorder" }, { "╮", "FloatBorder" },
-      { "│", "FloatBorder" }, { "╯", "FloatBorder" }, { "─", "FloatBorder" },
-      { "╰", "FloatBorder" }, { "│", "FloatBorder" },
-    }
-
-    local handlers = {
-      ["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = border }),
-      ["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = border }),
-    }
-
     local on_attach = function(client, bufnr)
       if client.name == "ts_ls" or client.name == "tsserver" then
         client.server_capabilities.documentFormattingProvider = false
@@ -35,8 +24,8 @@ vim.api.nvim_create_autocmd("User", {
       vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, bufopts)
       vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
       vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, bufopts)
-      vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, bufopts)
-      vim.keymap.set("n", "]d", vim.diagnostic.goto_next, bufopts)
+      vim.keymap.set("n", "[d", function() vim.diagnostic.jump({ count = -1 }) end, bufopts)
+      vim.keymap.set("n", "]d", function() vim.diagnostic.jump({ count = 1 }) end, bufopts)
     end
 
     local function setup_server(name, opts)

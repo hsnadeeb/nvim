@@ -2,10 +2,10 @@ return function()
 	local utils = require("config.utils")
 	local map = utils.map
 
-	require("nvim-tree").setup({
+	local config = {
 		sync_root_with_cwd = true,
 		respect_buf_cwd = true,
-		update_focused_file = { enable = true, update_root = true, ignore_list = { "help" } },
+		update_focused_file = { enable = true, update_root = false, ignore_list = { "help" } },
 		view = {
 			width = 35,
 			side = "left",
@@ -18,7 +18,7 @@ return function()
 			group_empty = true,
 			highlight_git = true,
 			full_name = false,
-			highlight_opened_files = "all",
+			highlight_opened_files = "none",
 			highlight_modified = "icon",
 			root_folder_label = ":~:s?$?/..?",
 			indent_width = 2,
@@ -31,7 +31,7 @@ return function()
 				webdev_colors = true,
 				git_placement = "before",
 				modified_placement = "after",
-				padding = " ",
+				padding = 1,
 				symlink_arrow = " ➛ ",
 				show = { file = true, folder = true, folder_arrow = true, git = true, modified = true },
 				glyphs = {
@@ -80,29 +80,18 @@ return function()
 			icons = { hint = "", info = "", warning = "", error = "" },
 		},
 		log = { enable = false, truncate = true },
-	})
+	}
+
+	require("nvim-tree").setup(config)
 
 	local api = require("nvim-tree.api")
 
-	-- Toggle hidden files using nvim-tree's official API
-	-- This properly toggles the filter without collapsing the tree
 	local function toggle_hidden_files()
-		-- Focus NvimTree if it's not already focused
 		if vim.bo.filetype ~= "NvimTree" then
 			api.tree.focus()
 		end
-
-		-- Use the official API to toggle hidden filter
+		---@diagnostic disable-next-line: undefined-field
 		api.tree.toggle_hidden_filter()
-
-		-- Get current state to show notification
-		-- The filter state is toggled after the API call
-		-- local core = require('nvim-tree.core')
-		-- local explorer = core.get_explorer()
-		-- local filters = explorer and explorer.filters
-		-- local is_hidden = filters and filters.dotfiles or false
-
-		-- vim.notify("Hidden files (dotfiles): " .. (is_hidden and "HIDDEN" or "SHOWN"), vim.log.levels.INFO)
 	end
 
 	map("n", "<leader>n", api.tree.toggle, { desc = "Toggle NvimTree" })
@@ -118,10 +107,6 @@ return function()
 	vim.api.nvim_create_autocmd("BufEnter", {
 		nested = true,
 		callback = function()
-			-- Only quit if:
-			-- 1. NvimTree is the only window
-			-- 2. No command-line arguments (not opening a file or directory)
-			-- 3. Buffer is actually NvimTree
 			local wins = vim.api.nvim_list_wins()
 			local bufname = vim.api.nvim_buf_get_name(0)
 			local argc = vim.fn.argc()
