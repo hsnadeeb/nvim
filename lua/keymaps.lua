@@ -39,7 +39,7 @@ map("n", "<leader>wq", ":w | BufferClose<CR>", { desc = "Save and close" })
 -- ============================================================================
 
 -- Yank entire buffer
-map("n", "<leader>yy", "ggVGy", { desc = "Yank entire buffer" })
+map("n", "<leader>y", "ggVG", { desc = "Select entire buffer" })
 
 -- ============================================================================
 -- LSP Keymaps (buffer-local)
@@ -227,9 +227,9 @@ if wk then
 				"Previous Theme",
 			},
 		},
-		["<leader>y"] = {
+		["<leader>"] = {
 			name = "+yank",
-			y = { "ggVGy", "Yank entire buffer" },
+			y = { "ggVG", "Select entire buffer" },
 		},
 		["<leader>w"] = {
 			name = "+write/quit",
