@@ -1,0 +1,2 @@
+WRN 2026-02-28T17:42:27.047 ?.82052    server_start:199: Failed to start server: operation not permitted: /var/folders/k1/p2xrxqds1hq8v1hd65xlqyp40000gn/T/nvim.shaz/5d373l/nvim.82052.0
+WRN 2026-02-28T17:42:31.527 ?.82098    server_start:199: Failed to start server: operation not permitted: /var/folders/k1/p2xrxqds1hq8v1hd65xlqyp40000gn/T/nvim.shaz/8AyTeg/nvim.82098.0

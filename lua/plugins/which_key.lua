@@ -43,12 +43,22 @@ return function()
     },
     ["<leader>g"] = {
       name = "+git",
-      c = { "<cmd>Telescope git_commits<CR>", "Commits" },
-      B = { "<cmd>Telescope git_branches<CR>", "Branches" },
-      s = { "<cmd>Telescope git_status<CR>", "Status" },
+      B = { "<cmd>DiffviewFileHistory %<CR>", "File History" },
+      s = { "<cmd>DiffviewOpen -- %<CR>", "Diff Current File" },
+      S = { "<cmd>DiffviewOpen<CR>", "Diff Workspace" },
+      D = { "<cmd>DiffviewClose<CR>", "Close Diff View" },
       j = { "<cmd>lua require('gitsigns').nav_hunk('next')<CR>", "Next Hunk" },
       k = { "<cmd>lua require('gitsigns').nav_hunk('prev')<CR>", "Prev Hunk" },
       p = { "<cmd>lua require('gitsigns').preview_hunk()<CR>", "Preview Hunk" },
+      b = { "<cmd>lua require('gitsigns').toggle_current_line_blame()<CR>", "Toggle Blame" },
+      h = {
+        name = "+hunk",
+        s = { "<cmd>lua require('gitsigns').stage_hunk()<CR>", "Stage Hunk" },
+        S = { "<cmd>lua require('gitsigns').stage_buffer()<CR>", "Stage Buffer" },
+        u = { "<cmd>lua require('gitsigns').undo_stage_hunk()<CR>", "Undo Stage Hunk" },
+        r = { "<cmd>lua require('gitsigns').reset_hunk()<CR>", "Reset Hunk" },
+        R = { "<cmd>lua require('gitsigns').reset_buffer()<CR>", "Reset Buffer" },
+      },
     },
     ["<leader>l"] = {
       name = "+lsp",
@@ -104,6 +114,7 @@ return function()
       name = "+write/quit",
       s = { "<cmd>w<CR>", "Save" },
       q = { "<cmd>wq<CR>", "Save & Quit" },
+      a = { "<cmd>BufOnly<CR>", "Close Other Buffers" },
     },
     ["<leader>d"] = {
       name = "+debug",

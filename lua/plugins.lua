@@ -66,7 +66,13 @@ require("lazy").setup({
   },
   {
     "numToStr/Comment.nvim",
-    keys = { "<leader>/" },
+    event = "VeryLazy",
+    keys = {
+      { "<leader>/", mode = "n" },
+      { "<leader>/", mode = "x" },
+      { "gc", mode = { "n", "x" } },
+      { "gcc", mode = "n" },
+    },
     config = cfg("comment"),
   },
 
@@ -167,6 +173,17 @@ require("lazy").setup({
     "lewis6991/gitsigns.nvim",
     event = { "BufReadPre", "BufNewFile" },
     config = cfg("gitsigns"),
+  },
+  {
+    "sindrets/diffview.nvim",
+    cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewFileHistory" },
+    keys = {
+      { "<leader>gs", "<cmd>DiffviewOpen -- %<CR>", desc = "Diff Current File" },
+      { "<leader>gS", "<cmd>DiffviewOpen<CR>", desc = "Diff Workspace" },
+      { "<leader>gD", "<cmd>DiffviewClose<CR>", desc = "Close Diff View" },
+      { "<leader>gB", "<cmd>DiffviewFileHistory %<CR>", desc = "File History" },
+    },
+    config = cfg("diffview"),
   },
 
   -- Project & sessions
