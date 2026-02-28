@@ -142,10 +142,5 @@ return function()
     ["<leader>e"] = { "<cmd>NvimTreeFocus<CR>", "Focus NvimTree" },
     ["<leader>m"] = { "<cmd>AerialToggle!<CR>", "Toggle Structure" },
     ["<leader>dd"] = { "<cmd>Telescope diagnostics<CR>", "Workspace Diagnostics" },
-    ["[d"] = { "<cmd>lua vim.diagnostic.jump({count=-1})<CR>", "Previous Diagnostic" },
-    ["]d"] = { "<cmd>lua vim.diagnostic.jump({count=1})<CR>", "Next Diagnostic" },
-    ["gd"] = { "<cmd>lua vim.lsp.buf.definition()<CR>", "Go to Definition" },
-    ["gD"] = { "<cmd>lua vim.lsp.buf.declaration()<CR>", "Go to Declaration" },
-    ["gi"] = { "<cmd>lua vim.lsp.buf.implementation()<CR>", "Go to Implementation" },
   })
 end

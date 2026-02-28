@@ -39,8 +39,10 @@ end
 -- Install buffer-local LSP convenience keymaps on attach.
 function M.setup_lsp_attach_keymaps()
   local utils = require("config.utils")
+  local group = vim.api.nvim_create_augroup("ConfigLspAttachKeymaps", { clear = true })
 
   vim.api.nvim_create_autocmd("LspAttach", {
+    group = group,
     callback = function(args)
       local bufnr = args.buf
       local function buf_map(lhs, rhs, desc)

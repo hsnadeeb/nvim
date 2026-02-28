@@ -121,7 +121,8 @@ Recommended on first setup to verify tool installation status.
 │   ├── config/
 │   │   ├── init.lua           # Main configuration loader
 │   │   ├── settings.lua       # Neovim settings
-│   │   └── utils.lua          # Utility functions
+│   │   ├── utils.lua          # Utility functions
+│   │   └── highlights.lua     # Custom highlights/autocmds
 │   ├── keymaps.lua            # Global keybindings
 │   ├── lsp/
 │   │   └── init.lua           # LSP configuration
@@ -268,13 +269,15 @@ Recommended on first setup to verify tool installation status.
 
 | Key | Description |
 |-----|-------------|
+| `<leader>gc` | Git commits |
+| `<leader>gb` | Git branches |
 | `<leader>gs` | Open Diffview |
 | `<leader>gD` | Close Diffview |
 | `<leader>gB` | File history in Diffview |
 | `<leader>gj` | Next hunk |
 | `<leader>gk` | Previous hunk |
 | `<leader>gp` | Preview hunk |
-| `<leader>gb` | Toggle line blame |
+| `<leader>gl` | Toggle line blame |
 
 **Hunk Operations (`<leader>gh...`):**
 | Key | Description |
