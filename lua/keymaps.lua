@@ -38,7 +38,6 @@ map("n", "<leader>wq", ":w | BufferClose<CR>", { desc = "Save and close" })
 -- Yank/Cut/Paste
 -- ============================================================================
 
--- Yank entire buffer
 map("n", "<leader>y", "ggVG", { desc = "Select entire buffer" })
 
 -- ============================================================================
@@ -88,6 +87,10 @@ local function telescope_keymap(builtin_name, desc)
 		builtin[builtin_name]()
 	end, { desc = desc })
 end
+
+vim.keymap.set("n", "<leader>dd", function()
+	require("telescope.builtin").diagnostics({ bufnr = nil })
+end, { desc = "Workspace Diagnostics" })
 
 telescope_keymap("fk", "Find Keymaps")
 telescope_keymap("fs", "Document Symbols")

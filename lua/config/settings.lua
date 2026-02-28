@@ -49,6 +49,9 @@ opt.expandtab = true
 opt.smartindent = true
 opt.autoindent = true
 
+-- Comments
+opt.formatoptions = "jql"
+
 -- Search
 opt.ignorecase = true
 opt.smartcase = true

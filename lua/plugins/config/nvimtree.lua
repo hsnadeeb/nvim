@@ -31,7 +31,6 @@ return function()
 				webdev_colors = true,
 				git_placement = "before",
 				modified_placement = "after",
-				padding = 1,
 				symlink_arrow = " ➛ ",
 				show = { file = true, folder = true, folder_arrow = true, git = true, modified = true },
 				glyphs = {
@@ -40,14 +39,14 @@ return function()
 					bookmark = "󰆤",
 					modified = "●",
 					folder = {
-						arrow_closed = "",
-						arrow_open = "",
-						default = "",
-						open = "",
-						empty = "",
-						empty_open = "",
-						symlink = "",
-						symlink_open = "",
+						arrow_closed = "",
+						arrow_open = "",
+						default = "",
+						open = "",
+						empty = "",
+						empty_open = "",
+						symlink = "",
+						symlink_open = "",
 					},
 					git = {
 						unstaged = "✗",
@@ -86,12 +85,18 @@ return function()
 
 	local api = require("nvim-tree.api")
 
+	-- local function toggle_hidden_files()
+	-- 	if vim.bo.filetype ~= "NvimTree" then
+	-- 		api.tree.focus()
+	-- 	end
+	-- 	---@diagnostic disable-next-line: undefined-field
+	-- 	api.tree.toggle_hidden_filter()
+	-- end
 	local function toggle_hidden_files()
 		if vim.bo.filetype ~= "NvimTree" then
 			api.tree.focus()
 		end
-		---@diagnostic disable-next-line: undefined-field
-		api.tree.toggle_hidden_filter()
+		api.filter.dotfiles.toggle()
 	end
 
 	map("n", "<leader>n", api.tree.toggle, { desc = "Toggle NvimTree" })
