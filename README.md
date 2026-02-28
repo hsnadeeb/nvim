@@ -155,7 +155,8 @@ Or wait for automatic installation on startup.
 │   │       ├── trouble.lua
 │   │       └── which_key.lua
 │   ├── plugins.lua            # Main plugin definitions
-│   ├── lsp.lua                # LSP setup
+│   ├── lsp/
+│   │   └── init.lua           # LSP setup
 │   └── theme_persistence.lua  # Theme persistence logic
 └── ftplugin/
     └── java.lua               # Java-specific settings
@@ -469,7 +470,7 @@ Press any leader key combination and wait to see available options.
 ```
 
 2. **Create config file** (optional, for complex configs):
-Create `lua/plugins/config/colorizer.lua`:
+Create `lua/plugins/colorizer.lua`:
 
 ```lua
 return function()
@@ -483,7 +484,7 @@ Then reference it:
 ```lua
 {
   "NvChad/nvim-colorizer.lua",
-  config = require("plugins.config.colorizer"),
+  config = require("plugins.colorizer"),
 }
 ```
 

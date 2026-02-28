@@ -48,25 +48,18 @@ opt.rtp:prepend(lazypath)
 require("config.settings")
 require("config.utils")
 require("plugins")
-require("lsp")
 require("keymaps")
 
--- Theme setup after plugins
-vim.api.nvim_create_autocmd("User", {
-  pattern = "VeryLazy",
-  callback = function()
-    local ok, themes = pcall(require, "plugins.config.themes")
-    if ok and themes and themes.setup then
-      local setup_ok = pcall(themes.setup)
-      if not setup_ok then
-        -- If theme setup fails, fall back to default
-        pcall(vim.cmd.colorscheme, "default")
-      end
-    else
-      pcall(vim.cmd.colorscheme, "default")
-    end
-  end,
-})
+-- Apply theme once plugin specs are registered
+local ok_themes, themes = pcall(require, "plugins.themes")
+if ok_themes and themes and themes.setup then
+  local setup_ok = pcall(themes.setup)
+  if not setup_ok then
+    pcall(vim.cmd.colorscheme, "default")
+  end
+else
+  pcall(vim.cmd.colorscheme, "default")
+end
 
 vim.api.nvim_create_autocmd("VimResized", {
   pattern = "*",
@@ -78,12 +71,8 @@ vim.api.nvim_create_autocmd("VimEnter", {
   callback = function()
     local argv = vim.fn.argv()
     if #argv > 0 and vim.fn.isdirectory(argv[1]) == 1 then
-      -- Open nvim-tree when starting with a directory
-      local ok, api = pcall(require, "nvim-tree.api")
-      if ok then
-        vim.cmd("enew")  -- Create empty buffer first
-        api.tree.open({ path = argv[1] })
-      end
+      vim.cmd("enew")
+      vim.cmd("NvimTreeToggle " .. vim.fn.fnameescape(argv[1]))
     end
   end,
 })
