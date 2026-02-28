@@ -68,7 +68,12 @@ require("lazy").setup({
 		"windwp/nvim-spectre",
 		event = "VeryLazy",
 		dependencies = { "nvim-lua/plenary.nvim" },
-		config = require("plugins.config.spectre"),
+		config = function()
+			local ok, cfg = pcall(require, "plugins.config.spectre")
+			if ok and cfg then
+				cfg()
+			end
+		end,
 	},
 
 	-- File explorer

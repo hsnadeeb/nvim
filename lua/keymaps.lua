@@ -38,8 +38,7 @@ map("n", "<leader>wq", ":w | BufferClose<CR>", { desc = "Save and close" })
 -- Yank/Cut/Paste
 -- ============================================================================
 
--- Yank entire buffer
-map("n", "<leader>yy", "ggVGy", { desc = "Yank entire buffer" })
+map("n", "<leader>y", "ggVG", { desc = "Select entire buffer" })
 
 -- ============================================================================
 -- LSP Keymaps (buffer-local)
@@ -89,6 +88,10 @@ local function telescope_keymap(builtin_name, desc)
 	end, { desc = desc })
 end
 
+vim.keymap.set("n", "<leader>dd", function()
+	require("telescope.builtin").diagnostics({ bufnr = nil })
+end, { desc = "Workspace Diagnostics" })
+
 telescope_keymap("fk", "Find Keymaps")
 telescope_keymap("fs", "Document Symbols")
 telescope_keymap("fS", "Workspace Symbols")
@@ -107,6 +110,38 @@ map("n", "<leader>dr", require("dap").repl.toggle, { desc = "Toggle REPL" })
 map("n", "<leader>dl", require("dap").run_last, { desc = "Run last" })
 map("n", "<leader>du", require("dapui").toggle, { desc = "Toggle DAP UI" })
 map("n", "<leader>dx", require("dap").terminate, { desc = "Terminate" })
+
+-- ============================================================================
+-- Run Code (Java/Python)
+-- ============================================================================
+
+local function run_file_in_term(cmd)
+	local Terminal = require("toggleterm.terminal").Terminal
+	local term = Terminal:new({
+		cmd = cmd,
+		direction = "horizontal",
+		close_on_exit = false,
+	})
+	term:toggle()
+end
+
+map("n", "<leader>jr", function()
+	if vim.fn.expand("%:e") == "java" then
+		local class_name = vim.fn.expand("%:t:r")
+		local dir = vim.fn.expand("%:p:h")
+		run_file_in_term("cd " .. dir .. " && javac " .. vim.fn.expand("%:t") .. " && java " .. class_name)
+	else
+		vim.notify("Not a Java file", vim.log.levels.WARN)
+	end
+end, { desc = "Compile and run Java file" })
+
+map("n", "<leader>pr", function()
+	if vim.fn.expand("%:e") == "py" then
+		run_file_in_term("python3 " .. vim.fn.expand("%:p"))
+	else
+		vim.notify("Not a Python file", vim.log.levels.WARN)
+	end
+end, { desc = "Run Python file" })
 
 -- ============================================================================
 -- Which-key Groups
@@ -227,9 +262,9 @@ if wk then
 				"Previous Theme",
 			},
 		},
-		["<leader>y"] = {
+		["<leader>"] = {
 			name = "+yank",
-			y = { "ggVGy", "Yank entire buffer" },
+			y = { "ggVG", "Select entire buffer" },
 		},
 		["<leader>w"] = {
 			name = "+write/quit",

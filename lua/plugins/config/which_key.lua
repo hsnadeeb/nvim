@@ -41,8 +41,8 @@ return function()
     end, "Toggle focus NvimTree/editor" },
 
     -- Diagnostics
-    ["[d"] = { vim.diagnostic.goto_prev, "Previous Diagnostic" },
-    ["]d"] = { vim.diagnostic.goto_next, "Next Diagnostic" },
+    ["[d"] = { function() vim.diagnostic.jump({ count = -1 }) end, "Previous Diagnostic" },
+    ["]d"] = { function() vim.diagnostic.jump({ count = 1 }) end, "Next Diagnostic" },
 
     -- LSP navigation
     ["gd"] = { vim.lsp.buf.definition, "Go to Definition" },
