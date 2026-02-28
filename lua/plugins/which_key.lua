@@ -5,7 +5,16 @@ return function()
     preset = "modern",
     delay = 300,
     expand = 1,
-    notify = true,
+    notify = false,
+    triggers = { "<leader>" },
+    plugins = {
+      presets = {
+        operators = false,
+        motions = false,
+        text_objects = false,
+        g = false,
+      },
+    },
     win = {
       border = "rounded",
       padding = { 1, 2 },
@@ -43,6 +52,8 @@ return function()
     },
     ["<leader>g"] = {
       name = "+git",
+      c = { "<cmd>Telescope git_commits<CR>", "Commits" },
+      b = { "<cmd>Telescope git_branches<CR>", "Branches" },
       B = { "<cmd>DiffviewFileHistory %<CR>", "File History" },
       s = { "<cmd>DiffviewOpen -- %<CR>", "Diff Current File" },
       S = { "<cmd>DiffviewOpen<CR>", "Diff Workspace" },
@@ -50,7 +61,7 @@ return function()
       j = { "<cmd>lua require('gitsigns').nav_hunk('next')<CR>", "Next Hunk" },
       k = { "<cmd>lua require('gitsigns').nav_hunk('prev')<CR>", "Prev Hunk" },
       p = { "<cmd>lua require('gitsigns').preview_hunk()<CR>", "Preview Hunk" },
-      b = { "<cmd>lua require('gitsigns').toggle_current_line_blame()<CR>", "Toggle Blame" },
+      l = { "<cmd>lua require('gitsigns').toggle_current_line_blame()<CR>", "Toggle Blame" },
       h = {
         name = "+hunk",
         s = { "<cmd>lua require('gitsigns').stage_hunk()<CR>", "Stage Hunk" },

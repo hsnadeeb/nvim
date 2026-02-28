@@ -67,12 +67,6 @@ require("lazy").setup({
   {
     "numToStr/Comment.nvim",
     event = "VeryLazy",
-    keys = {
-      { "<leader>/", mode = "n" },
-      { "<leader>/", mode = "x" },
-      { "gc", mode = { "n", "x" } },
-      { "gcc", mode = "n" },
-    },
     config = cfg("comment"),
   },
 

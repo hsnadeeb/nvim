@@ -44,6 +44,8 @@ map("n", "<leader>fs", actions.telescope_call("lsp_document_symbols"), { desc = 
 map("n", "<leader>fS", actions.telescope_call("lsp_workspace_symbols"), { desc = "Workspace Symbols" })
 map("n", "<leader>fd", actions.telescope_call("lsp_definitions"), { desc = "LSP Definitions" })
 map("n", "<leader>fi", actions.telescope_call("lsp_implementations"), { desc = "LSP Implementations" })
+map("n", "<leader>gc", "<cmd>Telescope git_commits<CR>", { desc = "Git Commits" })
+map("n", "<leader>gb", "<cmd>Telescope git_branches<CR>", { desc = "Git Branches" })
 
 -- DAP leader mappings
 map("n", "<leader>dc", actions.dap_call("dap", "continue"), { desc = "Continue" })

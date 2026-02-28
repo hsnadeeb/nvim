@@ -58,5 +58,5 @@ return function()
 		gs.diffthis("~")
 	end, { desc = "Hunk Diff (Staged)" })
 	utils.map("n", "<leader>gp", gs.preview_hunk, { desc = "Preview Hunk" })
-	utils.map("n", "<leader>gb", gs.toggle_current_line_blame, { desc = "Toggle Blame" })
+	utils.map("n", "<leader>gl", gs.toggle_current_line_blame, { desc = "Toggle Blame" })
 end
