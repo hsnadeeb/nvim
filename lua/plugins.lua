@@ -70,7 +70,9 @@ require("lazy").setup({
 		dependencies = { "nvim-lua/plenary.nvim" },
 		config = function()
 			local ok, cfg = pcall(require, "plugins.config.spectre")
-			if ok and cfg then cfg() end
+			if ok and cfg then
+				cfg()
+			end
 		end,
 	},
 
