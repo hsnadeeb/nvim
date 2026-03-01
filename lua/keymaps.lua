@@ -37,6 +37,20 @@ map("n", "<leader>Q", "<cmd>q!<CR>", { desc = "Force quit" })
 -- Select entire buffer
 map("n", "<leader>y", "ggVG", { desc = "Select entire buffer" })
 
+-- File explorer tree controls
+map("n", "<leader>nx", function()
+  local ok, api = pcall(require, "nvim-tree.api")
+  if ok and api.tree and api.tree.expand_all then
+    api.tree.expand_all()
+  end
+end, { desc = "Expand all folders" })
+map("n", "<leader>nc", function()
+  local ok, api = pcall(require, "nvim-tree.api")
+  if ok and api.tree and api.tree.collapse_all then
+    api.tree.collapse_all()
+  end
+end, { desc = "Collapse all folders" })
+
 -- Telescope extras
 map("n", "<leader>dd", actions.telescope_call("diagnostics", { bufnr = nil }), { desc = "Workspace Diagnostics" })
 map("n", "<leader>fk", actions.telescope_call("keymaps"), { desc = "Find Keymaps" })
@@ -63,4 +77,7 @@ map("n", "<leader>thp", actions.theme_previous, { desc = "Previous Theme" })
 
 -- Run current file helpers
 map("n", "<leader>jr", actions.run_java_file, { desc = "Compile and run Java file" })
+map("n", "<leader>jR", actions.run_spring_boot, { desc = "Run Spring Boot app" })
+map("n", "<leader>jb", actions.run_java_build, { desc = "Build Java project" })
+map("n", "<leader>jx", actions.run_java_tests, { desc = "Run Java tests" })
 map("n", "<leader>pr", actions.run_python_file, { desc = "Run Python file" })

@@ -144,14 +144,76 @@ function M.theme_previous()
 end
 
 -- Open a one-off ToggleTerm instance for a shell command.
-local function run_file_in_term(cmd)
+local function run_file_in_term(cmd, cwd)
   local Terminal = require("toggleterm.terminal").Terminal
   local term = Terminal:new({
     cmd = cmd,
+    dir = cwd,
     direction = "horizontal",
     close_on_exit = false,
   })
   term:toggle()
+end
+
+local function java_project_root()
+  local start = vim.fs.dirname(vim.api.nvim_buf_get_name(0))
+  if not start or start == "" then
+    start = vim.fn.getcwd()
+  end
+
+  local markers = {
+    "mvnw",
+    "pom.xml",
+    "gradlew",
+    "build.gradle",
+    "build.gradle.kts",
+    "settings.gradle",
+    "settings.gradle.kts",
+    ".git",
+  }
+  local root_marker = vim.fs.find(markers, { upward = true, path = start })[1]
+  if root_marker then
+    return vim.fs.dirname(root_marker)
+  end
+  return start
+end
+
+local function java_build_tool(root)
+  local function exists(path)
+    return vim.fn.filereadable(path) == 1
+  end
+  local function executable(path)
+    return vim.fn.executable(path) == 1
+  end
+  local has_mvn = vim.fn.executable("mvn") == 1
+
+  if exists(root .. "/mvnw") then
+    if has_mvn then
+      vim.notify("Using system mvn instead of mvnw", vim.log.levels.INFO)
+      return "mvn", "maven"
+    end
+    if executable(root .. "/mvnw") then
+      return "./mvnw", "maven"
+    end
+    return "sh ./mvnw", "maven"
+  end
+  if exists(root .. "/pom.xml") then
+    if has_mvn then
+      return "mvn", "maven"
+    end
+    vim.notify("Maven project detected but mvn is not installed and no mvnw found", vim.log.levels.ERROR)
+    return nil, nil
+  end
+  if exists(root .. "/gradlew") then
+    if executable(root .. "/gradlew") then
+      return "./gradlew", "gradle"
+    end
+    return "sh ./gradlew", "gradle"
+  end
+  if exists(root .. "/build.gradle") or exists(root .. "/build.gradle.kts") then
+    return "gradle", "gradle"
+  end
+  return nil, nil
 end
 
 -- Compile and run the current Java file.
@@ -163,6 +225,54 @@ function M.run_java_file()
     run_file_in_term("cd " .. dir .. " && javac " .. file .. " && java " .. class_name)
   else
     vim.notify("Not a Java file", vim.log.levels.WARN)
+  end
+end
+
+-- Build the current Java project (Maven/Gradle).
+function M.run_java_build()
+  local root = java_project_root()
+  local cmd, tool = java_build_tool(root)
+  if not cmd then
+    vim.notify("No Maven/Gradle build file found for this project", vim.log.levels.WARN)
+    return
+  end
+
+  if tool == "maven" then
+    run_file_in_term(cmd .. " -q -DskipTests package", root)
+  else
+    run_file_in_term(cmd .. " -q build -x test", root)
+  end
+end
+
+-- Run project tests (Maven/Gradle).
+function M.run_java_tests()
+  local root = java_project_root()
+  local cmd, tool = java_build_tool(root)
+  if not cmd then
+    vim.notify("No Maven/Gradle build file found for this project", vim.log.levels.WARN)
+    return
+  end
+
+  if tool == "maven" then
+    run_file_in_term(cmd .. " -q test", root)
+  else
+    run_file_in_term(cmd .. " -q test", root)
+  end
+end
+
+-- Run Spring Boot app (tries run/dev profile by build tool).
+function M.run_spring_boot()
+  local root = java_project_root()
+  local cmd, tool = java_build_tool(root)
+  if not cmd then
+    vim.notify("No Maven/Gradle build file found for this project", vim.log.levels.WARN)
+    return
+  end
+
+  if tool == "maven" then
+    run_file_in_term(cmd .. " spring-boot:run", root)
+  else
+    run_file_in_term(cmd .. " bootRun", root)
   end
 end
 

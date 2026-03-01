@@ -95,6 +95,8 @@ function M.setup()
       },
     },
     jsonls = {},
+    yamlls = {},
+    lemminx = {},
     lua_ls = {
       settings = {
         Lua = {
@@ -108,7 +110,6 @@ function M.setup()
         },
       },
     },
-    jdtls = {},
   }
 
   local has_native_config = vim.fn.has("nvim-0.11") == 1

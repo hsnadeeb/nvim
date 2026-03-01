@@ -144,7 +144,25 @@ return function()
 			u = { "<cmd>lua require('dapui').toggle()<CR>", "Toggle DAP UI" },
 			x = { "<cmd>lua require('dap').terminate()<CR>", "Terminate" },
 		},
-		["<leader>n"] = { "<cmd>NvimTreeToggle<CR>", "Toggle NvimTree" },
+		["<leader>j"] = {
+			name = "+java",
+			r = { "<cmd>lua require('config.actions').run_java_file()<CR>", "Run Java File" },
+			R = { "<cmd>lua require('config.actions').run_spring_boot()<CR>", "Run Spring Boot" },
+			b = { "<cmd>lua require('config.actions').run_java_build()<CR>", "Build Project" },
+			x = { "<cmd>lua require('config.actions').run_java_tests()<CR>", "Run Project Tests" },
+		},
+		["<leader>n"] = {
+			name = "+nvimtree",
+			n = { "<cmd>NvimTreeToggle<CR>", "Toggle NvimTree" },
+			x = {
+				"<cmd>lua local ok,api=pcall(require,'nvim-tree.api'); if ok and api.tree and api.tree.expand_all then api.tree.expand_all() end<CR>",
+				"Expand All Folders",
+			},
+			c = {
+				"<cmd>lua local ok,api=pcall(require,'nvim-tree.api'); if ok and api.tree and api.tree.collapse_all then api.tree.collapse_all() end<CR>",
+				"Collapse All Folders",
+			},
+		},
 		["<leader>e"] = { "<cmd>NvimTreeFocus<CR>", "Focus NvimTree" },
 		["<leader>m"] = { "<cmd>AerialToggle!<CR>", "Toggle Structure" },
 		["<leader>dd"] = { "<cmd>Telescope diagnostics<CR>", "Workspace Diagnostics" },

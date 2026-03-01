@@ -40,6 +40,7 @@ require("lazy").setup({
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
       "L3MON4D3/LuaSnip",
+      "rafamadriz/friendly-snippets",
       "onsails/lspkind-nvim",
     },
     config = cfg("cmp"),

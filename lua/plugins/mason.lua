@@ -11,6 +11,8 @@ return function()
       "gopls",
       "jdtls",
       "json-lsp",
+      "yaml-language-server",
+      "lemminx",
       "lua-language-server",
       -- Formatters
       "prettier",
@@ -21,6 +23,7 @@ return function()
       "google-java-format",
       -- Debug adapters
       "java-debug-adapter",
+      "java-test",
       "delve",
     },
     auto_update = false,
@@ -29,7 +32,7 @@ return function()
   })
 
   require("mason-lspconfig").setup({
-    ensure_installed = { "ts_ls", "html", "cssls", "eslint", "gopls", "jdtls", "jsonls", "lua_ls" },
+    ensure_installed = { "ts_ls", "html", "cssls", "eslint", "gopls", "jsonls", "yamlls", "lemminx", "lua_ls" },
     automatic_installation = true,
   })
 end
