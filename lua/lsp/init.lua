@@ -6,30 +6,10 @@ local M = {}
 local configured = false
 
 local function on_attach(client, bufnr)
-  local opts = { buffer = bufnr, silent = true }
-  local map = vim.keymap.set
-
   -- Keep formatting ownership with conform for TS/JS stacks
   if client.name == "ts_ls" or client.name == "tsserver" then
     client.server_capabilities.documentFormattingProvider = false
   end
-
-  map("n", "gD", vim.lsp.buf.declaration, opts)
-  map("n", "gd", vim.lsp.buf.definition, opts)
-  map("n", "gi", vim.lsp.buf.implementation, opts)
-  map("n", "gr", vim.lsp.buf.references, opts)
-  map("n", "gt", vim.lsp.buf.type_definition, opts)
-  map("n", "K", vim.lsp.buf.hover, opts)
-  map("n", "<C-k>", vim.lsp.buf.signature_help, opts)
-  map("n", "<leader>rn", vim.lsp.buf.rename, opts)
-  map("n", "<leader>ca", vim.lsp.buf.code_action, opts)
-
-  map("n", "[d", function()
-    vim.diagnostic.jump({ count = -1 })
-  end, opts)
-  map("n", "]d", function()
-    vim.diagnostic.jump({ count = 1 })
-  end, opts)
 
   if client.server_capabilities.documentHighlightProvider then
     local group = vim.api.nvim_create_augroup("LspDocumentHighlight" .. bufnr, { clear = true })
