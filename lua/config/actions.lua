@@ -4,6 +4,27 @@
 
 local M = {}
 
+function M.diagnostic_prev()
+  vim.diagnostic.jump({ count = -1 })
+end
+
+function M.diagnostic_next()
+  vim.diagnostic.jump({ count = 1 })
+end
+
+function M.format_document()
+  local ok_conform, conform = pcall(require, "conform")
+  if not ok_conform then
+    vim.notify("conform is not available", vim.log.levels.WARN)
+    return
+  end
+
+  local format_fn = type(conform) == "table" and conform["format"] or nil
+  if type(format_fn) == "function" then
+    format_fn()
+  end
+end
+
 -- Close all listed buffers except the current one and report skipped modified buffers.
 function M.close_other_buffers()
   local current = vim.api.nvim_get_current_buf()
@@ -57,18 +78,12 @@ function M.setup_lsp_attach_keymaps()
       buf_map("<leader>lr", vim.lsp.buf.references, "References")
       buf_map("<leader>ln", vim.lsp.buf.rename, "Rename")
       buf_map("<leader>lh", vim.lsp.buf.hover, "Hover")
-      buf_map("<leader>lk", function()
-        vim.diagnostic.jump({ count = -1 })
-      end, "Previous Diagnostic")
-      buf_map("<leader>lj", function()
-        vim.diagnostic.jump({ count = 1 })
-      end, "Next Diagnostic")
+      buf_map("<leader>lk", M.diagnostic_prev, "Previous Diagnostic")
+      buf_map("<leader>lj", M.diagnostic_next, "Next Diagnostic")
       buf_map("<leader>lt", vim.lsp.buf.type_definition, "Type Definition")
       buf_map("<leader>ls", vim.lsp.buf.document_symbol, "Document Symbols")
       buf_map("<leader>lS", vim.lsp.buf.workspace_symbol, "Workspace Symbols")
-      buf_map("<leader>lf", function()
-        require("conform").format()
-      end, "Format")
+      buf_map("<leader>lf", M.format_document, "Format")
     end,
   })
 end
@@ -102,12 +117,14 @@ end
 
 -- Toggle the DAP REPL if DAP is available.
 function M.toggle_dap_repl()
-  local ok, dap = pcall(require, "dap")
-  if not ok then
-    vim.notify("dap is not available", vim.log.levels.WARN)
+  local ok_repl, dap_repl = pcall(require, "dap.repl")
+  if not ok_repl then
+    vim.notify("dap.repl is not available", vim.log.levels.WARN)
     return
   end
-  dap.repl.toggle()
+  if type(dap_repl.toggle) == "function" then
+    dap_repl.toggle()
+  end
 end
 
 -- Switch to the next configured theme.
