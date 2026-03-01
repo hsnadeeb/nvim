@@ -58,8 +58,8 @@ map("n", "<leader>du", actions.dap_call("dapui", "toggle"), { desc = "Toggle DAP
 map("n", "<leader>dr", actions.toggle_dap_repl, { desc = "Toggle REPL" })
 
 -- Theme cycling
-map("n", "<leader>Tn", actions.theme_next, { desc = "Next Theme" })
-map("n", "<leader>Tp", actions.theme_previous, { desc = "Previous Theme" })
+map("n", "<leader>thn", actions.theme_next, { desc = "Next Theme" })
+map("n", "<leader>thp", actions.theme_previous, { desc = "Previous Theme" })
 
 -- Run current file helpers
 map("n", "<leader>jr", actions.run_java_file, { desc = "Compile and run Java file" })
