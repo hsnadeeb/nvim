@@ -100,7 +100,7 @@ return function()
 			["`"] = { "<cmd>ToggleTerm<CR>", "Toggle" },
 			f = { "<cmd>ToggleTerm direction=float<CR>", "Float" },
 			v = { "<cmd>ToggleTerm direction=vertical<CR>", "Vertical" },
-			h = { "<cmd>ToggleTerm direction=horizontal<CR>", "Horizontal" },
+			H = { "<cmd>ToggleTerm direction=horizontal<CR>", "Horizontal" },
 			g = { "<cmd>lua require('toggleterm').exec('lazygit', nil, nil, nil, 'float')<CR>", "Lazygit" },
 		},
 		["<leader>s"] = {

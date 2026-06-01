@@ -53,6 +53,7 @@ opt.rtp:prepend(lazypath)
 
 -- Load modules
 require("config.settings")
+require("config.filetypes")
 require("config.utils")
 require("plugins")
 require("keymaps")

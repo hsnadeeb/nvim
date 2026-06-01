@@ -4,7 +4,7 @@ return function()
 		padding = true,
 		sticky = true,
 		ignore = "^$",
-		mappings = { basic = true, extra = false, extended = false },
+		mappings = { basic = false, extra = false, extended = false },
 	})
 
 	local api = require("Comment.api")
