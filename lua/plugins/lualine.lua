@@ -1,7 +1,9 @@
 local function get_icon(kind, padding)
   local icon = ""
-  if kind == "git" then icon = ""
-  elseif kind == "diagnostics" then icon = ""
+  if kind == "git" then
+    icon = ""
+  elseif kind == "diagnostics" then
+    icon = ""
   end
   return icon .. string.rep(" ", padding or 0)
 end
@@ -20,7 +22,7 @@ return function()
       lualine_b = {
         { "branch", icon = get_icon("git") },
         { "diff", symbols = { added = " ", modified = " ", removed = " " } },
-        { "diagnostics", symbols = { error = " ", warn = " ", info = " ", hint = " " } },
+        { "diagnostics", symbols = { error = " ", warn = " ", info = " ", hint = "H " } },
       },
       lualine_c = {
         { "filename", path = 1, symbols = { modified = " ", readonly = " ", unnamed = "[No Name]" } },
@@ -35,16 +37,10 @@ return function()
         { "progress", separator = " ", padding = { left = 1, right = 0 } },
         { "location", padding = { left = 0, right = 1 } },
       },
-      lualine_z = { function() return " " .. os.date("%R") end },
+      lualine_z = { function()
+        return " " .. os.date("%R")
+      end },
     },
-    extensions = { "quickfix", "man", "fugitive", "trouble", "lazy", "fzf" },
-  })
-
-  vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "alpha", "dashboard" },
-    callback = function()
-      vim.opt.showtabline = 0
-      vim.opt.laststatus = 0
-    end,
+    extensions = { "quickfix", "man", "trouble", "lazy" },
   })
 end

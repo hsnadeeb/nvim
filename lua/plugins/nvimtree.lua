@@ -85,13 +85,6 @@ return function()
 
 	local api = require("nvim-tree.api")
 
-	-- local function toggle_hidden_files()
-	-- 	if vim.bo.filetype ~= "NvimTree" then
-	-- 		api.tree.focus()
-	-- 	end
-	-- 	---@diagnostic disable-next-line: undefined-field
-	-- 	api.tree.toggle_hidden_filter()
-	-- end
 	local function toggle_hidden_files()
 		if vim.bo.filetype ~= "NvimTree" then
 			api.tree.focus()

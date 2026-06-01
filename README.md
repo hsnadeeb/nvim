@@ -103,7 +103,7 @@ Lazy.nvim will automatically install all plugins on first launch.
 ```vim
 :Mason
 ```
-Or wait for automatic installation on startup.
+Recommended on first setup to verify tool installation status.
 
 5. **Check health**:
 ```vim
@@ -121,41 +121,43 @@ Or wait for automatic installation on startup.
 │   ├── config/
 │   │   ├── init.lua           # Main configuration loader
 │   │   ├── settings.lua       # Neovim settings
-│   │   └── utils.lua          # Utility functions
+│   │   ├── utils.lua          # Utility functions
+│   │   └── highlights.lua     # Custom highlights/autocmds
 │   ├── keymaps.lua            # Global keybindings
 │   ├── lsp/
 │   │   └── init.lua           # LSP configuration
-│   ├── plugins/
-│   │   ├── init.lua           # Plugin definitions (alternative)
-│   │   └── config/            # Individual plugin configs
-│   │       ├── aerial.lua
-│   │       ├── alpha.lua
-│   │       ├── autosave.lua
-│   │       ├── barbar.lua
-│   │       ├── cmp.lua
-│   │       ├── comment.lua
-│   │       ├── conform.lua
-│   │       ├── copilot.lua
-│   │       ├── copilot_cmp.lua
-│   │       ├── dap.lua
-│   │       ├── gitsigns.lua
-│   │       ├── indent_blankline.lua
-│   │       ├── lspsaga.lua
-│   │       ├── lualine.lua
-│   │       ├── mason.lua
-│   │       ├── nvimtree.lua
-│   │       ├── project.lua
-│   │       ├── refactoring.lua
-│   │       ├── session.lua
-│   │       ├── spectre.lua
-│   │       ├── telescope.lua
-│   │       ├── themes.lua
-│   │       ├── toggleterm.lua
-│   │       ├── todo_comments.lua
-│   │       ├── trouble.lua
-│   │       └── which_key.lua
+│   ├── plugins/              # Individual plugin configs
+│   │   ├── aerial.lua
+│   │   ├── alpha.lua
+│   │   ├── autopairs.lua
+│   │   ├── autosave.lua
+│   │   ├── barbar.lua
+│   │   ├── cmp.lua
+│   │   ├── comment.lua
+│   │   ├── conform.lua
+│   │   ├── copilot.lua
+│   │   ├── copilot_cmp.lua
+│   │   ├── dap.lua
+│   │   ├── diffview.lua
+│   │   ├── gitsigns.lua
+│   │   ├── indent_blankline.lua
+│   │   ├── lspsaga.lua
+│   │   ├── lualine.lua
+│   │   ├── mason.lua
+│   │   ├── nvimtree.lua
+│   │   ├── project.lua
+│   │   ├── refactoring.lua
+│   │   ├── session.lua
+│   │   ├── spectre.lua
+│   │   ├── telescope.lua
+│   │   ├── themes.lua
+│   │   ├── toggleterm.lua
+│   │   ├── todo_comments.lua
+│   │   ├── trouble.lua
+│   │   └── which_key.lua
 │   ├── plugins.lua            # Main plugin definitions
-│   ├── lsp.lua                # LSP setup
+│   ├── lsp/
+│   │   └── init.lua           # LSP setup
 │   └── theme_persistence.lua  # Theme persistence logic
 └── ftplugin/
     └── java.lua               # Java-specific settings
@@ -182,23 +184,21 @@ Or wait for automatic installation on startup.
 
 | Key | Mode | Description |
 |-----|------|-------------|
-| `<A-,>` | Normal | Previous buffer |
-| `<A-.>` | Normal | Next buffer |
-| `<A-<>` | Normal | Move buffer left |
-| `<A->>` | Normal | Move buffer right |
-| `<A-c>` | Normal | Close buffer |
+| `<leader><Tab>` | Normal | Move buffer left |
+| `<leader><S-Tab>` | Normal | Move buffer right |
 | `<A-p>` | Normal | Pin/unpin buffer |
 | `<Tab>` | Normal | Next buffer |
 | `<S-Tab>` | Normal | Previous buffer |
-| `<A-1..9>` | Normal | Go to buffer 1-9 |
+| `<A-1..8>` | Normal | Go to buffer 1-8 |
 
 **Buffer Leader Keys:**
 | Key | Description |
 |-----|-------------|
-| `<leader>bd` | Close buffer |
-| `<leader>bD` | Force close buffer |
-| `<leader>bn` | Next buffer |
-| `<leader>bp` | Previous buffer |
+| `<leader>ww` | Close buffer |
+| `<leader>wW` | Force close buffer |
+| `<leader>ws` | Save file |
+| `<leader>wq` | Save and close buffer |
+| `<leader>wa` | Close all other buffers |
 
 ### File Operations
 
@@ -207,15 +207,13 @@ Or wait for automatic installation on startup.
 | `<leader>n` | Toggle NvimTree file explorer |
 | `<leader>e` | Focus NvimTree / go back to editor |
 | `<leader>h` | Toggle hidden files in NvimTree |
-| `<leader>ws` | Save file |
-| `<leader>wq` | Save and close buffer |
-| `<leader>yy` | Yank entire buffer |
+| `<leader>y` | Select entire buffer |
 
 ### Window Management
 
 | Key | Description |
 |-----|-------------|
-| `<leader>q` | Quit (unless NvimTree) |
+| `<leader>q` | Quit |
 | `<leader>Q` | Force quit |
 
 ### LSP (Language Server Protocol)
@@ -231,10 +229,7 @@ Or wait for automatic installation on startup.
 | `<C-k>` | Show signature help |
 | `<leader>rn` | Rename symbol |
 | `<leader>ca` | Code action |
-| `<leader>f` | Format document |
 | `[d` / `]d` | Previous/Next diagnostic |
-| `<leader>d` | Show diagnostic float |
-| `<leader>q` | Show diagnostics in location list |
 
 **IntelliJ-like shortcuts:**
 | Key | Description |
@@ -270,16 +265,30 @@ Or wait for automatic installation on startup.
 | `<leader>fd` | LSP definitions |
 | `<leader>fi` | LSP implementations |
 
-### Git (Gitsigns + Telescope)
+### Git (Gitsigns + Diffview + Lazygit)
 
 | Key | Description |
 |-----|-------------|
 | `<leader>gc` | Git commits |
-| `<leader>gB` | Git branches |
-| `<leader>gs` | Git status |
+| `<leader>gb` | Git branches |
+| `<leader>gs` | Open Diffview |
+| `<leader>gD` | Close Diffview |
+| `<leader>gB` | File history in Diffview |
 | `<leader>gj` | Next hunk |
 | `<leader>gk` | Previous hunk |
 | `<leader>gp` | Preview hunk |
+| `<leader>gl` | Toggle line blame |
+
+**Hunk Operations (`<leader>gh...`):**
+| Key | Description |
+|-----|-------------|
+| `<leader>ghs` | Stage hunk |
+| `<leader>ghS` | Stage buffer |
+| `<leader>ghu` | Undo stage hunk |
+| `<leader>ghr` | Reset hunk |
+| `<leader>ghR` | Reset buffer |
+| `<leader>ghd` | Hunk diff |
+| `<leader>ghD` | Hunk diff (staged) |
 
 ### Terminal (ToggleTerm)
 
@@ -344,14 +353,17 @@ Or wait for automatic installation on startup.
 | `<leader>rw` | Replace word under cursor |
 | `<leader>rp` | Replace in project |
 | `<leader>rf` | Replace in file |
+| `<leader>sw` | Replace word/selection |
+| `<leader>sf` | Replace in file (direct) |
+| `<leader>sp` | Replace in project (direct) |
 
 ### Refactoring
 
 | Key | Description |
 |-----|-------------|
-| `<leader>ree` | Extract to function |
-| `<leader>ref` | Extract to file |
-| `<leader>rei` | Inline variable |
+| `<leader>re` | Extract to function (visual) |
+| `<leader>rf` | Extract to file (visual) |
+| `<leader>ri` | Inline variable (visual) |
 | `<leader>reb` | Extract block |
 
 ### Code Structure (Aerial)
@@ -423,9 +435,10 @@ Press any leader key combination and wait to see available options.
 
 ### Git
 - **gitsigns.nvim**: Git decorations and actions
+- **diffview.nvim**: Git diff and file-history views
 
 ### Terminal
-- **toggleterm.nvim**: Integrated terminal
+- **toggleterm.nvim**: Integrated terminal and lazygit floating terminal
 
 ### Debugging
 - **nvim-dap**: Debug adapter protocol
@@ -469,7 +482,7 @@ Press any leader key combination and wait to see available options.
 ```
 
 2. **Create config file** (optional, for complex configs):
-Create `lua/plugins/config/colorizer.lua`:
+Create `lua/plugins/colorizer.lua`:
 
 ```lua
 return function()
@@ -483,7 +496,7 @@ Then reference it:
 ```lua
 {
   "NvChad/nvim-colorizer.lua",
-  config = require("plugins.config.colorizer"),
+  config = require("plugins.colorizer"),
 }
 ```
 
@@ -497,7 +510,7 @@ Then reference it:
 **Global keymaps**: Edit `lua/keymaps.lua`
 
 ```lua
--- Add to existing which-key registration or create new
+-- Add to which-key registration (optional)
 wk.register({
   ["<leader>n"] = {
     name = "+new-category",
@@ -537,7 +550,7 @@ local servers = {
 }
 ```
 
-2. **Add to mason auto-install**: Edit `lua/plugins/config/mason.lua`
+2. **Add to mason auto-install**: Edit `lua/plugins/mason.lua`
 
 ```lua
 require("mason-tool-installer").setup({
@@ -556,11 +569,11 @@ require("mason-lspconfig").setup({
 })
 ```
 
-3. **Restart Neovim** - Mason will auto-install the server.
+3. **Restart Neovim** and run `:Mason` to verify/install missing tools.
 
 ### Adding a Formatter
 
-1. **Edit `lua/plugins/config/conform.lua`**:
+1. **Edit `lua/plugins/conform.lua`**:
 
 ```lua
 formatters_by_ft = {
@@ -570,7 +583,7 @@ formatters_by_ft = {
 }
 ```
 
-2. **Add to mason** (in `lua/plugins/config/mason.lua`):
+2. **Add to mason** (in `lua/plugins/mason.lua`):
 
 ```lua
 ensure_installed = {
@@ -589,7 +602,7 @@ ensure_installed = {
 { "catppuccin/nvim", name = "catppuccin", lazy = true },
 ```
 
-2. **Edit `lua/plugins/config/themes.lua`**:
+2. **Edit `lua/plugins/themes.lua`**:
 
 ```lua
 local themes = {

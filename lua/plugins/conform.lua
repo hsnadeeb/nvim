@@ -1,4 +1,6 @@
 return function()
+  local actions = require("config.actions")
+
   require("conform").setup({
     formatters_by_ft = {
       lua = { "stylua" },
@@ -17,5 +19,5 @@ return function()
     format_on_save = { timeout_ms = 500 },
   })
 
-  vim.keymap.set({ "n", "v" }, "<leader>fm", function() require("conform").format() end, { desc = "Format document" })
+  vim.keymap.set({ "n", "v" }, "<leader>fm", actions.format_document, { desc = "Format document" })
 end

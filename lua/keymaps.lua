@@ -1,13 +1,13 @@
 -- ============================================================================
--- Keybindings
+-- Global Keybindings (plugin-agnostic or lazy-safe wrappers)
 -- ============================================================================
 
 local utils = require("config.utils")
+local actions = require("config.actions")
 local map = utils.map
 
--- ============================================================================
--- General Navigation
--- ============================================================================
+actions.register_user_commands()
+actions.setup_lsp_attach_keymaps()
 
 -- Window navigation
 map("n", "<C-h>", "<C-w>h", { desc = "Left window" })
@@ -25,270 +25,59 @@ map("v", "L", "$", { desc = "End of line" })
 map("n", "]q", ":cnext<CR>", { desc = "Next quickfix" })
 map("n", "[q", ":cprev<CR>", { desc = "Prev quickfix" })
 
--- ============================================================================
--- Buffer Management
--- ============================================================================
-
+-- Buffer management (barbar)
 map("n", "<leader>ww", ":BufferClose<CR>", { desc = "Close buffer" })
 map("n", "<leader>wW", ":BufferClose!<CR>", { desc = "Force close buffer" })
 map("n", "<leader>ws", ":w<CR>", { desc = "Save file" })
 map("n", "<leader>wq", ":w | BufferClose<CR>", { desc = "Save and close" })
+map("n", "<leader>wa", "<cmd>BufOnly<CR>", { desc = "Close all other buffers" })
+map("n", "<leader>q", "<cmd>q<CR>", { desc = "Quit" })
+map("n", "<leader>Q", "<cmd>q!<CR>", { desc = "Force quit" })
 
--- ============================================================================
--- Yank/Cut/Paste
--- ============================================================================
-
+-- Select entire buffer
 map("n", "<leader>y", "ggVG", { desc = "Select entire buffer" })
 
--- ============================================================================
--- LSP Keymaps (buffer-local)
--- ============================================================================
+-- File explorer tree controls
+map("n", "<leader>nx", function()
+  local ok, api = pcall(require, "nvim-tree.api")
+  if ok and api.tree and api.tree.expand_all then
+    api.tree.expand_all()
+  end
+end, { desc = "Expand all folders" })
+map("n", "<leader>nc", function()
+  local ok, api = pcall(require, "nvim-tree.api")
+  if ok and api.tree and api.tree.collapse_all then
+    api.tree.collapse_all()
+  end
+end, { desc = "Collapse all folders" })
 
-local function setup_lsp_keymaps(bufnr)
-	local buf_map = function(key, cmd, desc)
-		utils.buf_map(bufnr, "n", key, cmd, { desc = desc })
-	end
+-- Telescope extras
+map("n", "<leader>dd", actions.telescope_call("diagnostics", { bufnr = nil }), { desc = "Workspace Diagnostics" })
+map("n", "<leader>fk", actions.telescope_call("keymaps"), { desc = "Find Keymaps" })
+map("n", "<leader>fs", actions.telescope_call("lsp_document_symbols"), { desc = "Document Symbols" })
+map("n", "<leader>fS", actions.telescope_call("lsp_workspace_symbols"), { desc = "Workspace Symbols" })
+map("n", "<leader>fd", actions.telescope_call("lsp_definitions"), { desc = "LSP Definitions" })
+map("n", "<leader>fi", actions.telescope_call("lsp_implementations"), { desc = "LSP Implementations" })
+map("n", "<leader>gc", "<cmd>Telescope git_commits<CR>", { desc = "Git Commits" })
+map("n", "<leader>gb", "<cmd>Telescope git_branches<CR>", { desc = "Git Branches" })
 
-	local function safe_lsp_call(func, msg)
-		return function()
-			local ok, _ = pcall(func)
-			if not ok then
-				vim.notify("LSP: " .. msg, vim.log.levels.INFO)
-			end
-		end
-	end
+-- DAP leader mappings
+map("n", "<leader>dc", actions.dap_call("dap", "continue"), { desc = "Continue" })
+map("n", "<leader>di", actions.dap_call("dap", "step_into"), { desc = "Step into" })
+map("n", "<leader>do", actions.dap_call("dap", "step_over"), { desc = "Step over" })
+map("n", "<leader>dO", actions.dap_call("dap", "step_out"), { desc = "Step out" })
+map("n", "<leader>dl", actions.dap_call("dap", "run_last"), { desc = "Run last" })
+map("n", "<leader>dx", actions.dap_call("dap", "terminate"), { desc = "Terminate" })
+map("n", "<leader>du", actions.dap_call("dapui", "toggle"), { desc = "Toggle DAP UI" })
+map("n", "<leader>dr", actions.toggle_dap_repl, { desc = "Toggle REPL" })
 
-	buf_map("K", safe_lsp_call(vim.lsp.buf.hover, "no docs"), "Hover docs")
-	buf_map("<C-k>", safe_lsp_call(vim.lsp.buf.signature_help, "no signature"), "Signature help")
-	buf_map("gr", safe_lsp_call(vim.lsp.buf.references, "no refs"), "References")
-	buf_map("gs", safe_lsp_call(vim.lsp.buf.document_symbol, "no symbols"), "Document symbols")
-	buf_map("gS", safe_lsp_call(vim.lsp.buf.workspace_symbol, "no ws symbols"), "Workspace symbols")
-	buf_map("gt", safe_lsp_call(vim.lsp.buf.type_definition, "no type def"), "Type definition")
+-- Theme cycling
+map("n", "<leader>thn", actions.theme_next, { desc = "Next Theme" })
+map("n", "<leader>thp", actions.theme_previous, { desc = "Previous Theme" })
 
-	-- IntelliJ-like
-	buf_map("<leader>bb", safe_lsp_call(vim.lsp.buf.definition, "no def"), "Go to definition (Cmd+B)")
-	buf_map("<leader>bi", safe_lsp_call(vim.lsp.buf.implementation, "no impl"), "Go to implementation")
-	buf_map("<leader>br", safe_lsp_call(vim.lsp.buf.references, "no refs"), "Find usages")
-end
-
-vim.api.nvim_create_autocmd("LspAttach", {
-	callback = function(args)
-		setup_lsp_keymaps(args.buf)
-	end,
-})
-
--- ============================================================================
--- Telescope (additional)
--- ============================================================================
-
-local function telescope_keymap(builtin_name, desc)
-	map("n", "<leader>" .. builtin_name, function()
-		local builtin = require("telescope.builtin")
-		builtin[builtin_name]()
-	end, { desc = desc })
-end
-
-vim.keymap.set("n", "<leader>dd", function()
-	require("telescope.builtin").diagnostics({ bufnr = nil })
-end, { desc = "Workspace Diagnostics" })
-
-telescope_keymap("fk", "Find Keymaps")
-telescope_keymap("fs", "Document Symbols")
-telescope_keymap("fS", "Workspace Symbols")
-telescope_keymap("fd", "LSP Definitions")
-telescope_keymap("fi", "LSP Implementations")
-
--- ============================================================================
--- DAP
--- ============================================================================
-
-map("n", "<leader>dc", require("dap").continue, { desc = "Continue" })
-map("n", "<leader>di", require("dap").step_into, { desc = "Step into" })
-map("n", "<leader>do", require("dap").step_over, { desc = "Step over" })
-map("n", "<leader>dO", require("dap").step_out, { desc = "Step out" })
-map("n", "<leader>dr", require("dap").repl.toggle, { desc = "Toggle REPL" })
-map("n", "<leader>dl", require("dap").run_last, { desc = "Run last" })
-map("n", "<leader>du", require("dapui").toggle, { desc = "Toggle DAP UI" })
-map("n", "<leader>dx", require("dap").terminate, { desc = "Terminate" })
-
--- ============================================================================
--- Run Code (Java/Python)
--- ============================================================================
-
-local function run_file_in_term(cmd)
-	local Terminal = require("toggleterm.terminal").Terminal
-	local term = Terminal:new({
-		cmd = cmd,
-		direction = "horizontal",
-		close_on_exit = false,
-	})
-	term:toggle()
-end
-
-map("n", "<leader>jr", function()
-	if vim.fn.expand("%:e") == "java" then
-		local class_name = vim.fn.expand("%:t:r")
-		local dir = vim.fn.expand("%:p:h")
-		run_file_in_term("cd " .. dir .. " && javac " .. vim.fn.expand("%:t") .. " && java " .. class_name)
-	else
-		vim.notify("Not a Java file", vim.log.levels.WARN)
-	end
-end, { desc = "Compile and run Java file" })
-
-map("n", "<leader>pr", function()
-	if vim.fn.expand("%:e") == "py" then
-		run_file_in_term("python3 " .. vim.fn.expand("%:p"))
-	else
-		vim.notify("Not a Python file", vim.log.levels.WARN)
-	end
-end, { desc = "Run Python file" })
-
--- ============================================================================
--- Which-key Groups
--- ============================================================================
-
-local wk = utils.safe_require("which-key")
-if wk then
-	local builtin = require("telescope.builtin")
-	wk.register({
-		["<leader>a"] = {
-			name = "+autosave",
-			a = {
-				_G.toggle_autosave or function()
-					vim.notify("AutoSave not loaded", vim.log.levels.WARN)
-				end,
-				"Toggle AutoSave",
-			},
-		},
-		["<leader>f"] = {
-			name = "+find",
-			f = { builtin.find_files, "Find File" },
-			g = { builtin.live_grep, "Live Grep" },
-			b = { builtin.buffers, "Buffers" },
-			h = { builtin.help_tags, "Help Tags" },
-			r = { builtin.oldfiles, "Recent Files" },
-			k = { builtin.keymaps, "Keymaps" },
-			s = { builtin.lsp_document_symbols, "Document Symbols" },
-			S = { builtin.lsp_workspace_symbols, "Workspace Symbols" },
-			d = { builtin.lsp_definitions, "Definitions" },
-			i = { builtin.lsp_implementations, "Implementations" },
-		},
-		["<leader>b"] = {
-			name = "+buffer",
-			d = { ":BufferClose<CR>", "Close" },
-			n = { ":BufferNext<CR>", "Next" },
-			p = { ":BufferPrevious<CR>", "Previous" },
-		},
-		["<leader>g"] = {
-			name = "+git",
-			c = { "<cmd>Telescope git_commits<CR>", "Commits" },
-			B = { "<cmd>Telescope git_branches<CR>", "Branches" },
-			s = { "<cmd>Telescope git_status<CR>", "Status" },
-			j = { require("gitsigns").next_hunk, "Next Hunk" },
-			k = { require("gitsigns").prev_hunk, "Prev Hunk" },
-			p = { require("gitsigns").preview_hunk, "Preview Hunk" },
-		},
-		["<leader>l"] = {
-			name = "+lsp",
-			a = { vim.lsp.buf.code_action, "Code Action" },
-			d = { vim.diagnostic.open_float, "Diagnostics" },
-			D = { vim.lsp.buf.declaration, "Declaration" },
-			i = { vim.lsp.buf.implementation, "Implementation" },
-			r = { vim.lsp.buf.references, "References" },
-			n = { vim.lsp.buf.rename, "Rename" },
-			f = { require("conform").format, "Format" },
-			h = { vim.lsp.buf.hover, "Hover" },
-		},
-		["<leader>x"] = {
-			name = "+diagnostics",
-			x = { "<cmd>Trouble diagnostics toggle<CR>", "Toggle" },
-			w = { "<cmd>Trouble diagnostics toggle<CR>", "Workspace" },
-			d = { "<cmd>Trouble diagnostics toggle filter.buf=0<CR>", "Document" },
-			q = { "<cmd>Trouble qflist toggle<CR>", "Quickfix" },
-		},
-		["<leader>t"] = {
-			name = "+terminal",
-			["`"] = { "<cmd>ToggleTerm<CR>", "Toggle" },
-			f = { "<cmd>ToggleTerm direction=float<CR>", "Float" },
-			v = { "<cmd>ToggleTerm direction=vertical<CR>", "Vertical" },
-			h = { "<cmd>ToggleTerm direction=horizontal<CR>", "Horizontal" },
-		},
-		["<leader>s"] = {
-			name = "+session",
-			s = { "<cmd>Autosession save<CR>", "Save" },
-			r = { "<cmd>Autosession restore<CR>", "Restore" },
-			d = { "<cmd>Autosession delete<CR>", "Delete" },
-		},
-		["<leader>r"] = {
-			name = "+search/replace",
-			w = {
-				function()
-					require("spectre").open_visual({ select_word = true })
-				end,
-				"Replace word",
-			},
-			p = {
-				function()
-					require("spectre").open()
-				end,
-				"Replace in project",
-			},
-			f = {
-				function()
-					require("spectre").open_file_search()
-				end,
-				"Replace in file",
-			},
-		},
-		["<leader>re"] = {
-			name = "+extract",
-			e = { ":Refactor extract ", "Extract to function" },
-			f = { ":Refactor extract_to_file ", "Extract to file" },
-			i = { ":Refactor inline_var", "Inline variable" },
-			b = { ":Refactor extract_block ", "Extract block" },
-		},
-		["<leader>T"] = {
-			name = "+theme",
-			n = {
-				function()
-					require("plugins.config.themes").next()
-				end,
-				"Next Theme",
-			},
-			p = {
-				function()
-					require("plugins.config.themes").previous()
-				end,
-				"Previous Theme",
-			},
-		},
-		["<leader>"] = {
-			name = "+yank",
-			y = { "ggVG", "Select entire buffer" },
-		},
-		["<leader>w"] = {
-			name = "+write/quit",
-			s = { "<cmd>w<CR>", "Save" },
-			q = { "<cmd>wq<CR>", "Save & Quit" },
-		},
-		["<leader>q"] = {
-			function()
-				if vim.fn.bufname("") ~= "NvimTree" then
-					vim.cmd("q")
-				end
-			end,
-			"Quit",
-		},
-		["<leader>Q"] = {
-			function()
-				if vim.fn.bufname("") ~= "NvimTree" then
-					vim.cmd("q!")
-				end
-			end,
-			"Force Quit",
-		},
-	})
-end
-
--- Clean up conflicting mappings
-pcall(vim.keymap.del, "n", "gc")
+-- Run current file helpers
+map("n", "<leader>jr", actions.run_java_file, { desc = "Compile and run Java file" })
+map("n", "<leader>jR", actions.run_spring_boot, { desc = "Run Spring Boot app" })
+map("n", "<leader>jb", actions.run_java_build, { desc = "Build Java project" })
+map("n", "<leader>jx", actions.run_java_tests, { desc = "Run Java tests" })
+map("n", "<leader>pr", actions.run_python_file, { desc = "Run Python file" })
